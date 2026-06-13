@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xtid"
+version = "0.1.0"
+description = "Cross-Trajectory Internal Divergence as a when-to-ask trigger for long-horizon coding agents (de-risk experiment for claim C1)."
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "pyyaml>=6.0",
+    "scikit-learn>=1.3",
+]
+
+[project.optional-dependencies]
+# Heavy deps for real runs on a rented GPU (see requirements-gpu.txt + scripts/provision_gpu.sh).
+# Not needed for CPU smoke tests, which use the numpy FakeWhiteBoxModel + MockJudge.
+gpu = [
+    "torch>=2.2",
+    "transformers>=4.44",
+    "accelerate>=0.30",
+    "geomstats>=2.7",
+]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"

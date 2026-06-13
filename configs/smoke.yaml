@@ -1,0 +1,34 @@
+# CPU smoke config -- runs anywhere with zero heavy deps and no model downloads.
+# Uses the numpy FakeWhiteBoxModel + the rule-based MockJudge + synthetic tasks.
+# Purpose: prove the full de-risk pipeline executes end-to-end without errors.
+experiment:
+  name: smoke
+  seed: 0
+  n_trajectories: 4      # >=4 so fork interpretations (k=3) actually spread across trajectories
+  out_dir: logs/smoke
+
+backbone:
+  kind: fake            # FakeWhiteBoxModel (numpy); no torch / transformers / downloads
+  hidden_dim: 64
+  n_layers: 8
+  mid_layer: 0.5        # fraction of depth -> mid layer (layer 4 of 8)
+
+agent:
+  max_steps: 4
+  temperature: 0.8
+
+judge:
+  kind: mock            # MockJudge: deterministic, rule-based
+
+tasks:
+  source: synthetic     # built-in synthetic tasks with planted fork / convergent / clear blockers
+  limit: 12             # 4 of each regime -> non-degenerate AUROC slices
+
+signals:
+  alignment: step_index_then_anchor
+  internal_metric: mean_pairwise_cosine          # primary divergence metric
+  extra_internal_metrics: [total_variance, eigenscore, stiefel_volume]
+
+probe:
+  train: true           # B3 single-stream correctness probe trained on logged hidden states
+  layer: 0.5

@@ -1,0 +1,42 @@
+# Real de-risk run -- intended for a rented GPU box (see scripts/provision_gpu.sh).
+# White-box Qwen coder backbone + Llama-3.3-70B judge served via an API endpoint.
+experiment:
+  name: derisk
+  seed: 0
+  n_trajectories: 5          # matched-N: every signal/baseline reads the same N rollouts
+  out_dir: logs/derisk
+
+backbone:
+  kind: hf
+  model_id: Qwen/Qwen2.5-Coder-7B-Instruct   # dense -> hidden states trivial; scale to 30B+ later
+  dtype: bfloat16
+  device: cuda
+  mid_layer: 0.5             # fraction of depth -> mid layer (probing literature favours mid layers)
+  load_in_4bit: false
+
+agent:
+  max_steps: 40
+  temperature: 0.8
+  diverse_prompting: true    # diversify the N trajectories beyond temperature alone
+
+judge:
+  kind: api                  # OpenAI-compatible endpoint hosting Llama-3.3-70B-Instruct
+  model_id: meta-llama/Llama-3.3-70B-Instruct
+  base_url_env: JUDGE_BASE_URL
+  api_key_env: JUDGE_API_KEY
+  # kind: hf                 # alternative: self-host the judge (needs 2xA100-80GB or 1xH100+offload)
+
+tasks:
+  source: hil_bench
+  domain: swe                # 'swe' (SWE-Bench Pro) or 'sql' (BIRD)
+  split: public              # 200 public tasks; leaderboard numbers are NOT comparable
+  limit: 50                  # de-risk slice
+
+signals:
+  alignment: step_index_then_anchor
+  internal_metric: mean_pairwise_cosine
+  extra_internal_metrics: [total_variance, eigenscore, stiefel_volume]
+
+probe:
+  train: true                # B3 single-stream correctness probe (OPENIA / Confidence-Manifold style)
+  layer: 0.5

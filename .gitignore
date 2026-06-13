@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Vendored upstream repos (cloned, not committed) -- but keep the version record
+third_party/*
+!third_party/VERSIONS.md
+
+# Run artifacts
+data/
+logs/
+models/
+*.pt
+*.bin
+*.safetensors
+*.npz
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
