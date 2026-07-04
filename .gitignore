@@ -11,8 +11,14 @@ venv/
 .env
 
 # Vendored upstream repos (cloned, not committed) -- but keep the version record
+# and each repo's provenance note. (The two-level negation is required: git
+# won't descend into an ignored directory unless the directory itself is
+# re-included.)
 third_party/*
 !third_party/VERSIONS.md
+!third_party/*/
+third_party/*/*
+!third_party/*/PROVENANCE.md
 
 # Run artifacts
 data/
@@ -28,3 +34,7 @@ models/
 Thumbs.db
 .idea/
 .vscode/
+
+# Reference papers (copyrighted third-party PDFs; local-only, not for a public repo)
+multi trajectory disagreement about same idea/
+

@@ -28,6 +28,6 @@ dev = ["pytest>=7.0"]
 where = ["src"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["src"]
+testpaths = ["tests", "harness"]
+pythonpath = ["src", "."]
 addopts = "-q"
