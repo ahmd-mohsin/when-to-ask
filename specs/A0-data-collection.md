@@ -4,6 +4,13 @@ Status: Phase-1 scope covers the read policy + log schema (CPU-testable) and the
 single-task hook proof (`scripts/prove_hook.py`, runs on the owner's AWS GPU box).
 Full N=8 collection over harbor_swe is a later run, not code.
 
+**v1.5 amendment (2026-07-05, ADR 012):** prompts are grounded in pre-patch
+source files extracted from each task's docker image (leak analysis in
+`scripts/extract_task_context.py`), generations default to 1536 tokens, a mild
+deliberation nudge is appended (recorded; `--no-nudge` ablation), and the
+collection writes a full diagnostics manifest. The RunLog schema below is
+unchanged; v1 data remains compatible.
+
 ## Purpose
 
 Run the agent N times per under-specified task; at read positions across the

@@ -20,8 +20,10 @@ third_party/*
 third_party/*/*
 !third_party/*/PROVENANCE.md
 
-# Run artifacts
-data/
+# Run artifacts -- but the frozen interpretation-class artifact is tracked
+# (a research artifact, decisions/005, not a run product)
+data/*
+!data/interpretation_classes.json
 logs/
 models/
 *.pt
@@ -37,4 +39,9 @@ Thumbs.db
 
 # Reference papers (copyrighted third-party PDFs; local-only, not for a public repo)
 multi trajectory disagreement about same idea/
+
+# Secrets -- never commit
+*.pem
+*.key
+.env.*
 

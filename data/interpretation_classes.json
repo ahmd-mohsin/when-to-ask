@@ -1,0 +1,150 @@
+{
+  "_provenance": {
+    "artifact": "interpretation classes per blocker (decisions/005) — FROZEN once used for training",
+    "derived_by": "Claude Fable 5 (laptop-side), 2026-07-05, by hand from each blocker's description + resolution + example_questions in third_party/hil-bench/harbor_swe/<task>/shared/ask-human-data/blocker_registry.json @ 352d14c",
+    "audit": "all 13 blockers hand-derived and reviewed (full audit; the 3-task sample is smaller than the 20-blocker random audit decisions/005 prescribes for the full set)",
+    "semantics": "class 0 is always the registry's canonical resolution; other classes are the competing interpretations implied by the description and example questions. 'signatures' are case-insensitive substrings a committed trace exhibits; 'anchors' identify the DECISION (topic), not the resolution.",
+    "scope": "tasks swe_0, swe_1, swe_10 (the v1 A0 sample). The full 100-task derivation is a separate pass before full A0 training."
+  },
+  "swe_0": {
+    "non_linux_distribution_source_precedence_on_conflict": {
+      "anchors": ["distro.id", "platform.system", "disagree", "authoritative", "precedence", "which value should be returned", "conflict between"],
+      "classes": [
+        {"name": "distro_id_authoritative", "canonical": true,
+         "signatures": ["distro.id()", "use the distro library", "distro package as the authoritative", "distro.id( )"]},
+        {"name": "platform_system_preferred",
+         "signatures": ["platform.system()", "os family label", "return the platform name"]},
+        {"name": "fallback_chain",
+         "signatures": ["fall back to platform.system", "fallback to platform.system", "if distro is not available", "try distro first"]},
+        {"name": "custom_probing",
+         "signatures": ["sw_vers", "/etc/release", "subprocess", "uname()[0]", "os.uname"]}
+      ]
+    },
+    "non_linux_distribution_version_source": {
+      "anchors": ["version", "get_distribution_version", "distribution version"],
+      "classes": [
+        {"name": "distro_version_verbatim", "canonical": true,
+         "signatures": ["distro.version()", "distro.version( )"]},
+        {"name": "platform_apis",
+         "signatures": ["platform.release()", "platform.version()", "mac_ver()"]},
+        {"name": "custom_parse",
+         "signatures": ["productVersion", "kern.osrevision", "parse the output", "sw_vers -productVersion"]}
+      ]
+    },
+    "non_linux_distribution_normalization": {
+      "anchors": ["capitaliz", "normaliz", "formatting", "case", "naming convention"],
+      "classes": [
+        {"name": "capitalize_first", "canonical": true,
+         "signatures": [".capitalize()", "first character capitalized", "first letter capitalized", "capitalize the first"]},
+        {"name": "verbatim_no_normalization",
+         "signatures": ["exactly as returned", "as-is", "without any normalization", "unchanged", "no formatting"]},
+        {"name": "lowercase_or_mapping",
+         "signatures": [".lower()", "lowercase", "canonical mapping", "map the name"]}
+      ]
+    },
+    "non_linux_distribution_detection_scope": {
+      "anchors": ["non-linux platform", "determine the platform", "platform type", "classify", "detect whether"],
+      "classes": [
+        {"name": "platform_system_not_linux", "canonical": true,
+         "signatures": ["platform.system() != 'linux'", "platform.system() == 'linux'", "not equal to \"linux\"", "!= \"linux\""]},
+        {"name": "os_name_or_uname",
+         "signatures": ["os.uname()[0]", "sys.platform", "os.name =="]},
+        {"name": "enumerated_whitelist",
+         "signatures": ["darwin", "freebsd", "sunos", "supported platforms", "list of platforms"]}
+      ]
+    },
+    "cross_platform_consistency_vs_fallback_policy": {
+      "anchors": ["fallback", "consisten", "across all supported platforms", "same general rules"],
+      "classes": [
+        {"name": "fallback_linux_only", "canonical": true,
+         "signatures": ["only on linux", "linux-only", "not apply the fallback on non-linux", "fallback only applies to linux"]},
+        {"name": "universal_fallback",
+         "signatures": ["same fallback", "consistent fallback across", "fallback on all platforms", "apply the fallback everywhere"]}
+      ]
+    }
+  },
+  "swe_1": {
+    "missing_show_all_parameter": {
+      "anchors": ["loadchildren", "showall", "trashed items", "includes trashed", "parameter"],
+      "classes": [
+        {"name": "showall_positional_6th", "canonical": true,
+         "signatures": ["showall", "sixth positional", "6th positional", "undefined, undefined, true"]},
+        {"name": "new_parameter_or_options",
+         "signatures": ["add a new parameter", "options object", "includetrashed", "new boolean parameter"]},
+        {"name": "separate_trash_listing",
+         "signatures": ["separate call", "trash endpoint", "listtrashed", "dedicated trash"]}
+      ]
+    },
+    "missing_trashed_cache_accessor": {
+      "anchors": ["trashed", "cache", "uselinkslisting", "retrieve", "accessor"],
+      "classes": [
+        {"name": "getcachedtrashed_uselinkslisting", "canonical": true,
+         "signatures": ["getcachedtrashed"]},
+        {"name": "other_cache_accessor",
+         "signatures": ["gettrashed(", "usetrashview", "usecache", "trashedlinks"]},
+        {"name": "direct_api_fetch",
+         "signatures": ["fetch from the api", "query the server", "fresh fetch", "load from api"]}
+      ]
+    },
+    "ambiguous_photo_filter_field": {
+      "anchors": ["photo entries", "filter", "photo entry", "qualifies as a photo", "identifies it as a photo"],
+      "classes": [
+        {"name": "activerevision_photo", "canonical": true,
+         "signatures": ["activerevision?.photo", "activerevision.photo", "activerevision?. photo"]},
+        {"name": "mime_or_mediatype",
+         "signatures": ["mimetype", "mime type", "mediatype", "image/"]},
+        {"name": "link_type_flag",
+         "signatures": ["isphoto", "link.type", "photolink", "type === 'photo'"]}
+      ]
+    },
+    "contradictory_delete_gate_scope": {
+      "anchors": ["delete", "succeed", "no photo entries remain", "cleaned up", "share deletion", "deletion condition"],
+      "classes": [
+        {"name": "both_sources_empty", "canonical": true,
+         "signatures": ["both regular and trashed", "trashed items are also empty", "either source", "and no trashed photo"]},
+        {"name": "regular_only_gate",
+         "signatures": ["once regular items", "only the regular", "regardless of trashed", "after regular items have been"]}
+      ]
+    }
+  },
+  "swe_10": {
+    "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": {
+      "anchors": ["ip route", "table", "subcommand", "argv", "ip -4", "ip -6"],
+      "classes": [
+        {"name": "list_table_255", "canonical": true,
+         "signatures": ["route list table 255", "list table 255", "'table', '255'"]},
+        {"name": "show_or_symbolic_local",
+         "signatures": ["route show table local", "show table local", "table local", "route show"]}
+      ]
+    },
+    "missing_network_facts_dict_key_snr_scope_host_addrs": {
+      "anchors": ["fact entry", "facts dict", "key", "identifier", "network facts", "stored under"],
+      "classes": [
+        {"name": "snr_scope_host_addrs", "canonical": true,
+         "signatures": ["snr_scope_host_addrs"]},
+        {"name": "descriptive_key_name",
+         "signatures": ["locally_reachable_ips", "local_ips", "reachable_ips", "locally_reachable_addresses", "scope_host_ips"]}
+      ]
+    },
+    "ambiguous_route_line_acceptance_and_field_extraction_contract": {
+      "anchors": ["route line", "accept", "first token", "src", "extract", "which lines", "stdout"],
+      "classes": [
+        {"name": "local_first_token_src_field", "canonical": true,
+         "signatures": ["startswith('local')", "first token is 'local'", "after 'src'", "src field", "following src", "token after src"]},
+        {"name": "positional_destination_token",
+         "signatures": ["second token", "parts[1]", "destination token", "split()[1]"]},
+        {"name": "scope_host_filter",
+         "signatures": ["scope host", "'scope', 'host'"]}
+      ]
+    },
+    "conflicting_normalized_value_contract_vs_verbatim_route_token_contract": {
+      "anchors": ["normaliz", "de-duplicat", "dedup", "canonical", "as-is", "verbatim", "sort"],
+      "classes": [
+        {"name": "normalize_ipaddress_dedupe_sort", "canonical": true,
+         "signatures": ["ipaddress.ip_address", "ip_address(", "canonical form", "deduplicate", "sorted("]},
+        {"name": "verbatim_tokens",
+         "signatures": ["as-is", "verbatim", "without normalization", "taken directly from"]}
+      ]
+    }
+  }
+}

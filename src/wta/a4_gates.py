@@ -123,6 +123,12 @@ def gate3_fork_collocation(t_he, top_he, cls_he, n_pairs: int = 4000,
             a, b = rng.choice(idx_by_topic[t]), rng.choice(idx_by_topic[t2])
             diff.append(float(u[a] @ u[b]))
     same, diff = np.asarray(same), np.asarray(diff)
+    if len(same) < 10 or len(diff) < 10:
+        return GateResult("gate3_fork_collocation",
+                          {"n_same": len(same), "n_diff": len(diff)},
+                          note="INSUFFICIENT PAIRS -- need held-out runs that "
+                               "commit to different classes on shared decisions; "
+                               "no theta produced")
     y = np.r_[np.ones(len(same)), np.zeros(len(diff))]
     fpr, tpr, thr = roc_curve(y, np.r_[same, diff])
     theta = float(thr[np.argmax(tpr - fpr)])
@@ -164,6 +170,10 @@ def gate5_lean_separation(l_he, top_he, cls_he) -> GateResult:
                                  for i, a in enumerate(gs) for b in gs[i + 1:]]))
         ratios.append(between / max(within, 1e-9))
         sils.append(float(silhouette_score(L, c)))
+    if not ratios:
+        return GateResult("gate5_lean_separation", {"n_decisions": 0},
+                          note="INSUFFICIENT DATA -- no held-out decision has "
+                               ">= 2 classes with >= 4 labeled reads")
     return GateResult("gate5_lean_separation",
                       {"between_within_ratio": float(np.mean(ratios)),
                        "silhouette": float(np.mean(sils)),

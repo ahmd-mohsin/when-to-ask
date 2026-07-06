@@ -256,11 +256,37 @@ class A2Model:
         return cls(net)
 
 
+def grl_diagnostic(model: A2Model, h: np.ndarray, class_labels: np.ndarray) -> dict:
+    """The treadmill check: compare the TRAINED adversary's accuracy on T with
+    a FRESH linear probe's. If the adversary is near chance but a fresh probe
+    reads the class, the encoder only fooled the adversary's current weights
+    (the failure measured on fixtures 2026-07-03) -- invariance did NOT happen.
+    Run after every real training; report both numbers."""
+    from sklearn.linear_model import LogisticRegression
+
+    m = np.asarray(class_labels) >= 0
+    if m.sum() < 10 or len(np.unique(class_labels[m])) < 2:
+        return {"note": "too few class-labeled reads for the diagnostic"}
+    t = model.encode_topic(np.asarray(h, dtype=np.float32)[m])
+    y = np.asarray(class_labels)[m]
+    with torch.no_grad():
+        adv_acc = float((model.net.adversary(torch.from_numpy(t)).argmax(1).numpy() == y).mean())
+    cut = int(0.7 * len(t))
+    probe_acc = float(LogisticRegression(max_iter=1000)
+                      .fit(t[:cut], y[:cut]).score(t[cut:], y[cut:])) if cut >= 10 else float("nan")
+    return {"adversary_acc_on_T": adv_acc, "fresh_probe_acc_on_T": probe_acc,
+            "chance": 1.0 / len(np.unique(y)),
+            "treadmill_suspected": bool(probe_acc > adv_acc + 0.2)}
+
+
 def train_a2(h: np.ndarray, topic_labels: np.ndarray, class_labels: np.ndarray,
-             cfg: A2Config, log_every: int = 0) -> A2Model:
+             cfg: A2Config, log_every: int = 0,
+             history_path: str | Path | None = None) -> A2Model:
     """Train on offline reads. ``class_labels`` uses -1 for unlabeled reads.
 
-    Returns the frozen model. Deterministic for a given cfg.seed.
+    Returns the frozen model. Deterministic for a given cfg.seed. With
+    ``history_path``, per-epoch full-batch loss components are appended as
+    JSONL -- the first thing to look at when a gate number looks wrong.
     """
     h = np.asarray(h, dtype=np.float32)
     if h.ndim != 2 or h.shape[1] != cfg.in_dim:
@@ -303,10 +329,16 @@ def train_a2(h: np.ndarray, topic_labels: np.ndarray, class_labels: np.ndarray,
             main_opt.zero_grad()
             losses["total"].backward()
             main_opt.step()
-        if log_every and (epoch + 1) % log_every == 0:
+        want_log = log_every and (epoch + 1) % log_every == 0
+        if want_log or history_path:
             with torch.no_grad():
                 full = compute_losses(net, ht, ty, cy, grl_lam)
-            print(f"epoch {epoch + 1}: " + json.dumps(
-                {k: round(float(v), 4) for k, v in full.items()}))
+            row = {k: round(float(v), 5) for k, v in full.items()}
+            row["epoch"], row["grl_lam"] = epoch + 1, round(grl_lam, 3)
+            if want_log:
+                print("epoch", epoch + 1, json.dumps(row))
+            if history_path:
+                with Path(history_path).open("a", encoding="utf-8") as f:
+                    f.write(json.dumps(row) + "\n")
 
     return A2Model(net)
