@@ -25,6 +25,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
@@ -45,8 +46,15 @@ def image_available(image: str) -> bool:
     return code == 0
 
 
-def try_load_archive(task_dir: Path, log: list[str]) -> str | None:
-    """Some hil-bench releases ship an image archive pointer; try it."""
+def try_load_archive(task_dir: Path, log: list[str],
+                     scratch_dir: str | None = None) -> str | None:
+    """Fetch + load a task's image archive the way the benchmark itself does
+    (harbor_swe/warmup_images.sh): `hf buckets cp hf://buckets/<bucket>/<path>`.
+    Verified on AWS 2026-07-06: the bucket serves anonymously; the plain
+    https://huggingface.co/... `hf_url` 404s/401s (wrong scheme for buckets),
+    and the metadata's artifact_bytes/artifact_sha256 are STALE for rebuilt
+    images (observed size mismatch on an archive that docker-loads fine with
+    the expected tag) -- so neither is used to gate the load."""
     arch = task_dir / "shared" / "image_archive.json"
     if not arch.exists():
         return None
@@ -55,14 +63,23 @@ def try_load_archive(task_dir: Path, log: list[str]) -> str | None:
     except Exception as e:
         log.append(f"image_archive.json unreadable: {e}")
         return None
-    url = info.get("url") or info.get("archive_url")
-    if not url:
-        log.append(f"image_archive.json has no url field (keys: {list(info)})")
+    bucket, apath = info.get("hf_bucket"), info.get("artifact_path")
+    if not (bucket and apath):
+        log.append(f"image_archive.json lacks hf_bucket/artifact_path (keys: {list(info)})")
         return None
-    log.append(f"pulling image archive: {url}")
-    code, out = sh(["bash", "-c", f"curl -fsSL '{url}' | docker load"], timeout=1800)
-    log.append(out.strip()[-500:])
-    return None if code != 0 else (info.get("image") or None)
+    hf_src = f"hf://buckets/{bucket}/{apath}"
+    log.append(f"pulling image archive: {hf_src}")
+    with tempfile.TemporaryDirectory(prefix="wta-img-", dir=scratch_dir) as tmp:
+        local = Path(tmp) / Path(apath).name
+        code, out = sh(["hf", "buckets", "cp", hf_src, str(local)], timeout=3600)
+        if code != 0 or not local.exists():
+            log.append(f"hf buckets cp failed: {out.strip()[-300:]}")
+            return None
+        code, out = sh(["bash", "-c", f"docker load < '{local}'"], timeout=1800)
+        log.append(out.strip()[-300:])
+    if code != 0:
+        return None
+    return info.get("local_image_ref") or info.get("image") or None
 
 
 def hunk_functions(patch_text: str, path: str) -> list[str]:
@@ -84,6 +101,12 @@ def main() -> int:
     ap.add_argument("--n-tasks", type=int, default=20)
     ap.add_argument("--out", default="data/task_context")
     ap.add_argument("--max-files", type=int, default=3)
+    ap.add_argument("--scratch-dir", default=None,
+                    help="dir for temporary image archives (multi-GB; put it "
+                         "on a large volume)")
+    ap.add_argument("--keep-images", action="store_true",
+                    help="do not `docker rmi` a task's image after its files "
+                         "are extracted (default: remove to bound disk use)")
     args = ap.parse_args()
 
     tasks_dir, out_root = Path(args.tasks_dir), Path(args.out)
@@ -112,7 +135,7 @@ def main() -> int:
         if paths:
             mode = "paths-only"
             if image and not image_available(image):
-                try_load_archive(task_dir, log)
+                try_load_archive(task_dir, log, scratch_dir=args.scratch_dir)
             if image and image_available(image):
                 mode = "docker"
                 for i, path in enumerate(paths):
@@ -136,6 +159,10 @@ def main() -> int:
                         log.append(f"FAILED to extract {path}: {out.strip()[:200]}")
                 if not entries:
                     mode = "paths-only"
+                if not args.keep_images:
+                    code, _ = sh(["docker", "rmi", image], timeout=120)
+                    log.append(f"docker rmi {image}: "
+                               f"{'ok' if code == 0 else 'failed (ignored)'}")
             if mode == "paths-only":
                 lines = [f"# touched file: {p}" for p in paths]
                 for p in paths:
