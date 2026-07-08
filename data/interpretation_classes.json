@@ -1,150 +1,3370 @@
 {
-  "_provenance": {
-    "artifact": "interpretation classes per blocker (decisions/005) — FROZEN once used for training",
-    "derived_by": "Claude Fable 5 (laptop-side), 2026-07-05, by hand from each blocker's description + resolution + example_questions in third_party/hil-bench/harbor_swe/<task>/shared/ask-human-data/blocker_registry.json @ 352d14c",
-    "audit": "all 13 blockers hand-derived and reviewed (full audit; the 3-task sample is smaller than the 20-blocker random audit decisions/005 prescribes for the full set)",
-    "semantics": "class 0 is always the registry's canonical resolution; other classes are the competing interpretations implied by the description and example questions. 'signatures' are case-insensitive substrings a committed trace exhibits; 'anchors' identify the DECISION (topic), not the resolution.",
-    "scope": "tasks swe_0, swe_1, swe_10 (the v1 A0 sample). The full 100-task derivation is a separate pass before full A0 training."
-  },
-  "swe_0": {
-    "non_linux_distribution_source_precedence_on_conflict": {
-      "anchors": ["distro.id", "platform.system", "disagree", "authoritative", "precedence", "which value should be returned", "conflict between"],
-      "classes": [
-        {"name": "distro_id_authoritative", "canonical": true,
-         "signatures": ["distro.id()", "use the distro library", "distro package as the authoritative", "distro.id( )"]},
-        {"name": "platform_system_preferred",
-         "signatures": ["platform.system()", "os family label", "return the platform name"]},
-        {"name": "fallback_chain",
-         "signatures": ["fall back to platform.system", "fallback to platform.system", "if distro is not available", "try distro first"]},
-        {"name": "custom_probing",
-         "signatures": ["sw_vers", "/etc/release", "subprocess", "uname()[0]", "os.uname"]}
-      ]
+ "_provenance": {
+  "artifact": "interpretation classes per blocker (decisions/005) \u2014 FROZEN once used for training",
+  "derived_by": "Claude Fable 5 (laptop-side), 2026-07-05, by hand from each blocker's description + resolution + example_questions in third_party/hil-bench/harbor_swe/<task>/shared/ask-human-data/blocker_registry.json @ 352d14c",
+  "audit": "all 13 blockers hand-derived and reviewed (full audit; the 3-task sample is smaller than the 20-blocker random audit decisions/005 prescribes for the full set)",
+  "semantics": "class 0 is always the registry's canonical resolution; other classes are the competing interpretations implied by the description and example questions. 'signatures' are case-insensitive substrings a committed trace exhibits; 'anchors' identify the DECISION (topic), not the resolution.",
+  "scope": "All 20 collected tasks (swe_0..swe_26). swe_0/1/10 hand-derived 2026-07-05; swe_11-26 derived by Opus workflow 2026-07-08 (per-task drafter grounded in registry+traces), 3 LLM-verified (swe_14/15/17), all 17 passed a deterministic anchor-leak repair (77 anchors that uniquely predicted one class were dropped; every blocker retains >=3 anchors) + owner hand-audit + empirical labeler validation."
+ },
+ "swe_0": {
+  "non_linux_distribution_source_precedence_on_conflict": {
+   "anchors": [
+    "distro.id",
+    "platform.system",
+    "disagree",
+    "authoritative",
+    "precedence",
+    "which value should be returned",
+    "conflict between"
+   ],
+   "classes": [
+    {
+     "name": "distro_id_authoritative",
+     "canonical": true,
+     "signatures": [
+      "distro.id()",
+      "use the distro library",
+      "distro package as the authoritative",
+      "distro.id( )"
+     ]
     },
-    "non_linux_distribution_version_source": {
-      "anchors": ["version", "get_distribution_version", "distribution version"],
-      "classes": [
-        {"name": "distro_version_verbatim", "canonical": true,
-         "signatures": ["distro.version()", "distro.version( )"]},
-        {"name": "platform_apis",
-         "signatures": ["platform.release()", "platform.version()", "mac_ver()"]},
-        {"name": "custom_parse",
-         "signatures": ["productVersion", "kern.osrevision", "parse the output", "sw_vers -productVersion"]}
-      ]
+    {
+     "name": "platform_system_preferred",
+     "signatures": [
+      "platform.system()",
+      "os family label",
+      "return the platform name"
+     ]
     },
-    "non_linux_distribution_normalization": {
-      "anchors": ["capitaliz", "normaliz", "formatting", "case", "naming convention"],
-      "classes": [
-        {"name": "capitalize_first", "canonical": true,
-         "signatures": [".capitalize()", "first character capitalized", "first letter capitalized", "capitalize the first"]},
-        {"name": "verbatim_no_normalization",
-         "signatures": ["exactly as returned", "as-is", "without any normalization", "unchanged", "no formatting"]},
-        {"name": "lowercase_or_mapping",
-         "signatures": [".lower()", "lowercase", "canonical mapping", "map the name"]}
-      ]
+    {
+     "name": "fallback_chain",
+     "signatures": [
+      "fall back to platform.system",
+      "fallback to platform.system",
+      "if distro is not available",
+      "try distro first"
+     ]
     },
-    "non_linux_distribution_detection_scope": {
-      "anchors": ["non-linux platform", "determine the platform", "platform type", "classify", "detect whether"],
-      "classes": [
-        {"name": "platform_system_not_linux", "canonical": true,
-         "signatures": ["platform.system() != 'linux'", "platform.system() == 'linux'", "not equal to \"linux\"", "!= \"linux\""]},
-        {"name": "os_name_or_uname",
-         "signatures": ["os.uname()[0]", "sys.platform", "os.name =="]},
-        {"name": "enumerated_whitelist",
-         "signatures": ["darwin", "freebsd", "sunos", "supported platforms", "list of platforms"]}
-      ]
-    },
-    "cross_platform_consistency_vs_fallback_policy": {
-      "anchors": ["fallback", "consisten", "across all supported platforms", "same general rules"],
-      "classes": [
-        {"name": "fallback_linux_only", "canonical": true,
-         "signatures": ["only on linux", "linux-only", "not apply the fallback on non-linux", "fallback only applies to linux"]},
-        {"name": "universal_fallback",
-         "signatures": ["same fallback", "consistent fallback across", "fallback on all platforms", "apply the fallback everywhere"]}
-      ]
+    {
+     "name": "custom_probing",
+     "signatures": [
+      "sw_vers",
+      "/etc/release",
+      "subprocess",
+      "uname()[0]",
+      "os.uname"
+     ]
     }
+   ]
   },
-  "swe_1": {
-    "missing_show_all_parameter": {
-      "anchors": ["loadchildren", "showall", "trashed items", "includes trashed", "parameter"],
-      "classes": [
-        {"name": "showall_positional_6th", "canonical": true,
-         "signatures": ["showall", "sixth positional", "6th positional", "undefined, undefined, true"]},
-        {"name": "new_parameter_or_options",
-         "signatures": ["add a new parameter", "options object", "includetrashed", "new boolean parameter"]},
-        {"name": "separate_trash_listing",
-         "signatures": ["separate call", "trash endpoint", "listtrashed", "dedicated trash"]}
-      ]
+  "non_linux_distribution_version_source": {
+   "anchors": [
+    "version",
+    "get_distribution_version",
+    "distribution version"
+   ],
+   "classes": [
+    {
+     "name": "distro_version_verbatim",
+     "canonical": true,
+     "signatures": [
+      "distro.version()",
+      "distro.version( )"
+     ]
     },
-    "missing_trashed_cache_accessor": {
-      "anchors": ["trashed", "cache", "uselinkslisting", "retrieve", "accessor"],
-      "classes": [
-        {"name": "getcachedtrashed_uselinkslisting", "canonical": true,
-         "signatures": ["getcachedtrashed"]},
-        {"name": "other_cache_accessor",
-         "signatures": ["gettrashed(", "usetrashview", "usecache", "trashedlinks"]},
-        {"name": "direct_api_fetch",
-         "signatures": ["fetch from the api", "query the server", "fresh fetch", "load from api"]}
-      ]
+    {
+     "name": "platform_apis",
+     "signatures": [
+      "platform.release()",
+      "platform.version()",
+      "mac_ver()"
+     ]
     },
-    "ambiguous_photo_filter_field": {
-      "anchors": ["photo entries", "filter", "photo entry", "qualifies as a photo", "identifies it as a photo"],
-      "classes": [
-        {"name": "activerevision_photo", "canonical": true,
-         "signatures": ["activerevision?.photo", "activerevision.photo", "activerevision?. photo"]},
-        {"name": "mime_or_mediatype",
-         "signatures": ["mimetype", "mime type", "mediatype", "image/"]},
-        {"name": "link_type_flag",
-         "signatures": ["isphoto", "link.type", "photolink", "type === 'photo'"]}
-      ]
-    },
-    "contradictory_delete_gate_scope": {
-      "anchors": ["delete", "succeed", "no photo entries remain", "cleaned up", "share deletion", "deletion condition"],
-      "classes": [
-        {"name": "both_sources_empty", "canonical": true,
-         "signatures": ["both regular and trashed", "trashed items are also empty", "either source", "and no trashed photo"]},
-        {"name": "regular_only_gate",
-         "signatures": ["once regular items", "only the regular", "regardless of trashed", "after regular items have been"]}
-      ]
+    {
+     "name": "custom_parse",
+     "signatures": [
+      "productVersion",
+      "kern.osrevision",
+      "parse the output",
+      "sw_vers -productVersion"
+     ]
     }
+   ]
   },
-  "swe_10": {
-    "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": {
-      "anchors": ["ip route", "table", "subcommand", "argv", "ip -4", "ip -6"],
-      "classes": [
-        {"name": "list_table_255", "canonical": true,
-         "signatures": ["route list table 255", "list table 255", "'table', '255'"]},
-        {"name": "show_or_symbolic_local",
-         "signatures": ["route show table local", "show table local", "table local", "route show"]}
-      ]
+  "non_linux_distribution_normalization": {
+   "anchors": [
+    "capitaliz",
+    "normaliz",
+    "formatting",
+    "case",
+    "naming convention"
+   ],
+   "classes": [
+    {
+     "name": "capitalize_first",
+     "canonical": true,
+     "signatures": [
+      ".capitalize()",
+      "first character capitalized",
+      "first letter capitalized",
+      "capitalize the first"
+     ]
     },
-    "missing_network_facts_dict_key_snr_scope_host_addrs": {
-      "anchors": ["fact entry", "facts dict", "key", "identifier", "network facts", "stored under"],
-      "classes": [
-        {"name": "snr_scope_host_addrs", "canonical": true,
-         "signatures": ["snr_scope_host_addrs"]},
-        {"name": "descriptive_key_name",
-         "signatures": ["locally_reachable_ips", "local_ips", "reachable_ips", "locally_reachable_addresses", "scope_host_ips"]}
-      ]
+    {
+     "name": "verbatim_no_normalization",
+     "signatures": [
+      "exactly as returned",
+      "as-is",
+      "without any normalization",
+      "unchanged",
+      "no formatting"
+     ]
     },
-    "ambiguous_route_line_acceptance_and_field_extraction_contract": {
-      "anchors": ["route line", "accept", "first token", "src", "extract", "which lines", "stdout"],
-      "classes": [
-        {"name": "local_first_token_src_field", "canonical": true,
-         "signatures": ["startswith('local')", "first token is 'local'", "after 'src'", "src field", "following src", "token after src"]},
-        {"name": "positional_destination_token",
-         "signatures": ["second token", "parts[1]", "destination token", "split()[1]"]},
-        {"name": "scope_host_filter",
-         "signatures": ["scope host", "'scope', 'host'"]}
-      ]
-    },
-    "conflicting_normalized_value_contract_vs_verbatim_route_token_contract": {
-      "anchors": ["normaliz", "de-duplicat", "dedup", "canonical", "as-is", "verbatim", "sort"],
-      "classes": [
-        {"name": "normalize_ipaddress_dedupe_sort", "canonical": true,
-         "signatures": ["ipaddress.ip_address", "ip_address(", "canonical form", "deduplicate", "sorted("]},
-        {"name": "verbatim_tokens",
-         "signatures": ["as-is", "verbatim", "without normalization", "taken directly from"]}
-      ]
+    {
+     "name": "lowercase_or_mapping",
+     "signatures": [
+      ".lower()",
+      "lowercase",
+      "canonical mapping",
+      "map the name"
+     ]
     }
+   ]
+  },
+  "non_linux_distribution_detection_scope": {
+   "anchors": [
+    "non-linux platform",
+    "determine the platform",
+    "platform type",
+    "classify",
+    "detect whether"
+   ],
+   "classes": [
+    {
+     "name": "platform_system_not_linux",
+     "canonical": true,
+     "signatures": [
+      "platform.system() != 'linux'",
+      "platform.system() == 'linux'",
+      "not equal to \"linux\"",
+      "!= \"linux\""
+     ]
+    },
+    {
+     "name": "os_name_or_uname",
+     "signatures": [
+      "os.uname()[0]",
+      "sys.platform",
+      "os.name =="
+     ]
+    },
+    {
+     "name": "enumerated_whitelist",
+     "signatures": [
+      "darwin",
+      "freebsd",
+      "sunos",
+      "supported platforms",
+      "list of platforms"
+     ]
+    }
+   ]
+  },
+  "cross_platform_consistency_vs_fallback_policy": {
+   "anchors": [
+    "fallback",
+    "consisten",
+    "across all supported platforms",
+    "same general rules"
+   ],
+   "classes": [
+    {
+     "name": "fallback_linux_only",
+     "canonical": true,
+     "signatures": [
+      "only on linux",
+      "linux-only",
+      "not apply the fallback on non-linux",
+      "fallback only applies to linux"
+     ]
+    },
+    {
+     "name": "universal_fallback",
+     "signatures": [
+      "same fallback",
+      "consistent fallback across",
+      "fallback on all platforms",
+      "apply the fallback everywhere"
+     ]
+    }
+   ]
   }
+ },
+ "swe_1": {
+  "missing_show_all_parameter": {
+   "anchors": [
+    "loadchildren",
+    "showall",
+    "trashed items",
+    "includes trashed",
+    "parameter"
+   ],
+   "classes": [
+    {
+     "name": "showall_positional_6th",
+     "canonical": true,
+     "signatures": [
+      "showall",
+      "sixth positional",
+      "6th positional",
+      "undefined, undefined, true"
+     ]
+    },
+    {
+     "name": "new_parameter_or_options",
+     "signatures": [
+      "add a new parameter",
+      "options object",
+      "includetrashed",
+      "new boolean parameter"
+     ]
+    },
+    {
+     "name": "separate_trash_listing",
+     "signatures": [
+      "separate call",
+      "trash endpoint",
+      "listtrashed",
+      "dedicated trash"
+     ]
+    }
+   ]
+  },
+  "missing_trashed_cache_accessor": {
+   "anchors": [
+    "trashed",
+    "cache",
+    "uselinkslisting",
+    "retrieve",
+    "accessor"
+   ],
+   "classes": [
+    {
+     "name": "getcachedtrashed_uselinkslisting",
+     "canonical": true,
+     "signatures": [
+      "getcachedtrashed"
+     ]
+    },
+    {
+     "name": "other_cache_accessor",
+     "signatures": [
+      "gettrashed(",
+      "usetrashview",
+      "usecache",
+      "trashedlinks"
+     ]
+    },
+    {
+     "name": "direct_api_fetch",
+     "signatures": [
+      "fetch from the api",
+      "query the server",
+      "fresh fetch",
+      "load from api"
+     ]
+    }
+   ]
+  },
+  "ambiguous_photo_filter_field": {
+   "anchors": [
+    "photo entries",
+    "filter",
+    "photo entry",
+    "qualifies as a photo",
+    "identifies it as a photo"
+   ],
+   "classes": [
+    {
+     "name": "activerevision_photo",
+     "canonical": true,
+     "signatures": [
+      "activerevision?.photo",
+      "activerevision.photo",
+      "activerevision?. photo"
+     ]
+    },
+    {
+     "name": "mime_or_mediatype",
+     "signatures": [
+      "mimetype",
+      "mime type",
+      "mediatype",
+      "image/"
+     ]
+    },
+    {
+     "name": "link_type_flag",
+     "signatures": [
+      "isphoto",
+      "link.type",
+      "photolink",
+      "type === 'photo'"
+     ]
+    }
+   ]
+  },
+  "contradictory_delete_gate_scope": {
+   "anchors": [
+    "delete",
+    "succeed",
+    "no photo entries remain",
+    "cleaned up",
+    "share deletion",
+    "deletion condition"
+   ],
+   "classes": [
+    {
+     "name": "both_sources_empty",
+     "canonical": true,
+     "signatures": [
+      "both regular and trashed",
+      "trashed items are also empty",
+      "either source",
+      "and no trashed photo"
+     ]
+    },
+    {
+     "name": "regular_only_gate",
+     "signatures": [
+      "once regular items",
+      "only the regular",
+      "regardless of trashed",
+      "after regular items have been"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_10": {
+  "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": {
+   "anchors": [
+    "ip route",
+    "table",
+    "subcommand",
+    "argv",
+    "ip -4",
+    "ip -6"
+   ],
+   "classes": [
+    {
+     "name": "list_table_255",
+     "canonical": true,
+     "signatures": [
+      "route list table 255",
+      "list table 255",
+      "'table', '255'"
+     ]
+    },
+    {
+     "name": "show_or_symbolic_local",
+     "signatures": [
+      "route show table local",
+      "show table local",
+      "table local",
+      "route show"
+     ]
+    }
+   ]
+  },
+  "missing_network_facts_dict_key_snr_scope_host_addrs": {
+   "anchors": [
+    "fact entry",
+    "facts dict",
+    "key",
+    "identifier",
+    "network facts",
+    "stored under"
+   ],
+   "classes": [
+    {
+     "name": "snr_scope_host_addrs",
+     "canonical": true,
+     "signatures": [
+      "snr_scope_host_addrs"
+     ]
+    },
+    {
+     "name": "descriptive_key_name",
+     "signatures": [
+      "locally_reachable_ips",
+      "local_ips",
+      "reachable_ips",
+      "locally_reachable_addresses",
+      "scope_host_ips"
+     ]
+    }
+   ]
+  },
+  "ambiguous_route_line_acceptance_and_field_extraction_contract": {
+   "anchors": [
+    "route line",
+    "accept",
+    "first token",
+    "src",
+    "extract",
+    "which lines",
+    "stdout"
+   ],
+   "classes": [
+    {
+     "name": "local_first_token_src_field",
+     "canonical": true,
+     "signatures": [
+      "startswith('local')",
+      "first token is 'local'",
+      "after 'src'",
+      "src field",
+      "following src",
+      "token after src"
+     ]
+    },
+    {
+     "name": "positional_destination_token",
+     "signatures": [
+      "second token",
+      "parts[1]",
+      "destination token",
+      "split()[1]"
+     ]
+    },
+    {
+     "name": "scope_host_filter",
+     "signatures": [
+      "scope host",
+      "'scope', 'host'"
+     ]
+    }
+   ]
+  },
+  "conflicting_normalized_value_contract_vs_verbatim_route_token_contract": {
+   "anchors": [
+    "normaliz",
+    "de-duplicat",
+    "dedup",
+    "canonical",
+    "as-is",
+    "verbatim",
+    "sort"
+   ],
+   "classes": [
+    {
+     "name": "normalize_ipaddress_dedupe_sort",
+     "canonical": true,
+     "signatures": [
+      "ipaddress.ip_address",
+      "ip_address(",
+      "canonical form",
+      "deduplicate",
+      "sorted("
+     ]
+    },
+    {
+     "name": "verbatim_tokens",
+     "signatures": [
+      "as-is",
+      "verbatim",
+      "without normalization",
+      "taken directly from"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_25": {
+  "rollout_cache_prefix": {
+   "anchors": [
+    "cache key format",
+    "rollout cache key",
+    "prefix",
+    "isolated from rule cache",
+    "s:er:%s:%s",
+    "const evaluationrolloutscachekeyfmt"
+   ],
+   "classes": [
+    {
+     "name": "prefix_s_ero",
+     "canonical": true,
+     "signatures": [
+      "s:ero:%s:%s",
+      "\"s:ero",
+      "= \"s:ero:",
+      "s:ero:"
+     ]
+    },
+    {
+     "name": "prefix_s_er_reuse_rules",
+     "signatures": [
+      "= \"s:er:%s:%s\"",
+      "\"s:er:%s:%s\"",
+      "evaluationrolloutscachekeyfmt = \"s:er:"
+     ]
+    },
+    {
+     "name": "prefix_s_evr",
+     "signatures": [
+      "s:evr:%s:%s",
+      "\"s:evr",
+      "= \"s:evr:"
+     ]
+    },
+    {
+     "name": "prefix_s_eroll_or_suffixed",
+     "signatures": [
+      "s:eroll:%s:%s",
+      "\"s:eroll",
+      "s:er:%s:%s:rollouts",
+      ":rollouts\"",
+      "s:roll",
+      "cache:rollouts",
+      "storage:evaluationrollouts:%s"
+     ]
+    }
+   ]
+  },
+  "rollout_serialization_tags": {
+   "anchors": [
+    "serialization",
+    "json tags",
+    "cache round-trip",
+    "evaluationrollout",
+    "rolloutthreshold",
+    "rolloutsegment",
+    "field identifiers",
+    "cached payloads"
+   ],
+   "classes": [
+    {
+     "name": "snake_case_omitempty",
+     "canonical": true,
+     "signatures": [
+      "namespace_key",
+      "rollout_type",
+      "segment_operator",
+      ",omitempty\"",
+      "json:\"rank,omitempty",
+      "json:\"threshold,omitempty",
+      "json:\"segment,omitempty"
+     ]
+    },
+    {
+     "name": "default_pascalcase_no_tags",
+     "signatures": [
+      "already handle json",
+      "get and set helpers already",
+      "no additional changes are needed",
+      "default json encoding",
+      "{\"rank\":1",
+      "{\"rank\": 1",
+      "no changes are needed here"
+     ]
+    },
+    {
+     "name": "camelcase_tags",
+     "signatures": [
+      "json:\"namespacekey",
+      "json:\"rollouttype",
+      "json:\"segmentoperator",
+      "camelcase",
+      "json:\"rolloutType"
+     ]
+    }
+   ]
+  },
+  "flag_primary_key_composition": {
+   "anchors": [
+    "parameter order",
+    "composing the rollout cache key",
+    "fmt.sprintf",
+    "primary lookup identifier"
+   ],
+   "classes": [
+    {
+     "name": "flag_first_namespace_second",
+     "canonical": true,
+     "signatures": [
+      "sprintf(evaluationrolloutscachekeyfmt, flagkey, namespacekey",
+      "flagkey, namespacekey)",
+      ":flag-1:ns",
+      "flag key first",
+      "flagkey as the first"
+     ]
+    },
+    {
+     "name": "namespace_first_signature_order",
+     "signatures": [
+      "sprintf(evaluationrolloutscachekeyfmt, namespacekey, flagkey",
+      "namespacekey, flagkey)",
+      ":ns:flag-1",
+      "namespace key first",
+      "same parameter conventions used by existing"
+     ]
+    },
+    {
+     "name": "combined_single_segment",
+     "signatures": [
+      ":flag-1-ns",
+      ":flag-1/ns",
+      "namespacekey + \"-\" + flagkey",
+      "concatenate both",
+      "flagkey+namespacekey"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_20": {
+  "ambiguous_eviction_strategy": {
+   "anchors": [
+    "evict",
+    "when the limit is reached",
+    "removal api",
+    "which entry to remove",
+    "exceed",
+    "does not exceed the limit"
+   ],
+   "classes": [
+    {
+     "name": "fifo_earliest_inserted",
+     "canonical": true,
+     "signatures": [
+      "fifo",
+      "first-in",
+      "first in, first out",
+      "oldest entry by insertion",
+      "earliest inserted",
+      "inserted earliest",
+      "insertion order",
+      "keys[0]",
+      "getkeys()[0]",
+      "remove the first key"
+     ]
+    },
+    {
+     "name": "lru_least_recently_used",
+     "signatures": [
+      "lru",
+      "least recently used",
+      "least-recently-used",
+      "removeleastrecentlyuseditem",
+      "evictlruitem",
+      "evict the least recently used"
+     ]
+    },
+    {
+     "name": "library_builtin_eviction",
+     "signatures": [
+      "setcachesizelimit",
+      "let the library handle",
+      "ttlcache handles eviction",
+      "library's built-in eviction",
+      "handled by the ttlcache",
+      "rely on the cache size limit"
+     ]
+    },
+    {
+     "name": "closest_to_expire_or_lfu",
+     "signatures": [
+      "closest to expiring",
+      "nearest expiry",
+      "closest-to-expire",
+      "least frequently used",
+      "lfu",
+      "shortest remaining ttl",
+      "soonest to expire"
+     ]
+    }
+   ]
+  },
+  "missing_eviction_watermark": {
+   "anchors": [
+    "how many entries to evict",
+    "how many to evict",
+    "make room",
+    "watermark",
+    "target occupancy",
+    "how aggressively",
+    "evict down to",
+    "free space",
+    "number of entries to remove"
+   ],
+   "classes": [
+    {
+     "name": "evict_to_half_floor",
+     "canonical": true,
+     "signatures": [
+      "sizelimit / 2",
+      "sizelimit/2",
+      "floor(sizelimit",
+      "half the size limit",
+      "down to half",
+      "integer division",
+      "50% occupancy",
+      "target of half",
+      "reduces the cache to",
+      "sizelimit >> 1"
+     ]
+    },
+    {
+     "name": "evict_single_entry",
+     "signatures": [
+      "evict one",
+      "evict a single",
+      "remove one entry",
+      "evict only one",
+      "remove the single oldest",
+      "one entry per insertion",
+      "keys[0]"
+     ]
+    },
+    {
+     "name": "evict_down_to_limit",
+     "signatures": [
+      "until the size limit is met",
+      "currentsize - c.data.getcachesizelimit",
+      "current - limit",
+      "evict items until",
+      "down to the limit",
+      "exceed the limit by",
+      "until the number of entries is at or below"
+     ]
+    }
+   ]
+  },
+  "contradictory_default_ttl_cap": {
+   "anchors": [
+    "default ttl",
+    "maximum lifetime",
+    "explicit per-entry",
+    "overridable default",
+    "maximum lifetime for cached entries",
+    "addwithttl"
+   ],
+   "classes": [
+    {
+     "name": "ceiling_caps_per_entry",
+     "canonical": true,
+     "signatures": [
+      "absolute ceiling",
+      "capped to defaultttl",
+      "cannot exceed defaultttl",
+      "cap the per-entry",
+      "no entry can live longer",
+      "min(ttl, defaultttl)",
+      "ttl = defaultttl if ttl > defaultttl",
+      "clamp",
+      "upper bound on the ttl"
+     ]
+    },
+    {
+     "name": "overridable_default_per_entry_wins",
+     "signatures": [
+      "per-entry ttl overrides",
+      "may specify a longer lifetime",
+      "per-entry ttl takes precedence",
+      "explicit ttl overrides the default",
+      "can live longer than the default",
+      "override this value",
+      "applied only when no per-entry ttl",
+      "used as a fallback default"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_26": {
+  "html_expiration_threshold": {
+   "anchors": [
+    "minimum display threshold",
+    "minimum expiration",
+    "html content is detected",
+    "expiration should meet",
+    "at least",
+    "math.max",
+    "requiring user interaction"
+   ],
+   "classes": [
+    {
+     "name": "min_expiration_5000",
+     "canonical": true,
+     "signatures": [
+      "math.max(5000",
+      "math.max(5000, expiration)",
+      "5000, expiration",
+      "at least 5 seconds",
+      "at least 5000",
+      "5000ms",
+      "minimum of 5000"
+     ]
+    },
+    {
+     "name": "min_expiration_3000",
+     "signatures": [
+      "math.max(3000",
+      "3000, expiration",
+      "at least 3 seconds",
+      "at least 3000",
+      "3000ms minimum",
+      "minimum of 3000"
+     ]
+    },
+    {
+     "name": "min_expiration_10000",
+     "signatures": [
+      "math.max(10000",
+      "10000, expiration",
+      "at least 10 seconds",
+      "at least 10000",
+      "10000ms",
+      "minimum of 10000"
+     ]
+    },
+    {
+     "name": "no_minimum_enforced",
+     "signatures": [
+      "expiration = 3500",
+      "no minimum",
+      "keep the expiration as-is",
+      "do not enforce a minimum",
+      "use the provided expiration",
+      "leave expiration unchanged"
+     ]
+    }
+   ]
+  },
+  "sanitization_tag_allowlist": {
+   "anchors": [
+    "safe structural and formatting tags",
+    "link markup",
+    "preserved",
+    "sanitization",
+    "allowed_tags",
+    "which specific html tags",
+    "safe set"
+   ],
+   "classes": [
+    {
+     "name": "inline_formatting_allowlist",
+     "canonical": true,
+     "signatures": [
+      "allowed_tags: ['a', 'b', 'i', 'em', 'strong', 'span', 'br']",
+      "'a', 'b', 'i', 'em', 'strong', 'span', 'br'",
+      "allowed_tags",
+      "'em', 'strong'",
+      "'span', 'br'",
+      "restricted allowlist"
+     ]
+    },
+    {
+     "name": "dompurify_defaults",
+     "signatures": [
+      "dompurify.sanitize(text, { return_dom: true",
+      "dompurify defaults",
+      "default configuration",
+      "default tag set",
+      "without allowed_tags",
+      "no allowed_tags",
+      "sanitize(html, { return_dom: true"
+     ]
+    },
+    {
+     "name": "block_or_media_tags_included",
+     "signatures": [
+      "'div'",
+      "'p'",
+      "'img'",
+      "'table'",
+      "block-level",
+      "'ul', 'li'",
+      "include block",
+      "media tags"
+     ]
+    }
+   ]
+  },
+  "safe_versus_interactive_rendering": {
+   "anchors": [
+    "event-handler attributes",
+    "add_attr",
+    "mitigate code execution",
+    "retained in the rendered output",
+    "stripped for security",
+    "interactivity",
+    "script tags"
+   ],
+   "classes": [
+    {
+     "name": "strip_event_handlers_href_only",
+     "canonical": true,
+     "signatures": [
+      "allowed_attr: ['href']",
+      "allowed_attr: ['href' ]",
+      "'href' ]",
+      "strip all event-handler",
+      "strips all event-handler",
+      "no add_attr",
+      "security-first",
+      "restricts the attribute allowlist to `href`",
+      "without add_attr"
+     ]
+    },
+    {
+     "name": "retain_event_handlers_add_attr",
+     "signatures": [
+      "add_attr: ['onclick', 'onchange', 'onsubmit']",
+      "['onclick', 'onchange', 'onsubmit']",
+      "onclick', 'onchange', 'onsubmit",
+      "retain event handlers",
+      "event handlers are retained",
+      "preserve certain attributes like `onclick`",
+      "event handler retention",
+      "retained during sanitization"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_13": {
+  "missing_cache_parameter_default": {
+   "anchors": [
+    "load_from_file",
+    "default value",
+    "when callers omit",
+    "cache: str",
+    "default for the cache",
+    "signature must be cache"
+   ],
+   "classes": [
+    {
+     "name": "default_all",
+     "canonical": true,
+     "signatures": [
+      "cache: str = 'all'",
+      "cache: str = \"all\"",
+      "default value 'all'",
+      "defaults to 'all'",
+      "cache='all' by default",
+      "cache every loaded file"
+     ]
+    },
+    {
+     "name": "default_selective",
+     "signatures": [
+      "cache: str = 'selective'",
+      "cache: str = \"selective\"",
+      "defaults to `'selective'`",
+      "default value `'selective'`",
+      "cache parameter defaults to 'selective'",
+      "with default value `'selective'`"
+     ]
+    },
+    {
+     "name": "default_none",
+     "signatures": [
+      "cache: str = 'none'",
+      "cache: str = \"none\"",
+      "defaults to 'none'",
+      "default value 'none'",
+      "no caching by default"
+     ]
+    }
+   ]
+  },
+  "ambiguous_selective_caching_criteria": {
+   "anchors": [
+    "content-aware caching",
+    "which files to cache",
+    "criteria for deciding",
+    "cache='selective'",
+    "exclude",
+    "caching strategy"
+   ],
+   "classes": [
+    {
+     "name": "cache_when_show_content_false",
+     "canonical": true,
+     "signatures": [
+      "show_content is false",
+      "show_content flag",
+      "when show_content",
+      "not show_content",
+      "if show_content is false",
+      "only files where the internal show_content"
+     ]
+    },
+    {
+     "name": "cache_all_unconditionally",
+     "signatures": [
+      "if file_name in self._file_cache",
+      "self._file_cache[file_name] = parsed_data",
+      "cache the file contents for next time",
+      "selectively cache results to optimize",
+      "caches parsed data but allows selective retrieval",
+      "use the existing cache logic"
+     ]
+    },
+    {
+     "name": "cache_by_mtime_freshness",
+     "signatures": [
+      "st_mtime",
+      "os.stat",
+      "file_stat.st_mtime",
+      "'mtime'",
+      "file metadata (like mtime)",
+      "detect changes"
+     ]
+    },
+    {
+     "name": "cache_by_vault_encryption",
+     "signatures": [
+      "is_encrypted",
+      "self._vault.is_encrypted",
+      "_decrypt_if_vault_data",
+      "vault-encrypted files",
+      "on the raw bytes",
+      "based on encryption"
+     ]
+    }
+   ]
+  },
+  "contradictory_cache_versus_freshness": {
+   "anchors": [
+    "inventory",
+    "host_group_vars",
+    "vars_files",
+    "fresh reads",
+    "freshness",
+    "which cache mode"
+   ],
+   "classes": [
+    {
+     "name": "per_call_site_none_all_selective",
+     "canonical": true,
+     "signatures": [
+      "inventory",
+      "cache='none'",
+      "host_group_vars",
+      "cache='all'",
+      "vars_files",
+      "cache='selective'",
+      "_read_config_data",
+      "load_found_files"
+     ]
+    },
+    {
+     "name": "uniform_selective_everywhere",
+     "signatures": [
+      "use selective for all",
+      "cache='selective' everywhere",
+      "same cache mode",
+      "already handled by the load_from_file method with the 'selective'",
+      "recommends cache='selective'",
+      "apply selective across"
+     ]
+    },
+    {
+     "name": "no_call_site_changes",
+     "signatures": [
+      "don't need to make specific changes to the inventory",
+      "managed by the inventory plugin itself",
+      "no changes to the call sites",
+      "leave call sites as-is",
+      "assuming they are designed to handle",
+      "typically managed by"
+     ]
+    },
+    {
+     "name": "inventory_selective_hgv_all",
+     "signatures": [
+      "inventory cache='selective'",
+      "inventory uses selective",
+      "host_group_vars cache='none'",
+      "inventory plugins populate the loader cache",
+      "vars_files cache='all'",
+      "vars_files cache='none'"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_24": {
+  "missing_pip_module_target": {
+   "anchors": [
+    "-m flag",
+    "pip launcher",
+    "module entry point",
+    "construct a launcher",
+    "invoke the pip module",
+    "-m target"
+   ],
+   "classes": [
+    {
+     "name": "pip_dunder_main",
+     "canonical": true,
+     "signatures": [
+      "'pip.__main__'",
+      "\"pip.__main__\"",
+      "-m', 'pip.__main__",
+      "pip.__main__ as the -m",
+      "runpy",
+      "python 2.6"
+     ]
+    },
+    {
+     "name": "plain_pip_module",
+     "signatures": [
+      "'-m', 'pip']",
+      "\"-m\", \"pip\"]",
+      "sys.executable, '-m', 'pip'",
+      "-m', 'pip' ]",
+      "using 'pip' directly",
+      "'-m', 'pip',"
+     ]
+    },
+    {
+     "name": "pip_internal_api",
+     "signatures": [
+      "pip._internal",
+      "pip._internal.cli.main",
+      "pip._internal.main",
+      "from pip._internal",
+      "-m', 'pip._internal"
+     ]
+    }
+   ]
+  },
+  "missing_detection_api_parameters": {
+   "anchors": [
+    "pip availability",
+    "pip library is available",
+    "current interpreter",
+    "detection",
+    "is_pip_available",
+    "have_pip_module",
+    "whether the pip",
+    "legacy interpreters"
+   ],
+   "classes": [
+    {
+     "name": "importlib_find_spec_imp_fallback",
+     "canonical": true,
+     "signatures": [
+      "importlib.util.find_spec",
+      "find_spec('pip')",
+      "find_spec(\"pip\")",
+      "imp.find_module",
+      "imp.find_module('pip')",
+      "importing the importlib"
+     ]
+    },
+    {
+     "name": "pkg_resources_lookup",
+     "signatures": [
+      "pkg_resources.require('pip')",
+      "from pkg_resources import get_distribution",
+      "get_distribution('pip')",
+      "working_set.require('pip')",
+      "import pkg_resources"
+     ]
+    },
+    {
+     "name": "direct_import_pip",
+     "signatures": [
+      "import pip\n",
+      "try:\n        import pip",
+      "except importerror:\n        return false",
+      "attempt to import the pip module"
+     ]
+    }
+   ]
+  },
+  "ambiguous_packages": {
+   "anchors": [
+    "_get_packages",
+    "package-listing",
+    "package listing",
+    "return the final command",
+    "stdout and stderr",
+    "return tuple",
+    "list --format=freeze",
+    "external consumers"
+   ],
+   "classes": [
+    {
+     "name": "list_build_string_return",
+     "canonical": true,
+     "signatures": [
+      "' '.join(command)",
+      "\" \".join(command)",
+      "space-joined string",
+      "return ' '.join(command), out, err",
+      "join(command), stdout, stderr",
+      "backward compatibility"
+     ]
+    },
+    {
+     "name": "list_command_return",
+     "signatures": [
+      "return command, out, err",
+      "return command, stdout, stderr",
+      "same list passed to run_command",
+      "return the command as a list",
+      "matching the internal representation"
+     ]
+    },
+    {
+     "name": "stdout_only_return",
+     "signatures": [
+      "return stdout\n",
+      "return stdout.strip()",
+      "return stdout, stderr\n",
+      "return stdout.strip().splitlines()"
+     ]
+    }
+   ]
+  },
+  "contradictory_detection": {
+   "anchors": [
+    "_get_pip",
+    "no executable or virtualenv",
+    "ordering of detection",
+    "module-based launcher"
+   ],
+   "classes": [
+    {
+     "name": "module_check_before_path",
+     "canonical": true,
+     "signatures": [
+      "module check before",
+      "take priority over path",
+      "without searching path",
+      "elif branch must be placed before",
+      "_have_pip_module() must take priority",
+      "check module availability first"
+     ]
+    },
+    {
+     "name": "path_search_first",
+     "signatures": [
+      "search path for pip",
+      "prefer path-located",
+      "module fallback as a last resort",
+      "after path search fails",
+      "get_bin_path('pip')",
+      "look for pip on path first"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_11": {
+  "max_input_length_unspecified": {
+   "anchors": [
+    "excessively long input",
+    "denial-of-service",
+    "dos attack",
+    "consume excessive memory",
+    "len(value)",
+    "input size",
+    "reject strings exceeding",
+    "character limit"
+   ],
+   "classes": [
+    {
+     "name": "limit_10000_typeerror",
+     "canonical": true,
+     "signatures": [
+      "10000",
+      "10_000",
+      "10,000",
+      "input string too long to safely parse as dictionary",
+      "too long to safely parse"
+     ]
+    },
+    {
+     "name": "different_length_value",
+     "signatures": [
+      "1024",
+      "max_length=1024",
+      "max_input_size = 1024",
+      "maximum allowed size of",
+      "4096",
+      "65536",
+      "1000",
+      "max_len = 5000"
+     ]
+    },
+    {
+     "name": "wrong_exception_or_message",
+     "signatures": [
+      "raise valueerror(\"input string is too long",
+      "input exceeds maximum allowed size",
+      "input string is too long.",
+      "raise valueerror(\"input"
+     ]
+    },
+    {
+     "name": "no_length_limit",
+     "signatures": [
+      "no length limit",
+      "without a size limit",
+      "does not enforce a maximum length",
+      "no maximum input length",
+      "omit the length check"
+     ]
+    }
+   ]
+  },
+  "max_fields_count_ambiguous": {
+   "anchors": [
+    "excessive number of fields",
+    "field count",
+    "typical use cases",
+    "configuration parameters",
+    "many parameters",
+    "attack surface",
+    "resource exhaustion",
+    "excessive vs typical"
+   ],
+   "classes": [
+    {
+     "name": "limit_100_typeerror",
+     "canonical": true,
+     "signatures": [
+      "100",
+      "max_fields = 100",
+      "fewer than 100",
+      "too many fields to parse as dictionary",
+      "maximum field count"
+     ]
+    },
+    {
+     "name": "different_field_count_value",
+     "signatures": [
+      "max_fields = 50",
+      "max_fields = 1000",
+      "256",
+      "512",
+      "1024 fields",
+      "limit of 50",
+      "no more than 200"
+     ]
+    },
+    {
+     "name": "no_field_count_limit",
+     "signatures": [
+      "no limit on the number of fields",
+      "does not restrict the number of fields",
+      "unlimited fields",
+      "no field count check",
+      "omit the field limit"
+     ]
+    }
+   ]
+  },
+  "max_nesting_depth_policy_conflict": {
+   "anchors": [
+    "nesting depth",
+    "max_depth",
+    "nested structures",
+    "resource exhaustion",
+    "recursion depth",
+    "dict-in-dict",
+    "complex inputs"
+   ],
+   "classes": [
+    {
+     "name": "depth_20_typeerror",
+     "canonical": true,
+     "signatures": [
+      "20",
+      "max_depth=20",
+      "max_nesting_depth = 20",
+      "depth of 20",
+      "input structure too deeply nested to safely parse as dictionary",
+      "too deeply nested"
+     ]
+    },
+    {
+     "name": "different_depth_value",
+     "signatures": [
+      "max_depth=10",
+      "max_depth = 10",
+      "max_nesting_depth = 10",
+      "max_depth=5",
+      "max_depth = 5",
+      "depth of 10",
+      "1024"
+     ]
+    },
+    {
+     "name": "wrong_exception_or_message",
+     "signatures": [
+      "raise valueerror(\"input exceeds maximum allowed nesting depth",
+      "excessive recursion detected",
+      "input exceeds maximum allowed nesting depth",
+      "recursionerror"
+     ]
+    },
+    {
+     "name": "no_depth_limit",
+     "signatures": [
+      "no maximum nesting depth",
+      "does not enforce a nesting depth",
+      "unlimited nesting",
+      "no depth limit",
+      "omit the depth check"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_17": {
+  "operational_time_bound_policy": {
+   "anchors": [
+    "no deadline",
+    "default timeout",
+    "operationally bounded",
+    "no explicit caller deadline",
+    "bounded time window",
+    "how long configuration loading may run",
+    "wrap it with a timeout",
+    "time bound"
+   ],
+   "classes": [
+    {
+     "name": "timeout_11_seconds",
+     "canonical": true,
+     "signatures": [
+      "11*time.second",
+      "11 * time.second",
+      "11 second",
+      "11s",
+      "timeout of exactly 11",
+      "eleven second"
+     ]
+    },
+    {
+     "name": "timeout_5_seconds",
+     "signatures": [
+      "5*time.second",
+      "5 * time.second",
+      "5 second",
+      "5s default",
+      "five second"
+     ]
+    },
+    {
+     "name": "timeout_5_minutes",
+     "signatures": [
+      "5*time.minute",
+      "5 * time.minute",
+      "5 minute",
+      "reasonable timeout",
+      "five minute"
+     ]
+    },
+    {
+     "name": "other_or_configurable_timeout",
+     "signatures": [
+      "30*time.second",
+      "10*time.second",
+      "1*time.minute",
+      "configurable timeout"
+     ]
+    }
+   ]
+  },
+  "typed_nil_context_input_policy": {
+   "anchors": [
+    "null-like context",
+    "typed nil",
+    "argument normalization",
+    "no concrete context",
+    "nil-equivalent",
+    "context slot",
+    "interface argument"
+   ],
+   "classes": [
+    {
+     "name": "normalize_nil_to_background",
+     "canonical": true,
+     "signatures": [
+      "ctx == nil",
+      "ctx = context.background()",
+      "context.background() if",
+      "normalize to context.background",
+      "default to context.background",
+      "typed-nil",
+      "reflect.valueof(ctx).isnil"
+     ]
+    },
+    {
+     "name": "reject_nil_context",
+     "signatures": [
+      "return nil, errors.new",
+      "invalid context",
+      "context must not be nil",
+      "return an error if ctx is nil",
+      "nil context is invalid"
+     ]
+    },
+    {
+     "name": "no_nil_handling",
+     "signatures": [
+      "assume ctx is non-nil",
+      "no nil check",
+      "caller must provide",
+      "does not handle nil"
+     ]
+    }
+   ]
+  },
+  "conflicting_context_freshness_policy": {
+   "anchors": [
+    "fresh context",
+    "clean context",
+    "clean slate",
+    "cancellation support",
+    "long-lived parent",
+    "which policy takes precedence"
+   ],
+   "classes": [
+    {
+     "name": "propagate_caller_context_directly",
+     "canonical": true,
+     "signatures": [
+      "cmd.context()",
+      "buildconfig(ctx)",
+      "propagate the caller",
+      "without creating a fresh context",
+      "pass it through",
+      "preserve the caller's cancellation",
+      "propagated end-to-end",
+      "backward-compatible call signature"
+     ]
+    },
+    {
+     "name": "create_fresh_isolated_context",
+     "signatures": [
+      "fresh context internally",
+      "context.withtimeout(ctx",
+      "freshctx",
+      "ctxwithcancel",
+      "internalctx",
+      "context.withtimeout(context.background()",
+      "isolate the configuration loading",
+      "prevent inheriting stale deadlines"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_23": {
+  "missing_persisted_session_staleness_ttl_ms": {
+   "anchors": [
+    "stale",
+    "persistedat",
+    "session freshness policy",
+    "eligible",
+    "date.now() - persistedat",
+    "up-to-date",
+    "filter out stale"
+   ],
+   "classes": [
+    {
+     "name": "ttl_1036800000_ms_12_days",
+     "canonical": true,
+     "signatures": [
+      "1036800000",
+      "1_036_800_000",
+      "1,036,800,000",
+      "12 days",
+      "12 * 24 * 60 * 60 * 1000"
+     ]
+    },
+    {
+     "name": "ttl_24_hours",
+     "signatures": [
+      "24 * 60 * 60 * 1000",
+      "24 hours",
+      "86400000",
+      "86_400_000",
+      "one day"
+     ]
+    },
+    {
+     "name": "ttl_7_days",
+     "signatures": [
+      "7 * 24 * 60 * 60 * 1000",
+      "7 days",
+      "604800000",
+      "one week"
+     ]
+    },
+    {
+     "name": "delegated_freshness_helper",
+     "signatures": [
+      "sessionfreshnesspolicy(session)",
+      "isSessionFresh",
+      "helper decides",
+      "existing freshness helper"
+     ]
+    }
+   ]
+  },
+  "ambiguous_resume_success_predicate_for_auth_updates": {
+   "anchors": [
+    "resumes successfully",
+    "success predicate",
+    "resumedsession",
+    "auth state should be updated",
+    "gate",
+    "guard",
+    "only if the session resumes"
+   ],
+   "classes": [
+    {
+     "name": "guard_on_truthy_resumedsession",
+     "canonical": true,
+     "signatures": [
+      "if (resumedsession)",
+      "if (resumedsession) {",
+      "truthy resumedsession",
+      "resumedsession is truthy"
+     ]
+    },
+    {
+     "name": "guard_on_keypassword",
+     "signatures": [
+      "if (resumedsession.keypassword)",
+      "if (resumedsession?.keypassword)",
+      "resumedsession.keypassword"
+     ]
+    },
+    {
+     "name": "guard_on_resumed_user",
+     "signatures": [
+      "if (resumedsession.user)",
+      "resumedsession?.user",
+      "resumed user is present"
+     ]
+    }
+   ]
+  },
+  "contradictory_uid_authority_after_resume": {
+   "anchors": [
+    "auth.setuid",
+    "uid",
+    "which uid",
+    "uid source",
+    "after resume",
+    "precedence",
+    "written into auth state"
+   ],
+   "classes": [
+    {
+     "name": "persisted_session_uid",
+     "canonical": true,
+     "signatures": [
+      "auth.setuid(persistedsession.uid)",
+      "persistedsession.uid",
+      "persisted session uid",
+      "setuid(persistedsession"
+     ]
+    },
+    {
+     "name": "resumed_payload_uid",
+     "signatures": [
+      "auth.setuid(resumedsession.uid)",
+      "resumedsession.uid",
+      "resumed payload uid",
+      "setuid(resumedsession"
+     ]
+    }
+   ]
+  },
+  "contradictory_localid_source_for_resume_call": {
+   "anchors": [
+    "localid",
+    "where localid",
+    "resume call",
+    "localid source",
+    "persisted session storage"
+   ],
+   "classes": [
+    {
+     "name": "persisted_session_localid",
+     "canonical": true,
+     "signatures": [
+      "resumesession({ api, localid: persistedsession.localid })",
+      "localid: persistedsession.localid",
+      "persistedsession.localid })",
+      "storage-derived localid"
+     ]
+    },
+    {
+     "name": "auth_getlocalid",
+     "signatures": [
+      "localid: auth.getlocalid()",
+      "auth.getlocalid() ??",
+      "const localid = auth.getlocalid()",
+      "resumesession({ api, localid })"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_16": {
+  "scrobble_limit": {
+   "anchors": [
+    "scrobble",
+    "maximum number of entries",
+    "excess entries",
+    "per invocation",
+    "batch",
+    "how many should i keep"
+   ],
+   "classes": [
+    {
+     "name": "truncate_to_80",
+     "canonical": true,
+     "signatures": [
+      "80",
+      "eighty",
+      "first 80",
+      "scrobbles[:80]",
+      "max 80",
+      "maximum of 80",
+      "len(scrobbles) > 80",
+      "[0:80]"
+     ]
+    },
+    {
+     "name": "truncate_to_100",
+     "signatures": [
+      "100",
+      "one hundred",
+      "first 100",
+      "scrobbles[:100]",
+      "max 100",
+      "maximum of 100",
+      "[0:100]"
+     ]
+    },
+    {
+     "name": "truncate_to_50_api_default",
+     "signatures": [
+      "50",
+      "fifty",
+      "first 50",
+      "scrobbles[:50]",
+      "maximum of 50",
+      "[0:50]"
+     ]
+    },
+    {
+     "name": "truncate_to_30",
+     "signatures": [
+      "truncate to 30",
+      "first 30 scrobbles",
+      "max 30 entries",
+      "maximum of 30",
+      "keep 30",
+      "scrobbles[:30]",
+      "[0:30]"
+     ]
+    }
+   ]
+  },
+  "scrobble_ordering": {
+   "anchors": [
+    "sort",
+    "deterministic order",
+    "before submitting",
+    "before submission",
+    "which field",
+    "sort key",
+    "ordering of scrobbles"
+   ],
+   "classes": [
+    {
+     "name": "descending_by_timestamp",
+     "canonical": true,
+     "signatures": [
+      "descending",
+      "timestamp",
+      "s.timestamp",
+      "descending order by",
+      "timestamp.after",
+      "reverse chronological",
+      "newest first",
+      "sort.slice",
+      "later.after(earlier)"
+     ]
+    },
+    {
+     "name": "ascending_by_timestamp",
+     "signatures": [
+      "ascending",
+      "ascending order",
+      "oldest first",
+      "chronological order",
+      "timestamp.before",
+      "earlier.before(later)",
+      "sort ascending by timestamp"
+     ]
+    },
+    {
+     "name": "sort_by_track_or_artist",
+     "signatures": [
+      "by track title",
+      "by artist name",
+      "sort by title",
+      "sort by artist",
+      "alphabetical",
+      "s.title",
+      "s.artist",
+      "lexicographic"
+     ]
+    }
+   ]
+  },
+  "userid_source": {
+   "anchors": [
+    "userpropsrepository",
+    "sessionkeys",
+    "caller",
+    "which user",
+    "put, get, delete"
+   ],
+   "classes": [
+    {
+     "name": "explicit_userid_argument",
+     "canonical": true,
+     "signatures": [
+      "userid string",
+      "explicit userid",
+      "userid parameter",
+      "put(ctx context.context, userid",
+      "get(ctx context.context, userid",
+      "take a userid",
+      "pass the userid",
+      "forward it to the repository",
+      "put(userid,",
+      "scope by that userid"
+     ]
+    },
+    {
+     "name": "derive_userid_from_context",
+     "signatures": [
+      "getuserfromcontext",
+      "extract the user identity from the context",
+      "extract user id from the context",
+      "user := ctx.value",
+      "ctx.value(model.ctxuser",
+      "request.userfrom",
+      "from the active request context",
+      "derive user identity from",
+      "prepend it to the key"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_18": {
+  "default_manifest_pack_mode": {
+   "anchors": [
+    "manifest_version",
+    "selector token",
+    "manifest compatibility",
+    "manifest-compatibility",
+    "supported manifest",
+    "which exact tokens",
+    "plain string",
+    "compatibility mode",
+    "oci version"
+   ],
+   "classes": [
+    {
+     "name": "oci_1_0_and_oci_1_1_tokens",
+     "canonical": true,
+     "signatures": [
+      "oci-1.0",
+      "oci-1.1",
+      "\"oci-1.0\"",
+      "\"oci-1.1\"",
+      "oci-1.0\" and \"oci-1.1",
+      "oci-1.0` and `oci-1.1"
+     ]
+    },
+    {
+     "name": "raw_version_like_tokens",
+     "signatures": [
+      "\"1.0\"",
+      "\"1.1\"",
+      "= \"1.0\"",
+      "1.0` and `1.1",
+      "version?:        \"1.0\"",
+      "enum\": [\"1.0\"]"
+     ]
+    },
+    {
+     "name": "v_prefixed_tokens",
+     "signatures": [
+      "\"v1.0\"",
+      "\"v1.1\"",
+      "v1.0\" and \"v1.1",
+      "\"v1\"",
+      "\"v2\"",
+      "manifestv1",
+      "manifestv2"
+     ]
+    },
+    {
+     "name": "product_style_aliases",
+     "signatures": [
+      "\"docker\"",
+      "\"oci\"",
+      "schema2",
+      "imagemanifestschema2",
+      "\"legacy\"",
+      "\"modern\""
+     ]
+    }
+   ]
+  },
+  "manifest_selection_propagation_scope": {
+   "anchors": [
+    "omitted",
+    "when the setting is omitted",
+    "deterministic",
+    "default compatibility",
+    "manifest structure",
+    "bundle creation",
+    "one supported compatibility behavior",
+    "reuse"
+   ],
+   "classes": [
+    {
+     "name": "omission_reuses_config_mediatype_no_artifacttype",
+     "canonical": true,
+     "signatures": [
+      "omits the top-level artifacttype",
+      "no artifacttype",
+      "without a top-level artifacttype",
+      "config.mediatype",
+      "media type in config.mediatype",
+      "same observable manifest",
+      "same as the explicit"
+     ]
+    },
+    {
+     "name": "omission_reuses_top_level_artifacttype_form",
+     "signatures": [
+      "top-level artifacttype",
+      "artifacttype field",
+      "artifacttype:",
+      "sets the artifacttype",
+      "feature media type in a top-level artifacttype"
+     ]
+    },
+    {
+     "name": "omission_keeps_own_independent_default",
+     "signatures": [
+      "its own default",
+      "own stable bundle form",
+      "independent default",
+      "separate default manifest",
+      "default to a predefined behavior",
+      "distinct omission behavior",
+      "neither explicit"
+     ]
+    }
+   ]
+  },
+  "unsupported_manifest_value_policy": {
+   "anchors": [
+    "unsupported",
+    "shared configuration",
+    "shared config",
+    "reuse one config",
+    "startup failures",
+    "schema-facing",
+    "reject any selector token",
+    "before oci bundle handling is used",
+    "portability"
+   ],
+   "classes": [
+    {
+     "name": "preserve_at_intake_fail_at_bundle_creation",
+     "canonical": true,
+     "signatures": [
+      "preserved during schema validation",
+      "must be preserved",
+      "fail during bundle creation",
+      "validation occurs when",
+      "resolves the manifest compatibility mode",
+      "not normalized",
+      "human-readable failure",
+      "fail clearly before producing a bundle"
+     ]
+    },
+    {
+     "name": "reject_at_schema_boundary_during_intake",
+     "signatures": [
+      "schema validation rejects",
+      "schema rejects any unsupported",
+      "reject unsupported tokens at the schema",
+      "enum\": [\"oci-1.0\"",
+      "at the field boundary",
+      "rejected during configuration loading",
+      "invalid config",
+      "fails to load"
+     ]
+    },
+    {
+     "name": "fail_at_option_construction_or_config_load",
+     "signatures": [
+      "withmanifestversion",
+      "return fmt.errorf(\"unsupported manifest version",
+      "unsupported manifest version: %q",
+      "validate that the provided version is supported",
+      "error at option construction",
+      "supportedmanifestselectors",
+      "if _, ok :="
+     ]
+    }
+   ]
+  }
+ },
+ "swe_15": {
+  "missing_auth_id_audit_display_length": {
+   "anchors": [
+    "authentication id",
+    "truncat",
+    "prefix length",
+    "display length",
+    "audit payload",
+    "per policy",
+    "auth id"
+   ],
+   "classes": [
+    {
+     "name": "prefix_length_7",
+     "canonical": true,
+     "signatures": [
+      "[:7]",
+      "first 7 characters",
+      "first seven characters",
+      ":7]",
+      "length of 7",
+      "id[0:7]"
+     ]
+    },
+    {
+     "name": "prefix_length_8",
+     "signatures": [
+      "[:8]",
+      "first 8 characters",
+      "truncate to 8",
+      "maxlen := 8",
+      "maxprefixlength = 8",
+      "maxuseridlength",
+      "length of 8",
+      ":8]"
+     ]
+    },
+    {
+     "name": "prefix_length_10",
+     "signatures": [
+      "[:10]",
+      "first 10 characters",
+      "truncate id to first 10",
+      "length of 10",
+      ":10]"
+     ]
+    },
+    {
+     "name": "other_length_or_named_constant",
+     "signatures": [
+      "[:12]",
+      "[:16]",
+      "first 6 characters",
+      "[:6]",
+      "first 16",
+      "maxauthidlength",
+      "maxprefixlength"
+     ]
+    }
+   ]
+  },
+  "ambiguous_checker_initialization_condition": {
+   "anchors": [
+    "checker initializ",
+    "grpc server initializ",
+    "prepare audit handling",
+    "when appropriate",
+    "condition determines",
+    "audit checker"
+   ],
+   "classes": [
+    {
+     "name": "gate_on_audit_enabled",
+     "canonical": true,
+     "signatures": [
+      "if cfg.audit.enabled",
+      "only when audit is enabled",
+      "when audit logging is enabled",
+      "initialize the checker only when audit is enabled",
+      "newchecker only if audit enabled"
+     ]
+    },
+    {
+     "name": "gate_on_sink_presence",
+     "signatures": [
+      "if len(sinks) > 0",
+      "len(sinks) > 0 {\n            checker",
+      "only initialize the checker when there are sinks",
+      "at least one sink",
+      "sinks configured",
+      "gate the checker on sink presence"
+     ]
+    },
+    {
+     "name": "gate_on_specific_event_contained",
+     "signatures": [
+      "initialize the checker only if token:deleted is enabled",
+      "checker when token:deleted events are enabled",
+      "gate checker on token:deleted event",
+      "if token:deleted events are enabled",
+      "only when token:deleted is in the events"
+     ]
+    },
+    {
+     "name": "unconditional_initialization",
+     "signatures": [
+      "always initialize",
+      "unconditionally",
+      "initialize the checker regardless",
+      "without any condition",
+      "in all cases"
+     ]
+    }
+   ]
+  },
+  "contradictory_auth_method_format": {
+   "anchors": [
+    "auth method",
+    "auth_method",
+    "token deletion audit payload",
+    "log aggregation",
+    "schema consistency",
+    "representation standard",
+    "format required"
+   ],
+   "classes": [
+    {
+     "name": "both_short_and_enum",
+     "canonical": true,
+     "signatures": [
+      "auth_method_enum",
+      "both auth_method and auth_method_enum",
+      "\"auth_method_enum\"",
+      "include both fields",
+      "auth_method\": \"token\", \"auth_method_enum"
+     ]
+    },
+    {
+     "name": "short_form_only",
+     "signatures": [
+      "\"auth_method\": \"token\"",
+      "\"method\": a.authmethod",
+      "\"auth_method\": a.authmethod",
+      "\"auth_method\":    a.authmethod",
+      "\"auth_method\":   a.method",
+      "short form only",
+      "just the auth_method field"
+     ]
+    },
+    {
+     "name": "enum_form_only",
+     "signatures": [
+      "\"auth_method\": \"method_token\"",
+      "enum string only",
+      "only the enum",
+      "authenticationmethod_token",
+      "use the enum representation"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_12": {
+  "missing_spotlight_eligibility_cutoff": {
+   "anchors": [
+    "spotlight",
+    "enough cached items",
+    "cached children",
+    "eligib",
+    "storeditemscount",
+    "min eligible",
+    "cutoff"
+   ],
+   "classes": [
+    {
+     "name": "min_eligible_8_strict_greater_than",
+     "canonical": true,
+     "signatures": [
+      "search_discovery_min_eligible_items = 8",
+      "min_eligible_items = 8",
+      "> 8",
+      "storeditemscount > 8",
+      "count is 9 or more",
+      "false when the cached root children count is exactly 8",
+      "8;"
+     ]
+    },
+    {
+     "name": "different_cutoff_value",
+     "signatures": [
+      "> 0",
+      "storeditemscount > 0",
+      "itemcount > 0",
+      "> 10",
+      "storeditemscount > 10",
+      "> 100",
+      "storeditemscount > 100",
+      "> 5",
+      "// example threshold"
+     ]
+    },
+    {
+     "name": "inclusive_boundary_count_8_eligible",
+     "signatures": [
+      ">= 8",
+      "storeditemscount >= 8",
+      "at least 8",
+      "8 or more items",
+      "count === 8 is eligible",
+      "inclusive boundary"
+     ]
+    }
+   ]
+  },
+  "ambiguous_feature_toggle_token": {
+   "anchors": [
+    "featurecode",
+    "feature flag",
+    "gating the spotlight",
+    "rollout",
+    "enum token",
+    "naming convention",
+    "feature toggle"
+   ],
+   "classes": [
+    {
+     "name": "drivesearchfeaturediscovery",
+     "canonical": true,
+     "signatures": [
+      "drivesearchfeaturediscovery = 'drivesearchfeaturediscovery'",
+      "drivesearchfeaturediscovery",
+      "featurecode.drivesearchfeaturediscovery"
+     ]
+    },
+    {
+     "name": "drivesearchspotlight_family",
+     "signatures": [
+      "featurecode.drivesearchspotlight",
+      "drivesearchspotlight = 'drivesearchspotlight'",
+      "drivesearchspotlight",
+      "drive_search_spotlight",
+      "featurecode.drive_search_spotlight",
+      "spotlightdrivesearch"
+     ]
+    },
+    {
+     "name": "other_discovery_or_search_token",
+     "signatures": [
+      "drivesearchdiscovery",
+      "searchdiscoveryspotlight",
+      "featurecode.searchdiscoveryspotlight",
+      "search_discovery_spotlight",
+      "drivediscovery"
+     ]
+    }
+   ]
+  },
+  "contradictory_spotlight_ownership_boundary": {
+   "anchors": [
+    "searchfield",
+    "usespotlight",
+    "shared provider",
+    "hook ownership",
+    "centralized spotlight state",
+    "which source takes precedence",
+    "boundary"
+   ],
+   "classes": [
+    {
+     "name": "provider_owns_feature_hooks",
+     "canonical": true,
+     "signatures": [
+      "usesearchspotlight",
+      "sole owner",
+      "searchspotlight.isopen",
+      "spotlight.isopen",
+      "searchfield must use only usespotlight",
+      "return { isopen, ondisplayed, close: onclose }",
+      "only consume usespotlight"
+     ]
+    },
+    {
+     "name": "searchfield_calls_feature_hooks_directly",
+     "signatures": [
+      "usespotlightshow(featurecode",
+      "usespotlightonfeature(featurecode",
+      "usespotlightshow(featurecode.drivesearchspotlight)",
+      "usespotlightonfeature(featurecode.drive_search_spotlight)",
+      "usespotlightshow, usespotlightonfeature } from '../usespotlight'",
+      "searchfield calls the spotlight hooks directly"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_21": {
+  "missing_loudness_normalization_definition": {
+   "anchors": [
+    "loudness reference",
+    "normaliz",
+    "numeric representation",
+    "convert",
+    "replaygain reference",
+    "expected loudness",
+    "conversion rule"
+   ],
+   "classes": [
+    {
+     "name": "q7_8_div_256_plus_4637_offset",
+     "canonical": true,
+     "signatures": [
+      "q7.8",
+      "q7_8",
+      "/ 256.0",
+      "/256.0",
+      "divide by 256",
+      "divided by 256",
+      "256.0",
+      "4.637",
+      "+4.637",
+      "fixed offset",
+      "fixed-point integer",
+      "0x100"
+     ]
+    },
+    {
+     "name": "verbatim_parsefloat_no_conversion",
+     "signatures": [
+      "parsefloat",
+      "parsegain",
+      "parsegainvalue",
+      "return value",
+      "already in the application",
+      "used directly as",
+      "parsed floats",
+      "no additional offset",
+      "no conversion",
+      "treat as plain float",
+      "strconv.parsefloat(gainstr, 64)"
+     ]
+    },
+    {
+     "name": "r128_lufs_reference_offset_only",
+     "signatures": [
+      "-23 lufs",
+      "-23.0",
+      "reference of -23",
+      "ebu r128 reference",
+      "lufs reference",
+      "18.06",
+      "5 lu",
+      "subtract the reference loudness",
+      "target loudness of -18"
+     ]
+    }
+   ]
+  },
+  "ambiguous_gain_processing_stage": {
+   "anchors": [
+    "multi-valued",
+    "same key",
+    "gain tag key",
+    "which value",
+    "list of values",
+    "multiple gain",
+    "value in the list",
+    "ordering",
+    "selection"
+   ],
+   "classes": [
+    {
+     "name": "use_last_value",
+     "canonical": true,
+     "signatures": [
+      "last value",
+      "use the last",
+      "values[len(values)-1]",
+      "last in the list",
+      "final value",
+      "last element",
+      "[len(",
+      "last entry"
+     ]
+    },
+    {
+     "name": "use_first_value",
+     "signatures": [
+      "first value",
+      "use the first",
+      "values[0]",
+      "primaryvalues[0]",
+      "getfirsttagvalue",
+      "first non-empty",
+      "[0]",
+      "keep the first",
+      "first tag value"
+     ]
+    },
+    {
+     "name": "reject_multi_valued",
+     "signatures": [
+      "treat it as invalid",
+      "reject",
+      "treat as invalid",
+      "return 0.0",
+      "ambiguous multiple values",
+      "more than one value",
+      "if len(values) > 1",
+      "discard the tag"
+     ]
+    }
+   ]
+  },
+  "conflicting_compatibility_vs_new_format_support": {
+   "anchors": [
+    "both gain formats",
+    "both formats",
+    "preference policy",
+    "same logical field",
+    "which source",
+    "externally observed behavior",
+    "present for the same"
+   ],
+   "classes": [
+    {
+     "name": "field_specific_album_rg_track_r128",
+     "canonical": true,
+     "signatures": [
+      "field-specific",
+      "album gain must prefer replaygain",
+      "track gain must prefer r128",
+      "album prefers replaygain",
+      "track prefers r128",
+      "different preference per field",
+      "album uses replaygain",
+      "track uses r128",
+      "per-field preference"
+     ]
+    },
+    {
+     "name": "always_prefer_r128_alternative",
+     "signatures": [
+      "prioritize the alternative",
+      "prefer the alternative gain format",
+      "check for alternative gain tags first",
+      "r128 takes precedence",
+      "alternative formats over traditional",
+      "prefer r128 for both",
+      "prioritize r128"
+     ]
+    },
+    {
+     "name": "always_prefer_replaygain",
+     "signatures": [
+      "traditional fields take precedence",
+      "prefer the replaygain",
+      "replaygain takes precedence",
+      "preserve existing behavior",
+      "prefer replaygain for both",
+      "traditional replaygain first",
+      "\"replaygain_track_gain\", \"r128_track_gain\""
+     ]
+    }
+   ]
+  }
+ },
+ "swe_14": {
+  "default_data_path": {
+   "anchors": [
+    "persistent data storage",
+    "data path",
+    "datapath",
+    "default location",
+    "metadata section",
+    "where should",
+    "local data",
+    "sensible default",
+    "data_path"
+   ],
+   "classes": [
+    {
+     "name": "var_opt_flipt_meta",
+     "canonical": true,
+     "signatures": [
+      "/var/opt/flipt/meta",
+      "\"/var/opt/flipt/meta\"",
+      "var/opt/flipt/meta"
+     ]
+    },
+    {
+     "name": "var_opt_flipt_data",
+     "signatures": [
+      "/var/opt/flipt/data",
+      "\"/var/opt/flipt/data\"",
+      "var/opt/flipt/data"
+     ]
+    },
+    {
+     "name": "tmp_or_app_local",
+     "signatures": [
+      "/tmp/flipt",
+      "\"/tmp/flipt\"",
+      "os.tempdir",
+      "application-local",
+      "/tmp/flipt_data"
+     ]
+    },
+    {
+     "name": "etc_flipt_meta",
+     "signatures": [
+      "/etc/flipt/meta",
+      "\"/etc/flipt/meta\"",
+      "/etc/flipt/config"
+     ]
+    }
+   ]
+  },
+  "update_interval_zero_handling": {
+   "anchors": [
+    "update check interval",
+    "update_check_interval",
+    "updatecheckinterval",
+    "updateinterval",
+    "check frequency",
+    "check scheduling",
+    "interval is set to zero",
+    "fallback when",
+    "default duration"
+   ],
+   "classes": [
+    {
+     "name": "six_hours",
+     "canonical": true,
+     "signatures": [
+      "6 * time.hour",
+      "6 * time.Hour",
+      "6*time.hour",
+      "6h",
+      "six hours",
+      "6 hours"
+     ]
+    },
+    {
+     "name": "twenty_four_hours",
+     "signatures": [
+      "24 * time.hour",
+      "24 * time.Hour",
+      "24*time.hour",
+      "24h",
+      "daily",
+      "default to daily",
+      "24 hours"
+     ]
+    },
+    {
+     "name": "one_hour",
+     "signatures": [
+      "1 * time.hour",
+      "1 * time.Hour",
+      "1h",
+      "one hour",
+      "hourly"
+     ]
+    },
+    {
+     "name": "twelve_hours_or_seconds",
+     "signatures": [
+      "12 * time.hour",
+      "12h",
+      "twelve hours",
+      "60 seconds",
+      "= 60",
+      "default to 60"
+     ]
+    }
+   ]
+  },
+  "data_path_format_validation": {
+   "anchors": [
+    "absolute",
+    "relative path",
+    "data path",
+    "metadata storage path",
+    "filesystem path",
+    "path validation"
+   ],
+   "classes": [
+    {
+     "name": "require_absolute_reject_relative",
+     "canonical": true,
+     "signatures": [
+      "absolute path",
+      "must be an absolute path",
+      "hasprefix(c.metadata.datapath, \"/\")",
+      "strings.hasprefix",
+      "not absolute",
+      "filepath.isabs",
+      "reject",
+      "relative path"
+     ]
+    },
+    {
+     "name": "no_format_validation",
+     "signatures": [
+      "no path format validation",
+      "does not validate the format",
+      "any path is accepted",
+      "both absolute and relative",
+      "relative paths are allowed",
+      "no absolute-path check"
+     ]
+    }
+   ]
+  },
+  "interval_validation_scope": {
+   "anchors": [
+    "update check interval",
+    "update_check_interval",
+    "checkforupdates",
+    "validated",
+    "interval validation",
+    "unconditionally",
+    "conditional"
+   ],
+   "classes": [
+    {
+     "name": "validate_only_when_checkforupdates_true",
+     "canonical": true,
+     "signatures": [
+      "only when checkforupdates",
+      "if c.metadata.checkforupdates",
+      "checkforupdates is true",
+      "only validate the interval when",
+      "when version checking is enabled",
+      "checkforupdates {"
+     ]
+    },
+    {
+     "name": "validate_unconditionally",
+     "signatures": [
+      "updatecheckinterval < 0",
+      "updateinterval < 0",
+      "updatecheckinterval <= 0",
+      "must be non-negative",
+      "must be positive",
+      "regardless of checkforupdates",
+      "always validate the interval"
+     ]
+    }
+   ]
+  },
+  "directory_existence_handling": {
+   "anchors": [
+    "directory existence",
+    "referenced directories exist",
+    "verify that referenced",
+    "early failure",
+    "zero-configuration",
+    "filesystem before accepting",
+    "load-time vs runtime",
+    "data directory",
+    "during configuration loading"
+   ],
+   "classes": [
+    {
+     "name": "do_not_check_existence",
+     "canonical": true,
+     "signatures": [
+      "do not check",
+      "does not verify",
+      "not check whether the directory",
+      "created at runtime",
+      "deferred to runtime",
+      "no os.stat on the data path",
+      "should not verify the existence"
+     ]
+    },
+    {
+     "name": "check_existence_reject",
+     "signatures": [
+      "os.stat(c.metadata.datapath)",
+      "os.isnotexist",
+      "pathexists",
+      "does not exist",
+      "cannot find data storage path",
+      "verify that the directory exists",
+      "data_path directory does not exist"
+     ]
+    },
+    {
+     "name": "create_at_load_mkdirall",
+     "signatures": [
+      "os.mkdirall",
+      "mkdirall(c.metadata.datapath",
+      "create the directory during",
+      "failed to create data storage directory",
+      "0755"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_22": {
+  "missing_kinit_args_max_length": {
+   "anchors": [
+    "length",
+    "excessively long",
+    "character limit",
+    "safe maximum",
+    "reject",
+    "before command execution",
+    "exceeds maximum allowed length",
+    "validate the length"
+   ],
+   "classes": [
+    {
+     "name": "max_length_892",
+     "canonical": true,
+     "signatures": [
+      "892",
+      "kinit_args_max_length = 892",
+      "kinit_args_max_length=892",
+      "= 892",
+      "> 892",
+      "of 892 characters"
+     ]
+    },
+    {
+     "name": "max_length_1024",
+     "signatures": [
+      "1024",
+      "max_length = 1024",
+      "max_length=1024",
+      "> 1024",
+      "of 1024 characters",
+      "example maximum length"
+     ]
+    },
+    {
+     "name": "other_named_limit",
+     "signatures": [
+      "255",
+      "256",
+      "512",
+      "128",
+      "2048",
+      "4096",
+      "= 100",
+      "os.sysconf",
+      "arg_max"
+     ]
+    }
+   ]
+  },
+  "ambiguous_retry_backoff_strategy": {
+   "anchors": [
+    "back-off",
+    "between consecutive attempts",
+    "overwhelming the kdc",
+    "retry",
+    "delay between",
+    "kinit_retries",
+    "transient timeout",
+    "retry logic"
+   ],
+   "classes": [
+    {
+     "name": "fibonacci_backoff",
+     "canonical": true,
+     "signatures": [
+      "fibonacci",
+      "1, 1, 2, 3, 5, 8",
+      "a, b = b, a + b",
+      "a, b = b, a+b",
+      "a + b",
+      "delays of 1, 1, 2, 3, 5"
+     ]
+    },
+    {
+     "name": "exponential_backoff",
+     "signatures": [
+      "2 ** attempt",
+      "2 ** i",
+      "2**attempt",
+      "exponential backoff",
+      "backoff_factor * (2 ** i)",
+      "2 ** retries"
+     ]
+    },
+    {
+     "name": "linear_backoff",
+     "signatures": [
+      "(i + 1) * 2",
+      "(attempt + 1) *",
+      "(i+1)*2",
+      "linear increase",
+      "attempt * delay",
+      "sleep((i + 1)"
+     ]
+    },
+    {
+     "name": "fixed_or_jittered_delay",
+     "signatures": [
+      "fixed delay",
+      "time.sleep(1)",
+      "time.sleep(5)",
+      "constant delay",
+      "random.uniform",
+      "jitter",
+      "time.sleep(2)"
+     ]
+    }
+   ]
+  },
+  "contradictory_kinit_timeout_value": {
+   "anchors": [
+    "timeout for kinit",
+    "ansible_winrm_kinit_timeout",
+    "kinit command execution",
+    "authentication budget",
+    "communicate(timeout",
+    "spawn(timeout",
+    "30-second budget"
+   ],
+   "classes": [
+    {
+     "name": "timeout_default_73",
+     "canonical": true,
+     "signatures": [
+      "73",
+      "default: 73",
+      "default=73",
+      "or 73",
+      "= 73",
+      "default to 73 seconds"
+     ]
+    },
+    {
+     "name": "timeout_default_30",
+     "signatures": [
+      "or 30",
+      "= 30",
+      "default: 30",
+      "default=30",
+      "default timeout",
+      "30 seconds",
+      "kinit_timeout = 30"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_2": {
+  "missing_overflow_sentinel_int": {
+   "anchors": [
+    "overflow",
+    "int32",
+    "signed 32-bit",
+    "out of range",
+    "toresponseint",
+    "responsewidthmode"
+   ],
+   "classes": [
+    {
+     "name": "sentinel_minus_2147482977",
+     "canonical": true,
+     "signatures": [
+      "-2147482977",
+      "-2147482977",
+      "math.maxint32",
+      "math.minint32"
+     ]
+    },
+    {
+     "name": "clamp_to_maxint32",
+     "signatures": [
+      "2147483647",
+      "2_147_483_647",
+      "2,147,483,647",
+      "^uint32(0)/2",
+      "^uint32(0) / 2",
+      "math.maxint32)",
+      "clamp",
+      "int(^uint32(0))"
+     ]
+    },
+    {
+     "name": "clamp_to_minint32",
+     "signatures": [
+      "-2147483648",
+      "-2_147_483_648",
+      "-2,147,483,648",
+      "math.minint32)"
+     ]
+    },
+    {
+     "name": "zero_or_placeholder_sentinel",
+     "signatures": [
+      "return 0",
+      "return -1",
+      "placeholder for actual sentinel"
+     ]
+    }
+   ]
+  },
+  "missing_player_id_base_offset": {
+   "anchors": [
+    "playerid",
+    "nowplayingplayerid",
+    "base offset",
+    "synthetic",
+    "now-playing",
+    "session ordering"
+   ],
+   "classes": [
+    {
+     "name": "base_offset_41000",
+     "canonical": true,
+     "signatures": [
+      "41000",
+      "41_000",
+      "41,000",
+      "41000 + i",
+      "41000 +"
+     ]
+    },
+    {
+     "name": "index_plus_one",
+     "signatures": [
+      "sessionindex + 1",
+      "index + 1",
+      "index+1",
+      "i + 1",
+      "1-based"
+     ]
+    },
+    {
+     "name": "other_fixed_offset",
+     "signatures": [
+      "baseoffset := 1000",
+      "baseoffset = 1000",
+      "1000 + sessionindex",
+      "10000 +",
+      "offset := 10000"
+     ]
+    },
+    {
+     "name": "index_zero_based_raw",
+     "signatures": [
+      "return sessionindex",
+      "return i\n",
+      "0-based session index directly",
+      "index as the player"
+     ]
+    }
+   ]
+  },
+  "ambiguous_minutes_ago_rounding_policy": {
+   "anchors": [
+    "minutesago",
+    "elapsed",
+    "whole minutes",
+    "fractional minutes",
+    "legacy behavior",
+    "rounding"
+   ],
+   "classes": [
+    {
+     "name": "ceil_positive_else_zero",
+     "canonical": true,
+     "signatures": [
+      "math.ceil",
+      "ceil(elapsed.minutes",
+      "if elapsed <= 0",
+      "ceiling",
+      "round upward",
+      "round up"
+     ]
+    },
+    {
+     "name": "floor_truncate",
+     "signatures": [
+      "int(now.sub(start).minutes())",
+      "int(duration.minutes())",
+      "int(elapsed.minutes())",
+      "math.floor",
+      "truncate",
+      "floor"
+     ]
+    },
+    {
+     "name": "round_nearest",
+     "signatures": [
+      "math.round",
+      "round(elapsed.minutes",
+      "round to nearest",
+      "nearest whole minute"
+     ]
+    }
+   ]
+  },
+  "conflicting_response_width_mode_activation": {
+   "anchors": [
+    "responsewidthmode",
+    "isint32migrationenabled",
+    "migration",
+    "strict32",
+    "hybrid32",
+    "compat32",
+    "which tokens",
+    "activation"
+   ],
+   "classes": [
+    {
+     "name": "strict32_compat32_only",
+     "canonical": true,
+     "signatures": [
+      "== \"strict32\" || mode == \"compat32\"",
+      "strict32 || mode == compat32",
+      "responsewidthmodestrict32 || mode == responsewidthmodecompat32",
+      "not hybrid32",
+      "hybrid32 stays on the legacy",
+      "strict32 or exactly compat32"
+     ]
+    },
+    {
+     "name": "includes_hybrid32",
+     "signatures": [
+      "strict32 || mode == hybrid32 || mode == compat32",
+      "== \"strict32\" || mode == \"hybrid32\"",
+      "responsewidthmodehybrid32",
+      "== strict32 || mode == responsewidthmodehybrid32"
+     ]
+    },
+    {
+     "name": "strict32_only",
+     "signatures": [
+      "mode == \"strict32\"\n",
+      "only strict32",
+      "return mode == strict32\n",
+      "== responsewidthmodestrict32\n\t}"
+     ]
+    }
+   ]
+  },
+  "conflicting_folder_emit_mode_list_rules": {
+   "anchors": [
+    "folderemitmode",
+    "folder",
+    "user.folder",
+    "repeated",
+    "multi-value",
+    "shouldemitfolderlist",
+    "list emission"
+   ],
+   "classes": [
+    {
+     "name": "scalar_list_only",
+     "canonical": true,
+     "signatures": [
+      "== \"scalar\" || mode == \"list\"",
+      "scalar || mode == list\n",
+      "folderemitmodescalar || mode == folderemitmodelist",
+      "auto does not populate",
+      "auto leave folder empty",
+      "exactly scalar or exactly list"
+     ]
+    },
+    {
+     "name": "includes_auto",
+     "signatures": [
+      "scalar || mode == list || mode == auto",
+      "|| mode == \"auto\"",
+      "list || mode == auto",
+      "folderemitmodeauto"
+     ]
+    },
+    {
+     "name": "list_and_csv_json_variants",
+     "signatures": [
+      "list || mode == csv",
+      "folderemitmodecsv || mode == folderemitmodejsonstring",
+      "list || mode == folderemitmodecsv",
+      "|| mode == jsonstr",
+      "== \"csv\" || mode == \"json_string\""
+     ]
+    }
+   ]
+  }
+ },
+ "swe_19": {
+  "missing_bytearray_handling": {
+   "anchors": [
+    "bytearray",
+    "binary-compatible input",
+    "binary data",
+    "wrap_var",
+    "bytes",
+    "binary types",
+    "before the mutablesequence"
+   ],
+   "classes": [
+    {
+     "name": "bytearray_wrapped_as_unsafe_bytes",
+     "canonical": true,
+     "signatures": [
+      "isinstance(v, bytearray)",
+      "ansibleunsafebytes(bytes(v))",
+      "elif isinstance(v, bytearray)",
+      "bytes(v)",
+      "wrap it as ansibleunsafebytes"
+     ]
+    },
+    {
+     "name": "bytearray_treated_as_mutable_sequence",
+     "signatures": [
+      "treated as a mutable sequence",
+      "falls into the mutablesequence",
+      "_wrap_list",
+      "handled by the mutablesequence branch",
+      "wrap each element"
+     ]
+    },
+    {
+     "name": "bytearray_not_handled",
+     "signatures": [
+      "only bytes",
+      "no special handling for bytearray",
+      "bytearray is not covered",
+      "does not handle bytearray",
+      "left unchanged"
+     ]
+    },
+    {
+     "name": "bytearray_as_unsafe_text",
+     "signatures": [
+      "ansibleunsafetext",
+      "decode the bytearray",
+      "to_text(",
+      "treated as text",
+      "convert to a string"
+     ]
+    }
+   ]
+  },
+  "missing_unsafe_attribute_check": {
+   "anchors": [
+    "ansibleunsafe instances",
+    "__unsafe__",
+    "already unsafe",
+    "returning",
+    "unchanged",
+    "wrap_var guard"
+   ],
+   "classes": [
+    {
+     "name": "isinstance_or_unsafe_attr",
+     "canonical": true,
+     "signatures": [
+      "getattr(v, '__unsafe__', false)",
+      "isinstance(v, ansibleunsafe) or getattr",
+      "__unsafe__', false)",
+      "or getattr(v, '__unsafe__'"
+     ]
+    },
+    {
+     "name": "isinstance_only",
+     "signatures": [
+      "isinstance(v, ansibleunsafe)",
+      "not isinstance(v, ansibleunsafe)",
+      "only via isinstance",
+      "instances of ansibleunsafe"
+     ]
+    },
+    {
+     "name": "unsafe_attr_only",
+     "signatures": [
+      "only the __unsafe__ attribute",
+      "getattr(v, '__unsafe__')",
+      "duck-typing only",
+      "check the __unsafe__ flag"
+     ]
+    }
+   ]
+  },
+  "missing_tuple_wrapping": {
+   "anchors": [
+    "tuple",
+    "recursively wrap",
+    "container types",
+    "mapping, mutablesequence",
+    "after the set check",
+    "type-handling policy",
+    "elements inside"
+   ],
+   "classes": [
+    {
+     "name": "tuple_recursively_wrapped_preserving_type",
+     "canonical": true,
+     "signatures": [
+      "isinstance(v, tuple)",
+      "tuple(wrap_var(item)",
+      "elif isinstance(v, tuple)",
+      "wrap_var(item) if item is not none else item for item in v",
+      "preserve the tuple type"
+     ]
+    },
+    {
+     "name": "tuple_left_unchanged",
+     "signatures": [
+      "tuples unchanged",
+      "return tuples as-is",
+      "left as-is",
+      "not wrap tuples",
+      "no handling for tuple",
+      "returned unchanged"
+     ]
+    },
+    {
+     "name": "tuple_converted_to_list",
+     "signatures": [
+      "convert to a list",
+      "list(wrap_var",
+      "_wrap_list",
+      "return a list",
+      "treated like a list"
+     ]
+    },
+    {
+     "name": "tuple_via_generic_iterable",
+     "signatures": [
+      "treated as an iterable",
+      "generic iterable branch",
+      "any iterable",
+      "like other iterables"
+     ]
+    }
+   ]
+  },
+  "ambiguous_container_mutation_policy": {
+   "anchors": [
+    "return a new object",
+    "identity of the input",
+    "_wrap_list",
+    "_wrap_dict",
+    "copy"
+   ],
+   "classes": [
+    {
+     "name": "return_new_container_objects",
+     "canonical": true,
+     "signatures": [
+      "type(v)(",
+      "return type(v)(",
+      "new type(v)()",
+      "return a new container",
+      "allocate a new instance",
+      "creates and returns a new"
+     ]
+    },
+    {
+     "name": "mutate_in_place",
+     "signatures": [
+      "v[idx] = wrap_var(item)",
+      "v[k] = wrap_var",
+      "for idx, item in enumerate(v)",
+      "modify the input container",
+      "return v",
+      "in-place",
+      "mutate the original"
+     ]
+    }
+   ]
+  },
+  "contradictory_remove_vs_deprecate_unsafeproxy": {
+   "anchors": [
+    "unsafeproxy",
+    "backward compat",
+    "class",
+    "notices"
+   ],
+   "classes": [
+    {
+     "name": "keep_class_with_identity_preservation",
+     "canonical": true,
+     "signatures": [
+      "keep unsafeproxy as a class",
+      "class unsafeproxy",
+      "unsafeproxy.__new__",
+      "if isinstance(obj, ansibleunsafe): return obj",
+      "remains a class",
+      "preserve object identity"
+     ]
+    },
+    {
+     "name": "remove_class_entirely",
+     "signatures": [
+      "remove the unsafeproxy class",
+      "delete the unsafeproxy class",
+      "class removed",
+      "eliminate the unsafeproxy class",
+      "no longer needed",
+      "removed entirely"
+     ]
+    },
+    {
+     "name": "convert_to_deprecated_function",
+     "signatures": [
+      "def unsafeproxy(",
+      "warnings.warn(",
+      "deprecationwarning",
+      "becomes a function",
+      "unsafeproxy is deprecated. use wrap_var",
+      "return wrap_var(obj)"
+     ]
+    }
+   ]
+  }
+ }
 }

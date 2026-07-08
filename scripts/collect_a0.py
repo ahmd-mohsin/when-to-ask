@@ -128,6 +128,14 @@ def main() -> int:
             run_id = f"{task_id}-s{seed}"
             if (out_dir / f"{run_id}.json").exists():
                 t_rec["runs"][run_id] = {"status": "already-present (resumed)"}
+                # Count the resumed run's signature too, else a task whose runs
+                # were ALL collected before a stop reports 0 distinct signatures
+                # (a reporting artifact, not low diversity -- seen for swe_0 in
+                # the 2026-07-07 full collection).
+                tf = out_dir / f"{run_id}.txt"
+                if tf.exists():
+                    signatures.add(answer_signature(
+                        tf.read_text(encoding="utf-8", errors="replace")))
                 continue
             temperature = TEMPS[seed % len(TEMPS)]
             log_event(events, event="run_start", run=run_id, temp=temperature)

@@ -83,14 +83,60 @@ def _sample_pair_cosines(t_vecs, mask_a, mask_b, n_pairs, rng) -> np.ndarray:
 # ---------------------------------------------------------------------------
 
 
-def gate1_topic_leakage(t_tr, cls_tr, t_he, cls_he) -> GateResult:
-    lab_tr, lab_he = cls_tr >= 0, cls_he >= 0
-    acc = _probe_acc(t_tr[lab_tr], cls_tr[lab_tr], t_he[lab_he], cls_he[lab_he])
-    chance = 1.0 / len(np.unique(cls_he[lab_he]))
+def gate1_topic_leakage(t_tr, cls_tr, t_he, cls_he, dec_he=None) -> GateResult:
+    """Hypothesis: T is blind to the resolution LEAN. Must be tested WITHIN a
+    decision -- global class ids are nested inside decisions (each class
+    belongs to one decision), so a global 'predict class from T' probe is
+    confounded by decision identity (which gate 2 WANTS T to encode). Pass
+    dec_he to measure within-decision leakage: per decision, cross-validated
+    probe T->class over that decision's held reads, aggregated as accuracy vs
+    that decision's chance and mean partial eta^2. Falls back to the (naive,
+    confounded) global measure when dec_he is None -- used only by the
+    fixture contract test, where classes are shared across decisions."""
+    from sklearn.linear_model import LogisticRegression
+
+    lab_he = cls_he >= 0
+    if dec_he is None:
+        lab_tr = cls_tr >= 0
+        acc = _probe_acc(t_tr[lab_tr], cls_tr[lab_tr], t_he[lab_he], cls_he[lab_he])
+        return GateResult("gate1_topic_leakage",
+                          {"class_from_T_acc": acc,
+                           "chance": 1.0 / len(np.unique(cls_he[lab_he])),
+                           "eta2": eta_squared(t_he[lab_he], cls_he[lab_he])},
+                          note="want acc ~ chance, eta2 ~ 0 (GLOBAL, fixture-only)")
+
+    accs, chances, etas, weights, n_dec = [], [], [], [], 0
+    T, C, D = t_he[lab_he], cls_he[lab_he], dec_he[lab_he]
+    for d in np.unique(D):
+        m = D == d
+        cls_d, td = C[m], T[m]
+        classes, counts = np.unique(cls_d, return_counts=True)
+        if len(classes) < 2 or counts.min() < 2 or m.sum() < 6:
+            continue
+        n_dec += 1
+        # 5-fold-ish: fit on 70%, score on 30%, stratified-ish by shuffling
+        rng = np.random.default_rng(0)
+        order = rng.permutation(m.sum())
+        cut = int(0.7 * m.sum())
+        tr_i, te_i = order[:cut], order[cut:]
+        if len(np.unique(cls_d[tr_i])) < 2 or len(te_i) == 0:
+            continue
+        probe = LogisticRegression(max_iter=1000).fit(td[tr_i], cls_d[tr_i])
+        accs.append(float(probe.score(td[te_i], cls_d[te_i])))
+        chances.append(1.0 / len(classes))
+        etas.append(eta_squared(td, cls_d))
+        weights.append(int(m.sum()))
+    if not accs:
+        return GateResult("gate1_topic_leakage", {"n_decisions": 0},
+                          note="INSUFFICIENT within-decision data (need decisions "
+                               "with >=2 classes, >=2 reads/class in held-out)")
+    w = np.array(weights, dtype=float)
     return GateResult("gate1_topic_leakage",
-                      {"class_from_T_acc": acc, "chance": chance,
-                       "eta2": eta_squared(t_he[lab_he], cls_he[lab_he])},
-                      note="want acc ~ chance, eta2 ~ 0")
+                      {"within_decision_class_from_T_acc": float(np.average(accs, weights=w)),
+                       "within_decision_chance": float(np.average(chances, weights=w)),
+                       "mean_partial_eta2": float(np.average(etas, weights=w)),
+                       "n_decisions": n_dec},
+                      note="want acc ~ chance, eta2 ~ 0 (WITHIN decision -- the real test)")
 
 
 def gate2_decision_recovery(t_tr, top_tr, t_he, top_he) -> GateResult:
