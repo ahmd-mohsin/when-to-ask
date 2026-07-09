@@ -24,11 +24,22 @@ from wta.reads import DEFAULT_CUES, StreamReadSelector
 from xtid.backbone.model import resolve_mid_layer
 
 
+def resolve_layers(n_layers: int, specs: list[float | int]) -> list[int]:
+    """Resolve a list of layer specs (fractions in (0,1) or explicit indices) to
+    distinct, sorted layer indices via `resolve_mid_layer`. Pure -- unit-tested
+    without torch (decisions/014)."""
+    idxs = sorted({resolve_mid_layer(n_layers, s) for s in specs})
+    if not idxs:
+        raise ValueError("no layers resolved")
+    return idxs
+
+
 class HFStreamReader:
     """Generate with a frozen HF causal LM, reading mid-layer residuals at
     cadence/cue positions during the reasoning span."""
 
     def __init__(self, model_id: str, *, mid_layer: float | int = 0.5,
+                 layers: list[float | int] | None = None,
                  dtype: str = "bfloat16", device: str = "cuda",
                  cadence: int = 32, cues: tuple[str, ...] = DEFAULT_CUES,
                  load_in_4bit: bool = False):
@@ -50,6 +61,11 @@ class HFStreamReader:
         self.n_layers = self.model.config.num_hidden_layers
         self.hidden_dim = self.model.config.hidden_size
         self.mid_layer = resolve_mid_layer(self.n_layers, mid_layer)
+        # Multi-layer capture (decisions/014): resolve each spec to an index and
+        # store the ORDER we stack them in. None -> single mid layer (legacy).
+        self.layer_indices = (
+            resolve_layers(self.n_layers, layers) if layers else None
+        )
 
     def _format(self, prompt: str) -> str:
         if self.tokenizer.chat_template:
@@ -80,7 +96,7 @@ class HFStreamReader:
         selector = StreamReadSelector(cadence=self.cadence, cues=self.cues)
         log = RunLog(run_id=run_id, task_id=task_id, seed=seed,
                      temperature=temperature, model_id=self.model_id,
-                     mid_layer=self.mid_layer)
+                     mid_layer=self.mid_layer, layers=self.layer_indices)
         # out.hidden_states: one tuple per generated step; each = (embeddings +
         # per-layer tensors of shape (batch, seq, H)). +1 skips the embedding
         # entry. Read the last position's vector at the step where the selector
@@ -100,7 +116,16 @@ class HFStreamReader:
             hit = selector.step(delta)
             if hit is None:
                 continue
-            h = out.hidden_states[step_idx][self.mid_layer + 1][0, -1, :].float().cpu().numpy()
+            step_states = out.hidden_states[step_idx]  # (embeddings, *layers)
+            # +1 skips the embedding entry. Single layer -> (H,); multi -> (L, H)
+            # stacked in self.layer_indices order (decisions/014).
+            if self.layer_indices is None:
+                h = step_states[self.mid_layer + 1][0, -1, :].float().cpu().numpy()
+            else:
+                h = np.stack([
+                    step_states[idx + 1][0, -1, :].float().cpu().numpy()
+                    for idx in self.layer_indices
+                ])
             log.reads.append(ReadRecord(token_idx=step_idx, trigger=hit.trigger,
                                         cue=hit.cue, h=h.astype(np.float16)))
         log.validate()

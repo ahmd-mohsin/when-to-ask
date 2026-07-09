@@ -92,6 +92,10 @@ def main() -> int:
     ap.add_argument("--cadence", type=int, default=32)
     ap.add_argument("--max-new-tokens", type=int, default=1536)
     ap.add_argument("--no-nudge", action="store_true")
+    ap.add_argument("--layers", default="0.4,0.5,0.6,0.7",
+                    help="comma list of mid-layer specs (fraction of depth or "
+                         "explicit index) captured per read for the layer sweep "
+                         "(decisions/014); '' or 'none' -> single --mid-layer")
     ap.add_argument("--out", default="data/a0")
     args = ap.parse_args()
 
@@ -99,12 +103,18 @@ def main() -> int:
     out_root.mkdir(parents=True, exist_ok=True)
     events = out_root / "events.jsonl"
 
+    layer_specs = None
+    if args.layers and args.layers.lower() != "none":
+        layer_specs = [float(x) if "." in x else int(x)
+                       for x in args.layers.split(",")]
     reader = HFStreamReader(args.model_id, mid_layer=args.mid_layer,
-                            cadence=args.cadence)
+                            layers=layer_specs, cadence=args.cadence)
     manifest = {
         "args": vars(args), "env": env_info(),
         "reader": {"n_layers": reader.n_layers, "hidden_dim": reader.hidden_dim,
-                   "mid_layer": reader.mid_layer},
+                   "mid_layer": reader.mid_layer,
+                   "layer_indices": reader.layer_indices,
+                   "layer_specs": layer_specs},
         "tasks": {},
     }
     log_event(events, event="collection_start", args=vars(args))

@@ -37,6 +37,23 @@ class GateResult:
 # ---------------------------------------------------------------------------
 
 
+def kfold_group_indices(group_ids: np.ndarray, k: int, seed: int = 0):
+    """Yield (train_mask, test_mask) for k folds partitioned by GROUP so that
+    all reads of one group (e.g. one (task, seed) run) land in the same fold --
+    never split a run across train/test (decisions/014 power fix). Groups are
+    shuffled deterministically then round-robin assigned to folds."""
+    group_ids = np.asarray(group_ids)
+    groups = np.unique(group_ids)
+    rng = np.random.default_rng(seed)
+    perm = rng.permutation(len(groups))
+    fold_of_group = {groups[g]: i % k for i, g in enumerate(perm)}
+    fold = np.array([fold_of_group[g] for g in group_ids])
+    for f in range(k):
+        test = fold == f
+        if test.any() and (~test).any():
+            yield ~test, test
+
+
 def _probe_acc(z_tr, y_tr, z_he, y_he) -> float:
     from sklearn.linear_model import LogisticRegression
 

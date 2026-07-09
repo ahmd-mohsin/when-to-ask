@@ -84,3 +84,52 @@ def test_empty_log_round_trips(tmp_path):
     save_run_log(log, tmp_path)
     back = load_run_log(tmp_path, "r4")
     assert back.reads == [] and back.actions == []
+
+
+def _make_multilayer_log(run_id="ml", n_reads=6, H=16, layers=(11, 14, 17, 20)):
+    rng = np.random.default_rng(2)
+    reads = [
+        ReadRecord(token_idx=5 * i + 3, trigger="cadence", cue=None,
+                   h=rng.standard_normal((len(layers), H)).astype(np.float16))
+        for i in range(n_reads)
+    ]
+    return RunLog(run_id=run_id, task_id="t0", seed=0, temperature=0.8,
+                  model_id="fake", mid_layer=14, reads=reads, layers=list(layers))
+
+
+def test_multilayer_capture_and_select_at_load(tmp_path):
+    """decisions/014: store (R, L, H) on disk; load_run_log(layer=) slices to a
+    single (R, H) so every downstream caller keeps 1-D per-read h."""
+    log = _make_multilayer_log()
+    save_run_log(log, tmp_path)
+    disk = np.load(tmp_path / "ml.npz")["h"]
+    assert disk.shape == (6, 4, 16)  # (R, L, H) on disk
+
+    back = load_run_log(tmp_path, "ml", layer=17)  # 17 is layers[2]
+    assert back.reads[0].h.shape == (16,)  # sliced to 1-D
+    assert np.array_equal(back.reads[0].h, disk[0, 2, :])
+    # default layer -> the stored mid_layer (14 == layers[1])
+    assert np.array_equal(load_run_log(tmp_path, "ml").reads[0].h, disk[0, 1, :])
+    # position index also accepted
+    assert np.array_equal(load_run_log(tmp_path, "ml", layer=0).reads[0].h, disk[0, 0, :])
+
+
+def test_multilayer_validate_layer_axis_mismatch():
+    from wta.logging_schema import RunLog, ReadRecord
+    bad = RunLog(run_id="b", task_id="t", seed=0, temperature=0.7, model_id="m",
+                 mid_layer=14, layers=[11, 14, 17],  # says 3 layers
+                 reads=[ReadRecord(token_idx=1, trigger="cadence", cue=None,
+                                   h=np.zeros((4, 8), dtype=np.float16))])  # but 4
+    with pytest.raises(ValueError):
+        bad.validate()
+
+
+def test_resolve_layers_pure():
+    """Layer-spec resolution is unit-testable without torch (decisions/014)."""
+    from wta.hf_reader import resolve_layers
+    assert resolve_layers(28, [0.4, 0.5, 0.6, 0.7]) == [11, 14, 17, 20]
+    assert resolve_layers(28, [14, 14, 0.5]) == [14]  # dedup + sort
+    from wta.logging_schema import resolve_layer_pos
+    assert resolve_layer_pos([11, 14, 17, 20], None, 14) == 1
+    assert resolve_layer_pos([11, 14, 17, 20], 20, 14) == 3
+    assert resolve_layer_pos(None, None, 14) == 0

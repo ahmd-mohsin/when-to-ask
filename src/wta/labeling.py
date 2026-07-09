@@ -138,7 +138,7 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                  tokenizer_name: str = "Qwen/Qwen2.5-Coder-7B-Instruct",
                  window_chars: int = 400, min_anchor_hits: int = 1,
                  min_sig_hits: int = 1,
-                 debug_path: str | Path | None = None) -> LabeledDataset:
+                 debug_path: str | Path | None = None, layer=None) -> LabeledDataset:
     """See spec labels.md. With debug_path, every labeling decision is written
     as JSONL (per read: window snippet + per-blocker anchor scores + outcome
     reason; per (run, decision): per-class signature scores + commit position)
@@ -180,7 +180,7 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                                          "committed_classes": {}})
         for jf in sorted(task_dir.glob("*.json")):
             run_id = jf.stem
-            log = load_run_log(task_dir, run_id)
+            log = load_run_log(task_dir, run_id, layer=layer)  # multi-layer: select-at-load
             text = (task_dir / f"{run_id}.txt").read_text(encoding="utf-8",
                                                           errors="replace")
             text_norm = _norm(text)

@@ -22,33 +22,42 @@ python scripts/prove_hook.py
 Downloads Qwen2.5-Coder-7B-Instruct (~15 GB), runs one under-specified task
 N=2, prints PASS/FAIL per spec-A0 check. **If FAIL, stop and report.**
 
-## 2. A0 collection v1.5 (grounded — ADR 012) — DONE for the 3-task sample;
-##    this is the full-batch procedure
+## 2. A0 collection v1.6 (grounded ADR 012 + multi-layer ADR 014) —
+##    the full-batch procedure; this is the LAST GPU step
 
 ```bash
-# (a) extract pre-patch source context from the task docker images
-#     (leak analysis in the script header; falls back gracefully, always
-#     recorded in the manifest)
-python scripts/extract_task_context.py --n-tasks 20
+# (a) extract pre-patch source context from the task docker images (leak
+#     analysis in the script header; falls back gracefully, recorded in the
+#     manifest). If data/task_context/ is empty (ephemeral NVMe wiped on a
+#     stop/start), re-run this; --scratch-dir keeps multi-GB archives off root.
+python scripts/extract_task_context.py --n-tasks 20 --scratch-dir /opt/dlami/nvme/wta-scratch
 
-# (b) collect: grounded prompts, 1536-token generations, full diagnostics
-python scripts/collect_a0.py --n-tasks 20
+# (b) collect capturing 4 LAYERS in one forward pass (--layers, ADR 014) so
+#     the layer sweep is laptop-only forever after. Same seeds/prompts as
+#     before -> directly comparable; only the saved activations change.
+python scripts/collect_a0.py --n-tasks 20 --layers 0.4,0.5,0.6,0.7
 ```
 
-Writes `data/a0/<task>/<run>.{npz,json,txt}` + per-task `prompt.txt` +
-`collection_manifest.json` (versions, GPU, grounding mode per task, per-run
-timing/finish-reason) + `events.jsonl`. Check the closing summary: how many
-tasks were actually grounded (`mode=docker`), and the distinct-signature
-count (< 30% diverse fires decisions/008's escalation — tell Claude).
+Writes `data/a0/<task>/<run>.{npz,json,txt}` (npz `h` now **(R, 4, 3584)**) +
+per-task `prompt.txt` + `collection_manifest.json` (versions, GPU, grounding
+mode, `reader.layer_indices`, per-run timing/finish-reason) + `events.jsonl`.
+Verify: npz shape (R, 4, 3584) float16, finite, nonzero variance; 20/20
+`mode=docker`; distinct-signature count (< 30% fires decisions/008 — tell
+Claude). Then tarball `data/a0/` + `data/task_context/`, print sha256, report.
+The box can be stopped after — all sweeps/gates run on the laptop.
 
-Bring `data/a0/` (tar.gz) back to the laptop.
-
-## 3. Offline training + calibration + label audit (laptop, CPU)
+## 3. Offline training + sweeps + gates (laptop, CPU — no AWS)
 
 ```bash
-python scripts/train_offline.py          # labels -> d -> A2 -> A3 (+ diagnostics)
-python scripts/audit_labels.py           # human-readable audit of label decisions
+python scripts/audit_labels.py                       # human-readable label audit
+python scripts/sweep.py --layers 0,1,2,3             # rank layers (gate1+gate5) + eps/window
+python scripts/run_full_gates.py --layer <best> --eps-settle <best> --window <best> --kfold 5
 ```
+
+`sweep.py` prints the layer table (best by gate-5 lean-separation) and the
+eps×window table (best A3 settle rate), then the exact `run_full_gates.py`
+command for the trustworthy k-fold gate numbers. That gate run is the owner
+STOP point (decisions/011/013/014).
 
 train_offline prints: label coverage + class balance, A1 held-out AUROC, the
 GRL-treadmill check, A3 settle rate + benign-spread reference — each number's
