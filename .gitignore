@@ -49,3 +49,4 @@ multi trajectory disagreement about same idea/
 # session data tarballs (derived artifacts, keep out of history)
 a0_sample_3task.tar.gz
 a0_v1.5_full_*.tar.gz
+wta-a0-*.tar.gz
