@@ -78,6 +78,53 @@ class HFStreamReader:
             )
         return prompt
 
+    def generate_segment(self, messages: list[dict], *, seed: int,
+                         temperature: float, max_new_tokens: int,
+                         segment_idx: int) -> tuple[list, str]:
+        """One agent TURN (v2, decisions/017): generate from a chat-history
+        message list, reading residuals at cadence/cue/value positions. Returns
+        (reads for this segment with segment_idx set, generated text). The
+        caller accumulates segments into one RunLog. A fresh selector per
+        segment (cue buffers must not leak across turns); seed is mixed with
+        segment_idx so turns differ deterministically."""
+        torch = self._torch
+        torch.manual_seed(seed * 100003 + segment_idx)
+        text_in = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.tokenizer(text_in, return_tensors="pt").to(self.model.device)
+        with torch.no_grad():
+            out = self.model.generate(
+                **inputs, do_sample=temperature > 0,
+                temperature=max(temperature, 1e-5),
+                max_new_tokens=max_new_tokens,
+                return_dict_in_generate=True, output_hidden_states=True,
+            )
+        gen_ids = out.sequences[0, inputs["input_ids"].shape[1]:]
+        text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
+
+        selector = StreamReadSelector(cadence=self.cadence, cues=self.cues,
+                                      value_pattern=self.value_pattern,
+                                      value_cooldown=self.value_cooldown)
+        reads, prev_text = [], ""
+        n_steps = min(len(gen_ids), len(out.hidden_states))
+        for step_idx in range(n_steps):
+            text_so_far = self.tokenizer.decode(gen_ids[: step_idx + 1],
+                                                skip_special_tokens=True)
+            delta, prev_text = text_so_far[len(prev_text):], text_so_far
+            hit = selector.step(delta)
+            if hit is None:
+                continue
+            step_states = out.hidden_states[step_idx]
+            if self.layer_indices is None:
+                h = step_states[self.mid_layer + 1][0, -1, :].float().cpu().numpy()
+            else:
+                h = np.stack([step_states[idx + 1][0, -1, :].float().cpu().numpy()
+                              for idx in self.layer_indices])
+            reads.append(ReadRecord(token_idx=step_idx, trigger=hit.trigger,
+                                    cue=hit.cue, h=h.astype(np.float16),
+                                    segment_idx=segment_idx))
+        return reads, text
+
     def run(self, prompt: str, *, run_id: str, task_id: str, seed: int,
             temperature: float = 0.8, max_new_tokens: int = 512) -> tuple[RunLog, str]:
         """One generation pass -> (RunLog with per-read h, generated text)."""

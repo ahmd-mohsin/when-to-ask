@@ -46,6 +46,21 @@ Verify: npz shape (R, 4, 3584) float16, finite, nonzero variance; 20/20
 Claude). Then tarball `data/a0/` + `data/task_context/`, print sha256, report.
 The box can be stopped after — all sweeps/gates run on the laptop.
 
+## 2b. v2 collection — REAL agent trajectories (decisions/017) — CURRENT step
+
+```bash
+git pull && python -m pytest -q          # expect 108 green
+python scripts/collect_v2.py --n-tasks 20 --scratch-dir /opt/dlami/nvme/wta-scratch
+```
+
+Runs 8 seeded agent trajectories per task inside each task's docker container
+(4-layer capture + cadence/cue/value reads baked in). Budget ~4-8 GPU-hours
+(15 turns × ~1k tokens × 160 runs). Watch the manifest per run: `steps`,
+`finished` (reached TASK_DONE), `reads_by_trigger` (expect nonzero `value`),
+`actions`. Broken images are skipped and logged, not fatal. Tarball
+`data/a0_v2/` back to the laptop when done. For the 32B pass afterwards:
+same command + `--model-id Qwen/Qwen2.5-Coder-32B-Instruct` on a g5.12xlarge.
+
 ## 3. Offline training + sweeps + gates (laptop, CPU — no AWS)
 
 ```bash

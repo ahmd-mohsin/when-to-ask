@@ -180,11 +180,25 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                                          "committed_classes": {}})
         for jf in sorted(task_dir.glob("*.json")):
             run_id = jf.stem
+            if run_id.endswith(".segments") or not (task_dir / f"{run_id}.npz").exists():
+                continue  # sidecar/metadata json, not a run log
             log = load_run_log(task_dir, run_id, layer=layer)  # multi-layer: select-at-load
             text = (task_dir / f"{run_id}.txt").read_text(encoding="utf-8",
                                                           errors="replace")
             text_norm = _norm(text)
-            starts = token_char_positions(text, tokenizer)
+            # v2 multi-segment runs (decisions/017): token_idx restarts per
+            # turn, so the token->char map is per segment; the run's .txt is
+            # "\n\n".join(segments), so segment k's chars start at offs[k].
+            seg_file = task_dir / f"{run_id}.segments.json"
+            if seg_file.exists():
+                segments = json.loads(seg_file.read_text(encoding="utf-8"))
+                seg_starts, offs, pos = [], [], 0
+                for s in segments:
+                    seg_starts.append(token_char_positions(s, tokenizer))
+                    offs.append(pos)
+                    pos += len(s) + 2  # the join separator
+            else:
+                seg_starts, offs = [token_char_positions(text, tokenizer)], [0]
             runs.append((task, run_id))
             r_i = len(runs) - 1
 
@@ -220,7 +234,10 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
             h = log.read_matrix().astype(np.float32)
             for k, read in enumerate(log.reads):
                 tok = read.token_idx
-                char = starts[min(tok, len(starts) - 1)] if starts else 0
+                seg = min(read.segment_idx, len(seg_starts) - 1)
+                s_starts = seg_starts[seg]
+                local = s_starts[min(tok, len(s_starts) - 1)] if s_starts else 0
+                char = offs[seg] + local
                 lo, hi = max(0, char - window_chars), char + window_chars
                 win = text_norm[lo:hi]
 
