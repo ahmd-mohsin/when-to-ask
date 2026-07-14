@@ -70,11 +70,12 @@ class RunLog:
                         f"{self.run_id}: 2-D h layer axis {r.h.shape[0]} != "
                         f"len(layers) {n_layers}"
                     )
-            if r.trigger not in ("cadence", "cue"):
+            if r.trigger not in ("cadence", "cue", "value"):
                 raise ValueError(f"{self.run_id}: unknown trigger {r.trigger!r}")
-            if (r.trigger == "cue") != (r.cue is not None):
+            # cue field carries the matched text for cue AND value reads
+            if (r.trigger in ("cue", "value")) != (r.cue is not None):
                 raise ValueError(
-                    f"{self.run_id}: cue must be set iff trigger == 'cue' "
+                    f"{self.run_id}: cue must be set iff trigger is 'cue'/'value' "
                     f"(got trigger={r.trigger!r}, cue={r.cue!r})"
                 )
 

@@ -72,3 +72,33 @@ def test_config_validation():
         StreamReadSelector(cadence=0)
     with pytest.raises(ValueError):
         StreamReadSelector(cues=("",))
+
+
+def test_value_reads_fire_on_literals_with_cooldown():
+    from wta.reads import DEFAULT_VALUE_PATTERN
+
+    sel_kw = dict(cadence=10**6, cues=(), value_pattern=DEFAULT_VALUE_PATTERN,
+                  value_cooldown=8)
+    # fires on a multi-digit literal, records the matched text in cue
+    sel = StreamReadSelector(**sel_kw)
+    hits = [sel.step(t) for t in ["timeout", " = ", "30", " seconds"]]
+    fired = [h for h in hits if h]
+    assert [(h.token_idx, h.trigger, h.cue) for h in fired] == [(2, "value", "30")]
+
+    # cooldown: a burst of literals yields one read per cooldown window
+    sel = StreamReadSelector(**sel_kw)
+    hits = [sel.step(f"{n} ") for n in range(100, 120)]  # 20 literals in a row
+    fired = [h for h in hits if h and h.trigger == "value"]
+    assert len(fired) == 3  # positions 0, 8, 16
+    # single digits do NOT fire (loop indices would flood otherwise)
+    sel = StreamReadSelector(**sel_kw)
+    assert all(sel.step(t) is None for t in ["i = 1", "j = 2", "k = 3"])
+
+
+def test_value_reads_off_by_default_and_cue_priority():
+    sel = StreamReadSelector(cadence=10**6, cues=())
+    assert all(sel.step(t) is None for t in ["x = ", "3000"])  # no pattern -> off
+    from wta.reads import DEFAULT_VALUE_PATTERN
+    sel = StreamReadSelector(cadence=10**6, value_pattern=DEFAULT_VALUE_PATTERN)
+    hit = sel.step("30 wait")  # cue (at end) and value in one token -> cue wins
+    assert hit.trigger == "cue" and hit.cue == "wait"

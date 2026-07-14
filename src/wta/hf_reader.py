@@ -42,6 +42,7 @@ class HFStreamReader:
                  layers: list[float | int] | None = None,
                  dtype: str = "bfloat16", device: str = "cuda",
                  cadence: int = 32, cues: tuple[str, ...] = DEFAULT_CUES,
+                 value_pattern: str | None = None, value_cooldown: int = 8,
                  load_in_4bit: bool = False):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -50,6 +51,8 @@ class HFStreamReader:
         self.model_id = model_id
         self.cadence = cadence
         self.cues = cues
+        self.value_pattern = value_pattern
+        self.value_cooldown = value_cooldown
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         kwargs: dict = {"torch_dtype": getattr(torch, dtype), "output_hidden_states": True}
         if device == "cuda":
@@ -93,7 +96,9 @@ class HFStreamReader:
         gen_ids = out.sequences[0, inputs["input_ids"].shape[1]:]
         text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
 
-        selector = StreamReadSelector(cadence=self.cadence, cues=self.cues)
+        selector = StreamReadSelector(cadence=self.cadence, cues=self.cues,
+                                      value_pattern=self.value_pattern,
+                                      value_cooldown=self.value_cooldown)
         log = RunLog(run_id=run_id, task_id=task_id, seed=seed,
                      temperature=temperature, model_id=self.model_id,
                      mid_layer=self.mid_layer, layers=self.layer_indices)

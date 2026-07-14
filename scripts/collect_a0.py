@@ -96,6 +96,9 @@ def main() -> int:
                     help="comma list of mid-layer specs (fraction of depth or "
                          "explicit index) captured per read for the layer sweep "
                          "(decisions/014); '' or 'none' -> single --mid-layer")
+    ap.add_argument("--value-reads", action="store_true",
+                    help="also read the moment a multi-digit literal is emitted "
+                         "(decisions/016 value-fork experiment; cooldown-limited)")
     ap.add_argument("--out", default="data/a0")
     args = ap.parse_args()
 
@@ -107,8 +110,12 @@ def main() -> int:
     if args.layers and args.layers.lower() != "none":
         layer_specs = [float(x) if "." in x else int(x)
                        for x in args.layers.split(",")]
+    from wta.reads import DEFAULT_VALUE_PATTERN
+
     reader = HFStreamReader(args.model_id, mid_layer=args.mid_layer,
-                            layers=layer_specs, cadence=args.cadence)
+                            layers=layer_specs, cadence=args.cadence,
+                            value_pattern=(DEFAULT_VALUE_PATTERN
+                                           if args.value_reads else None))
     manifest = {
         "args": vars(args), "env": env_info(),
         "reader": {"n_layers": reader.n_layers, "hidden_dim": reader.hidden_dim,

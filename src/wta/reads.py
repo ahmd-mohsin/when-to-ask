@@ -22,6 +22,10 @@ DEFAULT_CUES: tuple[str, ...] = (
     "hmm", "wait", "let me", "actually", "should i", "alternatively",
 )
 
+# Multi-digit literals (ints/floats), not bare single digits -- loop indices
+# and list numbering would flood reads otherwise (decisions/016).
+DEFAULT_VALUE_PATTERN = r"\d{2,}(?:\.\d+)?"
+
 _WS = re.compile(r"\s+")
 _TRAILING_NON_ALNUM = re.compile(r"[^a-z0-9]+$")
 
@@ -44,17 +48,27 @@ class StreamReadSelector:
       a word boundary. Matching is on detokenized text, so cues spanning token
       boundaries ("let" + " me") fire, and words merely containing a cue
       ("awaits", "hmmm") do not.
-    - one read per position; if both fire, the read is recorded as "cue".
+    - value reads (decisions/016, off by default): when `value_pattern` is set,
+      a read also fires the moment the generated delta emits a matching literal
+      (e.g. a number) -- the instant a value-fork's distinguishing token is
+      written, which cadence reads mostly straddle. A cooldown bounds the rate
+      (code is full of digits). Still reading DURING generation, never at the
+      action boundary -- this is a cue-set extension per decisions/006.
+    - one read per position; priority cue > value > cadence.
     """
 
     def __init__(self, cadence: int = 32, cues: tuple[str, ...] = DEFAULT_CUES,
-                 max_buffer: int = 256):
+                 max_buffer: int = 256, value_pattern: str | None = None,
+                 value_cooldown: int = 8):
         if cadence < 1:
             raise ValueError("cadence must be >= 1")
         self.cadence = cadence
         self.cues = tuple(_WS.sub(" ", c.lower()).strip() for c in cues)
         if any(not c for c in self.cues):
             raise ValueError("empty cue")
+        self._value_re = re.compile(value_pattern) if value_pattern else None
+        self._value_cooldown = max(0, value_cooldown)
+        self._last_value_read = -10**9
         self._max_buffer = max(max_buffer, 4 * max((len(c) for c in self.cues), default=8))
         self._buf = ""
         self._idx = -1
@@ -82,6 +96,11 @@ class StreamReadSelector:
 
         if cue_hit is not None:
             return ReadTrigger(self._idx, "cue", cue_hit)
+        if self._value_re is not None and token_text:
+            m = self._value_re.search(token_text)
+            if m and (self._idx - self._last_value_read) >= self._value_cooldown:
+                self._last_value_read = self._idx
+                return ReadTrigger(self._idx, "value", m.group(0))
         if (self._idx + 1) % self.cadence == 0:
             return ReadTrigger(self._idx, "cadence")
         return None
