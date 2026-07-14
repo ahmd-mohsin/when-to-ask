@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from wta.layer_capture import LayerCapture
 from wta.logging_schema import ReadRecord, RunLog
 from wta.reads import DEFAULT_CUES, StreamReadSelector
 
@@ -54,7 +55,7 @@ class HFStreamReader:
         self.value_pattern = value_pattern
         self.value_cooldown = value_cooldown
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
-        kwargs: dict = {"torch_dtype": getattr(torch, dtype), "output_hidden_states": True}
+        kwargs: dict = {"torch_dtype": getattr(torch, dtype)}
         if device == "cuda":
             kwargs["device_map"] = "auto"
         if load_in_4bit:
@@ -69,6 +70,9 @@ class HFStreamReader:
         self.layer_indices = (
             resolve_layers(self.n_layers, layers) if layers else None
         )
+        # what the hook capture actually grabs (single-layer mode still hooks
+        # exactly one layer; the saved h stays 1-D for schema compatibility)
+        self._capture_layers = self.layer_indices or [self.mid_layer]
 
     def _format(self, prompt: str) -> str:
         if self.tokenizer.chat_template:
@@ -92,12 +96,12 @@ class HFStreamReader:
         text_in = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True)
         inputs = self.tokenizer(text_in, return_tensors="pt").to(self.model.device)
-        with torch.no_grad():
+        with torch.no_grad(), LayerCapture(self.model, self._capture_layers) as cap:
             out = self.model.generate(
                 **inputs, do_sample=temperature > 0,
                 temperature=max(temperature, 1e-5),
                 max_new_tokens=max_new_tokens,
-                return_dict_in_generate=True, output_hidden_states=True,
+                return_dict_in_generate=True,
             )
         gen_ids = out.sequences[0, inputs["input_ids"].shape[1]:]
         text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
@@ -106,7 +110,7 @@ class HFStreamReader:
                                       value_pattern=self.value_pattern,
                                       value_cooldown=self.value_cooldown)
         reads, prev_text = [], ""
-        n_steps = min(len(gen_ids), len(out.hidden_states))
+        n_steps = min(len(gen_ids), cap.n_steps)
         for step_idx in range(n_steps):
             text_so_far = self.tokenizer.decode(gen_ids[: step_idx + 1],
                                                 skip_special_tokens=True)
@@ -114,12 +118,9 @@ class HFStreamReader:
             hit = selector.step(delta)
             if hit is None:
                 continue
-            step_states = out.hidden_states[step_idx]
+            h = cap.get(step_idx)
             if self.layer_indices is None:
-                h = step_states[self.mid_layer + 1][0, -1, :].float().cpu().numpy()
-            else:
-                h = np.stack([step_states[idx + 1][0, -1, :].float().cpu().numpy()
-                              for idx in self.layer_indices])
+                h = h[0]
             reads.append(ReadRecord(token_idx=step_idx, trigger=hit.trigger,
                                     cue=hit.cue, h=h.astype(np.float16),
                                     segment_idx=segment_idx))
@@ -131,14 +132,13 @@ class HFStreamReader:
         torch = self._torch
         torch.manual_seed(seed)
         inputs = self.tokenizer(self._format(prompt), return_tensors="pt").to(self.model.device)
-        with torch.no_grad():
+        with torch.no_grad(), LayerCapture(self.model, self._capture_layers) as cap:
             out = self.model.generate(
                 **inputs,
                 do_sample=temperature > 0,
                 temperature=max(temperature, 1e-5),
                 max_new_tokens=max_new_tokens,
                 return_dict_in_generate=True,
-                output_hidden_states=True,
             )
         gen_ids = out.sequences[0, inputs["input_ids"].shape[1]:]
         text = self.tokenizer.decode(gen_ids, skip_special_tokens=True)
@@ -149,17 +149,18 @@ class HFStreamReader:
         log = RunLog(run_id=run_id, task_id=task_id, seed=seed,
                      temperature=temperature, model_id=self.model_id,
                      mid_layer=self.mid_layer, layers=self.layer_indices)
-        # out.hidden_states: one tuple per generated step; each = (embeddings +
-        # per-layer tensors of shape (batch, seq, H)). +1 skips the embedding
-        # entry. Read the last position's vector at the step where the selector
-        # fires -- and ONLY there (no averaging; decisions/006).
+        # Hook capture (wta/layer_capture.py): one (L, H) per generation step,
+        # last position only, chosen layers only -- equivalent to the old
+        # output_hidden_states path (contract-tested) without its multi-GB
+        # prompt-wide transient. Read ONLY where the selector fires (no
+        # averaging; decisions/006).
         #
         # Token text comes from DELTAS of the progressively decoded prefix, not
         # from decode([tok_id]): single-token decode drops BPE space markers
         # and mangles multi-byte characters split across tokens, which would
         # feed the cue matcher "letme" instead of "let me".
         prev_text = ""
-        n_steps = min(len(gen_ids), len(out.hidden_states))
+        n_steps = min(len(gen_ids), cap.n_steps)
         for step_idx in range(n_steps):
             text_so_far = self.tokenizer.decode(
                 gen_ids[: step_idx + 1], skip_special_tokens=True
@@ -168,16 +169,9 @@ class HFStreamReader:
             hit = selector.step(delta)
             if hit is None:
                 continue
-            step_states = out.hidden_states[step_idx]  # (embeddings, *layers)
-            # +1 skips the embedding entry. Single layer -> (H,); multi -> (L, H)
-            # stacked in self.layer_indices order (decisions/014).
+            h = cap.get(step_idx)  # (L, H); single-layer mode -> squeeze to (H,)
             if self.layer_indices is None:
-                h = step_states[self.mid_layer + 1][0, -1, :].float().cpu().numpy()
-            else:
-                h = np.stack([
-                    step_states[idx + 1][0, -1, :].float().cpu().numpy()
-                    for idx in self.layer_indices
-                ])
+                h = h[0]
             log.reads.append(ReadRecord(token_idx=step_idx, trigger=hit.trigger,
                                         cue=hit.cue, h=h.astype(np.float16)))
         log.validate()
