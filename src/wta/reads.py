@@ -97,7 +97,19 @@ class StreamReadSelector:
         if cue_hit is not None:
             return ReadTrigger(self._idx, "cue", cue_hit)
         if self._value_re is not None and token_text:
-            m = self._value_re.search(token_text)
+            # Match against the rolling buffer, not the lone token: tokenizers
+            # that split literals across tokens (Qwen emits numbers digit by
+            # digit) never put >= 2 digits in one token, so a token-local
+            # search can never fire. A read fires when a match ENDS inside the
+            # text this token added -- the instant the literal (first) becomes
+            # matchable -- and the cooldown absorbs refires as the same
+            # literal keeps extending.
+            tail = self._buf[-64:]
+            added_from = max(len(tail) - len(token_text), 0)
+            m = None
+            for m_ in self._value_re.finditer(tail):
+                if m_.end() > added_from:
+                    m = m_
             if m and (self._idx - self._last_value_read) >= self._value_cooldown:
                 self._last_value_read = self._idx
                 return ReadTrigger(self._idx, "value", m.group(0))

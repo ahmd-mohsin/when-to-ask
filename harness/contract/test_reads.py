@@ -95,6 +95,29 @@ def test_value_reads_fire_on_literals_with_cooldown():
     assert all(sel.step(t) is None for t in ["i = 1", "j = 2", "k = 3"])
 
 
+def test_value_reads_fire_across_token_boundaries():
+    """Qwen-family tokenizers emit numbers digit by digit ('120' -> '1','2',
+    '0'), so no single token ever contains >= 2 digits. The literal must fire
+    the moment it becomes matchable in the stream (here: the 2nd digit), not
+    require the whole literal inside one token -- the 14B v2 collection
+    produced ZERO value reads before this was fixed."""
+    from wta.reads import DEFAULT_VALUE_PATTERN
+
+    sel = StreamReadSelector(cadence=10**6, cues=(),
+                             value_pattern=DEFAULT_VALUE_PATTERN,
+                             value_cooldown=8)
+    hits = [sel.step(t) for t in ["timeout", " ", "1", "2", "0", " ok"]]
+    fired = [h for h in hits if h]
+    assert [(h.token_idx, h.trigger, h.cue) for h in fired] == [(3, "value", "12")]
+    # a literal ending mid-token still fires exactly once
+    sel = StreamReadSelector(cadence=10**6, cues=(),
+                             value_pattern=DEFAULT_VALUE_PATTERN,
+                             value_cooldown=8)
+    hits = [sel.step(t) for t in ["port ", "80", "80,", " done"]]
+    fired = [h for h in hits if h]
+    assert [(h.token_idx, h.trigger) for h in fired] == [(1, "value")]
+
+
 def test_value_reads_off_by_default_and_cue_priority():
     sel = StreamReadSelector(cadence=10**6, cues=())
     assert all(sel.step(t) is None for t in ["x = ", "3000"])  # no pattern -> off
