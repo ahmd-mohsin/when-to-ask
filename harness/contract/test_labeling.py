@@ -89,8 +89,13 @@ def test_artifact_validation():
     from wta.labeling import load_class_artifact
 
     good = load_class_artifact(ART)
-    # all 20 collected tasks now have derived + leak-repaired classes
-    assert sum(1 for k in good if not k.startswith("_")) == 20
+    # the 20 collected tasks all have derived + leak-repaired classes; the
+    # artifact grows ahead of collection (40 registry-only tasks added
+    # 2026-07-18 for the scale run — see _provenance)
+    n_tasks = sum(1 for k in good if not k.startswith("_"))
+    assert n_tasks >= 20
+    collected = {"swe_0", "swe_1", "swe_2"} | {f"swe_{i}" for i in range(10, 27)}
+    assert collected <= {k for k in good if not k.startswith("_")}
     import json
     bad = {"t": {"b": {"anchors": ["x"], "classes": [{"name": "only-one",
                                                       "canonical": True,

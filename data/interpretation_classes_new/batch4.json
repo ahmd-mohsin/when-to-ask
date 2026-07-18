@@ -1,0 +1,530 @@
+{
+  "swe_35": {
+    "missing_seed_canonicalization_algorithm": {
+      "anchors": [
+        "canonicalization",
+        "key=value terms",
+        "stable across runtimes",
+        "before hashing"
+      ],
+      "classes": [
+        {
+          "name": "sha256",
+          "canonical": true,
+          "signatures": [
+            "'sha256'",
+            "\"sha256\""
+          ]
+        },
+        {
+          "name": "md5_or_sha1",
+          "signatures": [
+            "'md5'",
+            "'sha1'",
+            "\"md5\"",
+            "\"sha1\""
+          ]
+        },
+        {
+          "name": "sha512",
+          "signatures": [
+            "'sha512'",
+            "\"sha512\""
+          ]
+        }
+      ]
+    },
+    "ambiguous_chars_option_type_handling": {
+      "anchors": [
+        "input formats",
+        "processed consistently",
+        "comma-splitting",
+        "plugin default"
+      ],
+      "classes": [
+        {
+          "name": "string_guard_list_unchanged",
+          "canonical": true,
+          "signatures": [
+            "isinstance(params['chars'], string_types)",
+            "string_types):",
+            "leave it unchanged"
+          ]
+        },
+        {
+          "name": "always_split",
+          "signatures": [
+            "split(',') regardless",
+            "always split",
+            "same processing for both"
+          ]
+        },
+        {
+          "name": "join_list_first",
+          "signatures": [
+            "','.join",
+            "\",\".join",
+            "convert the list to a string"
+          ]
+        }
+      ]
+    },
+    "contradictory_parse_parameters_scope": {
+      "anchors": [
+        "parsing defaults",
+        "refactoring",
+        "lookupmodule",
+        "calling patterns"
+      ],
+      "classes": [
+        {
+          "name": "instance_method_only",
+          "canonical": true,
+          "signatures": [
+            "def _parse_parameters(self",
+            "self._parse_parameters(",
+            "self.get_option("
+          ]
+        },
+        {
+          "name": "keep_module_level",
+          "signatures": [
+            "remain at module level",
+            "def _parse_parameters(term",
+            "module-level function stays"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_36": {
+    "runtime_replacement_import_path": {
+      "anchors": [
+        "runtime files",
+        "collection abcs",
+        "approved runtime-safe",
+        "migrate"
+      ],
+      "classes": [
+        {
+          "name": "six_moves_collections_abc",
+          "canonical": true,
+          "signatures": [
+            "six.moves.collections_abc"
+          ]
+        },
+        {
+          "name": "stdlib_collections_abc_runtime",
+          "signatures": [
+            "from collections.abc import"
+          ]
+        },
+        {
+          "name": "keep_legacy_shim_runtime",
+          "signatures": [
+            "common._collections_compat import"
+          ]
+        }
+      ]
+    },
+    "controller_replacement_import_path": {
+      "anchors": [
+        "controller-side",
+        "shell plugins",
+        "replacement target",
+        "legacy shim"
+      ],
+      "classes": [
+        {
+          "name": "stdlib_collections_abc",
+          "canonical": true,
+          "signatures": [
+            "from collections.abc import"
+          ]
+        },
+        {
+          "name": "six_moves_path_controller",
+          "signatures": [
+            "six.moves.collections_abc"
+          ]
+        },
+        {
+          "name": "keep_shim_controller",
+          "signatures": [
+            "common._collections_compat"
+          ]
+        }
+      ]
+    },
+    "shim_transition_signal_mode": {
+      "anchors": [
+        "transitional",
+        "shim",
+        "signal",
+        "migration guidance"
+      ],
+      "classes": [
+        {
+          "name": "documentation_only",
+          "canonical": true,
+          "signatures": [
+            "docstring",
+            "documentation-only",
+            "do not emit runtime warnings",
+            "single unconditional import"
+          ]
+        },
+        {
+          "name": "runtime_deprecation_warning",
+          "signatures": [
+            "warnings.warn",
+            "deprecationwarning",
+            "deprecate("
+          ]
+        }
+      ]
+    },
+    "packaging_shim_inclusion_condition": {
+      "anchors": [
+        "dependency discovery",
+        "runtime artifacts",
+        "third-party callers",
+        "inclusion rule"
+      ],
+      "classes": [
+        {
+          "name": "two_surface_precedence",
+          "canonical": true,
+          "signatures": [
+            "only when there is an explicit",
+            "keep bundling",
+            "two-surface"
+          ]
+        },
+        {
+          "name": "drop_everywhere",
+          "signatures": [
+            "drop the shim from both",
+            "exclude from the bundle",
+            "remove from packaging"
+          ]
+        },
+        {
+          "name": "include_everywhere",
+          "signatures": [
+            "always include",
+            "in both surfaces",
+            "unconditionally include"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_37": {
+    "cancellation_context_parameter": {
+      "anchors": [
+        "cancellation context",
+        "second argument",
+        "call sites",
+        "utility entry point"
+      ],
+      "classes": [
+        {
+          "name": "boolean_cancelled_default_false",
+          "canonical": true,
+          "signatures": [
+            "cancelled = false",
+            "cancelled: boolean",
+            "cancelled?: boolean",
+            "subscription, true)"
+          ]
+        },
+        {
+          "name": "options_object",
+          "signatures": [
+            "{ cancelled",
+            "options object",
+            "opts.cancel"
+          ]
+        },
+        {
+          "name": "mode_string_param",
+          "signatures": [
+            "mode: 'cancel",
+            "'cancellation'",
+            "mode ==="
+          ]
+        }
+      ]
+    },
+    "forced_renewal_flags_when_cancelled": {
+      "anchors": [
+        "renewal-related fields",
+        "auto-renew",
+        "non-renewing",
+        "billing data"
+      ],
+      "classes": [
+        {
+          "name": "forced_nonrenew_presentation",
+          "canonical": true,
+          "signatures": [
+            "renewdisabled: true",
+            "renewdisabled = true",
+            "!renewdisabled"
+          ]
+        },
+        {
+          "name": "billing_fidelity",
+          "signatures": [
+            "renew === renew.enabled",
+            "stay tied to billing",
+            "actual renew state"
+          ]
+        }
+      ]
+    },
+    "renew_disabled_ignores_upcoming": {
+      "anchors": [
+        "scheduled subscription changes",
+        "base subscription",
+        "bypass",
+        "outside of cancellation"
+      ],
+      "classes": [
+        {
+          "name": "renew_disabled_ignores",
+          "canonical": true,
+          "signatures": [
+            "renew.disabled",
+            "=== renew.disabled"
+          ]
+        },
+        {
+          "name": "always_honor_upcoming",
+          "signatures": [
+            "always use the upcoming",
+            "upcoming when present",
+            "honor scheduled"
+          ]
+        }
+      ]
+    },
+    "conflicting_subscription_data": {
+      "anchors": [
+        "cancellation-aware",
+        "snapshot",
+        "the cancelling term",
+        "active paid term"
+      ],
+      "classes": [
+        {
+          "name": "base_subscription_in_cancellation",
+          "canonical": true,
+          "signatures": [
+            "base subscription only",
+            "return the base subscription",
+            "ignore upcoming in cancellation"
+          ]
+        },
+        {
+          "name": "scheduled_primary",
+          "signatures": [
+            "scheduled configuration",
+            "upcoming as primary",
+            "prefer the upcoming"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_38": {
+    "missing_max_active_entries_limit": {
+      "anchors": [
+        "active entries",
+        "memory policy",
+        "overflow",
+        "entry-count"
+      ],
+      "classes": [
+        {
+          "name": "max_256_error",
+          "canonical": true,
+          "signatures": [
+            "256"
+          ]
+        },
+        {
+          "name": "other_power_limit",
+          "signatures": [
+            "128",
+            "512",
+            "1024"
+          ]
+        },
+        {
+          "name": "evict_oldest",
+          "signatures": [
+            "evict",
+            "remove the oldest",
+            "lru"
+          ]
+        }
+      ]
+    },
+    "ambiguous_expired_entry_refresh_failure_behavior": {
+      "anchors": [
+        "refresh loader",
+        "expired",
+        "getwithloader",
+        "previously cached"
+      ],
+      "classes": [
+        {
+          "name": "serve_stale_not_reactivated",
+          "canonical": true,
+          "signatures": [
+            "return the stale",
+            "stale cached value",
+            "not restore"
+          ]
+        },
+        {
+          "name": "fail_closed_error",
+          "signatures": [
+            "return the loader error",
+            "fail closed",
+            "propagate the error"
+          ]
+        },
+        {
+          "name": "reactivate_stale",
+          "signatures": [
+            "reinsert",
+            "restore that key as active",
+            "re-add the entry"
+          ]
+        }
+      ]
+    },
+    "contradiction_non_positive_lifetime_write_policy": {
+      "anchors": [
+        "addwithttl",
+        "non-positive",
+        "write paths",
+        "loader-provided"
+      ],
+      "classes": [
+        {
+          "name": "nonactive_error_and_passthrough",
+          "canonical": true,
+          "signatures": [
+            "ttl <= 0",
+            "return a non-nil error",
+            "must not store"
+          ]
+        },
+        {
+          "name": "store_as_infinite",
+          "signatures": [
+            "never expires",
+            "no expiration",
+            "treat as infinite"
+          ]
+        },
+        {
+          "name": "clamp_to_default",
+          "signatures": [
+            "default ttl",
+            "clamp",
+            "minimum lifetime"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_39": {
+    "songcount_zero_behavior": {
+      "anchors": [
+        "songcount is zero",
+        "normalized mode",
+        "zero denominator",
+        "fallback"
+      ],
+      "classes": [
+        {
+          "name": "playcount_zero",
+          "canonical": true,
+          "signatures": [
+            "playcount = 0",
+            "playcount=0"
+          ]
+        },
+        {
+          "name": "skip_normalization",
+          "signatures": [
+            "skip normalization",
+            "leave playcount unchanged",
+            "return early"
+          ]
+        },
+        {
+          "name": "return_error",
+          "signatures": [
+            "return err",
+            "division by zero error",
+            "return an error"
+          ]
+        }
+      ]
+    },
+    "playcount_rounding_strategy": {
+      "anchors": [
+        "rounding",
+        "established convention",
+        "nearest integer"
+      ],
+      "classes": [
+        {
+          "name": "math_floor",
+          "canonical": true,
+          "signatures": [
+            "math.floor"
+          ]
+        },
+        {
+          "name": "math_round",
+          "signatures": [
+            "math.round"
+          ]
+        }
+      ]
+    },
+    "compilation_album_normalization": {
+      "anchors": [
+        "compilation albums",
+        "uniformly",
+        "metadata flags"
+      ],
+      "classes": [
+        {
+          "name": "normalize_all_albums",
+          "canonical": true,
+          "signatures": [
+            "all albums",
+            "regardless of",
+            "do not check the compilation"
+          ]
+        },
+        {
+          "name": "exclude_compilations",
+          "signatures": [
+            "album.compilation",
+            "if compilation",
+            "only normalize non-compilation"
+          ]
+        }
+      ]
+    }
+  }
+}

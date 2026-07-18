@@ -1,0 +1,594 @@
+{
+  "swe_40": {
+    "share_generated_password_length": {
+      "anchors": [
+        "generated password",
+        "shareurl",
+        "splitting",
+        "segmentation"
+      ],
+      "classes": [
+        {
+          "name": "length_18",
+          "canonical": true,
+          "signatures": [
+            "share_generated_password_length = 18",
+            "substring(0, 18)",
+            "(0, 18)"
+          ]
+        },
+        {
+          "name": "length_12",
+          "signatures": [
+            "substring(0, 12)",
+            "(0, 12)"
+          ]
+        },
+        {
+          "name": "length_16",
+          "signatures": [
+            "substring(0, 16)",
+            "(0, 16)"
+          ]
+        }
+      ]
+    },
+    "flags_value_normalization": {
+      "anchors": [
+        "flags value",
+        "bit evaluation",
+        "not a strict integer",
+        "incoming"
+      ],
+      "classes": [
+        {
+          "name": "unsigned32_coercion",
+          "canonical": true,
+          "signatures": [
+            ">>> 0",
+            "number(flagsvalue)",
+            "normalizedflags"
+          ]
+        },
+        {
+          "name": "strict_no_coercion",
+          "signatures": [
+            "already-valid integer",
+            "without any coercion",
+            "typeof flags !== 'number'"
+          ]
+        }
+      ]
+    },
+    "legacy_flags_property_compatibility": {
+      "anchors": [
+        "legacy flags",
+        "representations",
+        "coexist",
+        "disagree"
+      ],
+      "classes": [
+        {
+          "name": "conflict_resolves_to_zero",
+          "canonical": true,
+          "signatures": [
+            "treat the effective flags value as 0",
+            "differ, treat",
+            "conflict as 0"
+          ]
+        },
+        {
+          "name": "canonical_wins",
+          "signatures": [
+            "prefer the canonical",
+            "canonical takes precedence",
+            "new flags wins"
+          ]
+        },
+        {
+          "name": "legacy_wins",
+          "signatures": [
+            "prefer the legacy",
+            "legacy takes precedence",
+            "capital flags wins"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_41": {
+    "missing_album_refresh_chunk_size": {
+      "anchors": [
+        "batch",
+        "album ids",
+        "refresh",
+        "chunk"
+      ],
+      "classes": [
+        {
+          "name": "chunk_70",
+          "canonical": true,
+          "signatures": [
+            "ids, 70)",
+            ", 70)"
+          ]
+        },
+        {
+          "name": "chunk_100",
+          "signatures": [
+            "ids, 100)",
+            ", 100)"
+          ]
+        },
+        {
+          "name": "chunk_50",
+          "signatures": [
+            "ids, 50)",
+            ", 50)"
+          ]
+        }
+      ]
+    },
+    "conflicting_path_separator": {
+      "anchors": [
+        "between paths",
+        "concatenated",
+        "image paths",
+        "csv"
+      ],
+      "classes": [
+        {
+          "name": "pipe_separator",
+          "canonical": true,
+          "signatures": [
+            "\"|\"",
+            "'|'"
+          ]
+        },
+        {
+          "name": "comma_separator",
+          "signatures": [
+            "pathslice, \",\"",
+            "join(paths, \",\""
+          ]
+        },
+        {
+          "name": "os_list_separator",
+          "signatures": [
+            "os.pathlistseparator",
+            "\";\""
+          ]
+        }
+      ]
+    },
+    "conflicting_path_normalization": {
+      "anchors": [
+        "stored paths",
+        "library root",
+        "portability",
+        "resolve files"
+      ],
+      "classes": [
+        {
+          "name": "absolute_toslash",
+          "canonical": true,
+          "signatures": [
+            "filepath.toslash",
+            "fully qualified"
+          ]
+        },
+        {
+          "name": "relative_paths",
+          "signatures": [
+            "filepath.rel",
+            "relative to the",
+            "strip the root"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_42": {
+    "missing_min_password_length": {
+      "anchors": [
+        "basicauth",
+        "metrics endpoint",
+        "threshold",
+        "minimum required length"
+      ],
+      "classes": [
+        {
+          "name": "min_7",
+          "canonical": true,
+          "signatures": [
+            "len(password) >= 7",
+            ">= 7",
+            "< 7"
+          ]
+        },
+        {
+          "name": "min_8",
+          "signatures": [
+            "len(password) >= 8",
+            ">= 8",
+            "< 8"
+          ]
+        },
+        {
+          "name": "min_12",
+          "signatures": [
+            ">= 12",
+            "< 12"
+          ]
+        }
+      ]
+    },
+    "missing_max_bearer_token_length": {
+      "anchors": [
+        "bearer token",
+        "oversized",
+        "tokenfromheader"
+      ],
+      "classes": [
+        {
+          "name": "max_2000",
+          "canonical": true,
+          "signatures": [
+            "2000"
+          ]
+        },
+        {
+          "name": "max_4096",
+          "signatures": [
+            "4096"
+          ]
+        },
+        {
+          "name": "max_1024",
+          "signatures": [
+            "1024"
+          ]
+        }
+      ]
+    },
+    "missing_prometheus_max_concurrent": {
+      "anchors": [
+        "concurrent",
+        "throttle",
+        "scrape requests"
+      ],
+      "classes": [
+        {
+          "name": "limit_6",
+          "canonical": true,
+          "signatures": [
+            "throttle(6)",
+            "middleware.throttle(6"
+          ]
+        },
+        {
+          "name": "limit_10",
+          "signatures": [
+            "throttle(10)"
+          ]
+        },
+        {
+          "name": "limit_100",
+          "signatures": [
+            "throttle(100)"
+          ]
+        }
+      ]
+    },
+    "ambiguous_write_after_scan_scope": {
+      "anchors": [
+        "writeafterscanmetrics",
+        "record metrics",
+        "success boolean"
+      ],
+      "classes": [
+        {
+          "name": "scan_only_success_counter",
+          "canonical": true,
+          "signatures": [
+            "only the lastmediascan",
+            "if success {",
+            "must not access the datastore"
+          ]
+        },
+        {
+          "name": "also_db_counts",
+          "signatures": [
+            "processsqlaggregatemetrics(",
+            "db model counts after scan",
+            "update the gauges after"
+          ]
+        }
+      ]
+    },
+    "contradictory_metrics_detail_when_to_record_counts": {
+      "anchors": [
+        "which levels",
+        "model counts",
+        "writeinitialmetrics"
+      ],
+      "classes": [
+        {
+          "name": "full_and_timestamps_only",
+          "canonical": true,
+          "signatures": [
+            "full\" || ",
+            "or timestamps_only",
+            "timestamps_only\" {"
+          ]
+        },
+        {
+          "name": "full_only",
+          "signatures": [
+            "only when the detail level is full",
+            "full only",
+            "just \"full\""
+          ]
+        }
+      ]
+    }
+  },
+  "swe_43": {
+    "state_value": {
+      "anchors": [
+        "value field",
+        "batch entry",
+        "response entries"
+      ],
+      "classes": [
+        {
+          "name": "lowercase_disabled_literal",
+          "canonical": true,
+          "signatures": [
+            "\"value\": \"disabled\"",
+            "value: \"disabled\"",
+            "value = \"disabled\""
+          ]
+        },
+        {
+          "name": "empty_string_value",
+          "signatures": [
+            "\"value\": \"\"",
+            "value: \"\""
+          ]
+        },
+        {
+          "name": "off_or_inactive",
+          "signatures": [
+            "\"off\"",
+            "\"inactive\""
+          ]
+        }
+      ]
+    },
+    "disabled_duration": {
+      "anchors": [
+        "duration field",
+        "no evaluation",
+        "report for disabled"
+      ],
+      "classes": [
+        {
+          "name": "zero_duration",
+          "canonical": true,
+          "signatures": [
+            "request_duration_millis: 0",
+            "millis = 0.0",
+            "duration of 0.0"
+          ]
+        },
+        {
+          "name": "elapsed_time",
+          "signatures": [
+            "elapsed",
+            "time.since(start"
+          ]
+        },
+        {
+          "name": "sentinel_negative",
+          "signatures": [
+            "-1"
+          ]
+        }
+      ]
+    },
+    "batch_stamp": {
+      "anchors": [
+        "timestamp",
+        "batch mode",
+        "entries processed"
+      ],
+      "classes": [
+        {
+          "name": "single_start_timestamp",
+          "canonical": true,
+          "signatures": [
+            "once at the start",
+            "same timestamp to every",
+            "batchtimestamp"
+          ]
+        },
+        {
+          "name": "per_entry_fresh",
+          "signatures": [
+            "fresh timestamp per",
+            "time.now() for each",
+            "per-entry timestamp"
+          ]
+        },
+        {
+          "name": "completion_time",
+          "signatures": [
+            "completion time",
+            "after the batch finishes"
+          ]
+        }
+      ]
+    },
+    "entry_id": {
+      "anchors": [
+        "entry identifier",
+        "traceability",
+        "identification"
+      ],
+      "classes": [
+        {
+          "name": "compound_batch_colon_flag",
+          "canonical": true,
+          "signatures": [
+            "%s:%s",
+            "+ \":\" +",
+            "requestid + \":\""
+          ]
+        },
+        {
+          "name": "copy_batch_id",
+          "signatures": [
+            "copy the batch",
+            "same request_id for all",
+            "batch id directly"
+          ]
+        },
+        {
+          "name": "uuid_per_entry",
+          "signatures": [
+            "uuid.new",
+            "uuid per"
+          ]
+        }
+      ]
+    },
+    "abort_rule": {
+      "anchors": [
+        "mid-batch",
+        "hard failure",
+        "abort",
+        "return shape"
+      ],
+      "classes": [
+        {
+          "name": "partial_plus_error",
+          "canonical": true,
+          "signatures": [
+            "partial results",
+            "collected so far"
+          ]
+        },
+        {
+          "name": "nil_with_error",
+          "signatures": [
+            "return nil,",
+            "nil, err"
+          ]
+        },
+        {
+          "name": "continue_all",
+          "signatures": [
+            "continue evaluating",
+            "regardless of outcomes",
+            "skip the failed"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_44": {
+    "missing_deprecation_call_parameters": {
+      "anchors": [
+        "deprecation warning",
+        "py3compat.environ",
+        "removal version"
+      ],
+      "classes": [
+        {
+          "name": "display_deprecated_220",
+          "canonical": true,
+          "signatures": [
+            "deprecated(",
+            "version='2.20'",
+            "\"2.20\""
+          ]
+        },
+        {
+          "name": "warnings_warn",
+          "signatures": [
+            "warnings.warn"
+          ]
+        },
+        {
+          "name": "other_target_version",
+          "signatures": [
+            "'2.18'",
+            "'2.19'",
+            "\"2.18\"",
+            "\"2.19\""
+          ]
+        }
+      ]
+    },
+    "ambiguous_migration_scope": {
+      "anchors": [
+        "modules updated",
+        "component field",
+        "which files"
+      ],
+      "classes": [
+        {
+          "name": "env_and_manager",
+          "canonical": true,
+          "signatures": [
+            "config/manager.py",
+            "manager.py"
+          ]
+        },
+        {
+          "name": "env_only",
+          "signatures": [
+            "only env.py",
+            "just the env lookup",
+            "single file"
+          ]
+        },
+        {
+          "name": "all_three_including_junit",
+          "signatures": [
+            "junit.py",
+            "callback/junit",
+            "all three files"
+          ]
+        }
+      ]
+    },
+    "contradictory_duplicate_versus_unique_values": {
+      "anchors": [
+        "environ access",
+        "duplicate",
+        "__getattr__"
+      ],
+      "classes": [
+        {
+          "name": "filter_duplicate_values",
+          "canonical": true,
+          "signatures": [
+            "values_seen",
+            "not values_seen.add",
+            "if v not in values_seen"
+          ]
+        },
+        {
+          "name": "return_unchanged",
+          "signatures": [
+            "return os.environ\n",
+            "without any other change",
+            "os.environ directly"
+          ]
+        }
+      ]
+    }
+  }
+}

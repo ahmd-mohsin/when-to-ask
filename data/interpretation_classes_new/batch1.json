@@ -1,0 +1,146 @@
+{
+  "swe_3": {
+    "missing_path_env_default_value": {
+      "anchors": ["krb5env", "kinit environment", "environment dictionary", "krb5ccname", "path when it is not set"],
+      "classes": [
+        {"name": "env_get_empty_default", "canonical": true, "signatures": ["os.environ.get('path', '')", "os.environ.get(\"path\", \"\")", "path=os.environ.get('path'", "get('path', '')"]},
+        {"name": "os_defpath_fallback", "signatures": ["os.defpath", "'/bin:/usr/bin'"]},
+        {"name": "hardcoded_path", "signatures": ["'/usr/bin:/bin'", "\"/usr/bin:/bin\"", "path='/usr/bin"]},
+        {"name": "direct_environ_access", "signatures": ["os.environ['path']", "os.environ[\"path\"]"]}
+      ]
+    },
+    "missing_communicate_timeout_value": {
+      "anchors": ["time limit", "kinit process", "hung", "complete within", "how many seconds"],
+      "classes": [
+        {"name": "timeout_30", "canonical": true, "signatures": ["timeout=30", "timeout = 30"]},
+        {"name": "timeout_60", "signatures": ["timeout=60", "timeout = 60"]},
+        {"name": "timeout_45", "signatures": ["timeout=45", "timeout = 45"]},
+        {"name": "timeout_120", "signatures": ["timeout=120", "timeout = 120"]}
+      ]
+    },
+    "ambiguous_timeout_cleanup_sequence": {
+      "anchors": ["timeoutexpired", "cleanup", "reap", "timed out", "exceeds the time limit"],
+      "classes": [
+        {"name": "kill_then_wait", "canonical": true, "signatures": ["p.kill()", "proc.kill()", "sigkill"]},
+        {"name": "terminate_first", "signatures": ["p.terminate()", "proc.terminate()", "sigterm"]},
+        {"name": "process_group_kill", "signatures": ["os.killpg", "getpgid"]}
+      ]
+    },
+    "contradictory_password_input_format": {
+      "anchors": ["password", "stdin", "kinit prompt", "line termination", "raw bytes"],
+      "classes": [
+        {"name": "raw_bytes_no_terminator", "canonical": true, "signatures": ["input=b_password,", "input=b_password)", "without any appended", "as-is without"]},
+        {"name": "newline_terminated", "signatures": ["b_password + b'\\n'", "+ b'\\n'", "b\"\\n\""]},
+        {"name": "crlf_terminated", "signatures": ["b'\\r\\n'", "\"\\r\\n\""]}
+      ]
+    }
+  },
+  "swe_4": {
+    "ambiguous_seed_input_framing": {
+      "anchors": ["seed string", "input string", "framing", "byte sequence", "combination of the seed"],
+      "classes": [
+        {"name": "unit_separator_0x1f", "canonical": true, "signatures": ["0x1f", "\\x1f", "unit separator"]},
+        {"name": "plain_concatenation", "signatures": ["[]byte(seed+str)", "[]byte(seed + str)", "seed+str)", "direct concatenation"]},
+        {"name": "nul_or_colon_separator", "signatures": ["\\x00", "byte(0)", "seed + \":\"", "seed+\":\""]},
+        {"name": "input_before_seed", "signatures": ["str + seed", "str+seed", "input followed by the seed"]}
+      ]
+    },
+    "missing_hasher_digest_and_auto_seed_rules": {
+      "anchors": ["hasher", "digest", "auto-seed", "deterministic", "random integer"],
+      "classes": [
+        {"name": "maphash_seed_field_random_int64", "canonical": true, "signatures": ["maphash.makeseed", "maphash.bytes(", "random.int64(math.maxint64"]},
+        {"name": "fresh_hash_per_call", "signatures": ["maphash.hash{}", "var h maphash.hash", "h.sum64()"]},
+        {"name": "stdlib_rand_direct", "signatures": ["rand.int63", "math/rand", "crypto/rand"]}
+      ]
+    },
+    "contradictory_auto_seed_serialization_and_digest_scope": {
+      "anchors": ["persisted", "serialization", "interchange", "collide", "incorporated into the digest"],
+      "classes": [
+        {"name": "decimal_persist_seed_only_digest", "canonical": true, "signatures": ["strconv.formatint", "itoa(", "base-10", "decimal digit string"]},
+        {"name": "hex_serialization", "signatures": ["formatint(n, 16", "%x\"", "hex encoding", "lowercase hexadecimal"]},
+        {"name": "id_mixed_into_digest", "signatures": ["id + seed", "id+seed", "identifier into the hash", "hash the id"]}
+      ]
+    }
+  },
+  "swe_5": {
+    "fixed_address_lookup_strategy": {
+      "anchors": ["get_object_ref", "wapi", "lookup", "existing fixed address", "reference"],
+      "classes": [
+        {"name": "mac_only_branch", "canonical": true, "signatures": ["test_obj_filter", "('mac', obj_filter['mac'])", "dict([('mac'"]},
+        {"name": "full_filter_lookup", "signatures": ["self.get_object(ib_obj_type, obj_filter", "full obj_filter", "all ib_req fields"]},
+        {"name": "default_fallback_no_branch", "signatures": ["default fallback", "no special handling", "existing fallback is sufficient"]}
+      ]
+    },
+    "missing_lease_action_param": {
+      "anchors": ["provisioning", "initial address", "dhcp server handles", "allocation"],
+      "classes": [
+        {"name": "direct_assign_default", "canonical": true, "signatures": ["'direct_assign'", "\"direct_assign\""]},
+        {"name": "reserved_style", "signatures": ["'reserved'", "\"reserved\"", "reservation step"]}
+      ]
+    },
+    "missing_match_client_param": {
+      "anchors": ["client identification", "client matching", "matching key", "option 61", "binding"],
+      "classes": [
+        {"name": "client_id_default", "canonical": true, "signatures": ["'client_id'", "\"client_id\""]},
+        {"name": "mac_address_match", "signatures": ["'mac_address'", "\"mac_address\""]},
+        {"name": "circuit_id_match", "signatures": ["'circuit_id'", "\"circuit_id\""]}
+      ]
+    },
+    "name_required_vs_optional": {
+      "anchors": ["hostname identifier", "descriptive hostname", "must be assigned", "listed as optional"],
+      "classes": [
+        {"name": "name_required", "canonical": true, "signatures": ["name=dict(required=true", "name=dict(required=1"]},
+        {"name": "name_optional", "signatures": ["name=dict()", "name=dict(default", "required=false", "name stays optional"]}
+      ]
+    }
+  },
+  "swe_6": {
+    "missing_modal_startup_contract": {
+      "anchors": ["modal mounts", "startup", "auto-start", "explicit user action", "launch policy"],
+      "classes": [
+        {"name": "submit_path_only_omit_initial", "canonical": true, "signatures": ["onprocess={", "onprocess:", "new abortcontroller"]},
+        {"name": "auto_start_initial_process", "signatures": ["initialprocess"]}
+      ]
+    },
+    "ambiguous_redirect_metadata_ownership_boundary": {
+      "anchors": ["redirect metadata", "ownership boundary", "verification callback", "polling flow", "extracted interface"],
+      "classes": [
+        {"name": "private_to_verifier", "canonical": true, "signatures": ["returnhost, approvalurl", "approvalurl, signal", "kept private"]},
+        {"name": "modal_props", "signatures": ["approvalurl={", "returnhost={", "props on the modal"]}
+      ]
+    },
+    "contradictory_pre_verification_status_partition": {
+      "anchors": ["tokenization", "terminal", "before verification", "status partition"],
+      "classes": [
+        {"name": "throw_terminal_before_verify", "canonical": true, "signatures": ["payment process failed", "payment process consumed", "payment process not supported", "unknown payment token status"]},
+        {"name": "forward_all_to_verify", "signatures": ["forwarded to verify", "verify governs", "all non-chargeable outcomes"]}
+      ]
+    }
+  },
+  "swe_7": {
+    "upsell_priority_level": {
+      "anchors": ["priority level", "display queue", "upsell configuration", "numeric value"],
+      "classes": [
+        {"name": "priority_23", "canonical": true, "signatures": ["priority: 23", "priority:23"]},
+        {"name": "priority_1", "signatures": ["priority: 1,", "priority:1,"]},
+        {"name": "priority_5_or_10", "signatures": ["priority: 5,", "priority: 10,", "priority:5,", "priority:10,"]},
+        {"name": "priority_100", "signatures": ["priority: 100,", "priority:100,"]}
+      ]
+    },
+    "maximum_cycle_calculation": {
+      "anchors": ["billing cycle", "cycle constraints", "cycle range", "upgrade"],
+      "classes": [
+        {"name": "monthly_to_yearly_else_current", "canonical": true, "signatures": ["cycle.monthly ? cycle.yearly", "=== cycle.monthly ? cycle.yearly : currentcycle"]},
+        {"name": "always_longest_cycle", "signatures": ["maximumcycle: cycle.two_years", "longest cycle"]},
+        {"name": "lock_to_current_cycle", "signatures": ["maximumcycle: currentcycle,", "maximumcycle: currentcycle }"]}
+      ]
+    },
+    "disable_cycle_selector_conflict": {
+      "anchors": ["cycle selector", "lock the billing", "checkout flow", "flexibility"],
+      "classes": [
+        {"name": "include_disable_true", "canonical": true, "signatures": ["disablecycleselector: true", "disablecycleselector:true"]},
+        {"name": "omit_disable_property", "signatures": ["not include disablecycleselector", "omit disablecycleselector", "without disablecycleselector"]}
+      ]
+    }
+  }
+}

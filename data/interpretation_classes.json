@@ -4,7 +4,9 @@
   "derived_by": "Claude Fable 5 (laptop-side), 2026-07-05, by hand from each blocker's description + resolution + example_questions in third_party/hil-bench/harbor_swe/<task>/shared/ask-human-data/blocker_registry.json @ 352d14c",
   "audit": "all 13 blockers hand-derived and reviewed (full audit; the 3-task sample is smaller than the 20-blocker random audit decisions/005 prescribes for the full set)",
   "semantics": "class 0 is always the registry's canonical resolution; other classes are the competing interpretations implied by the description and example questions. 'signatures' are case-insensitive substrings a committed trace exhibits; 'anchors' identify the DECISION (topic), not the resolution.",
-  "scope": "All 20 collected tasks (swe_0..swe_26). swe_0/1/10 hand-derived 2026-07-05; swe_11-26 derived by Opus workflow 2026-07-08 (per-task drafter grounded in registry+traces), 3 LLM-verified (swe_14/15/17), all 17 passed a deterministic anchor-leak repair (77 anchors that uniquely predicted one class were dropped; every blocker retains >=3 anchors) + owner hand-audit + empirical labeler validation."
+  "scope": "All 20 collected tasks (swe_0..swe_26). swe_0/1/10 hand-derived 2026-07-05; swe_11-26 derived by Opus workflow 2026-07-08 (per-task drafter grounded in registry+traces), 3 LLM-verified (swe_14/15/17), all 17 passed a deterministic anchor-leak repair (77 anchors that uniquely predicted one class were dropped; every blocker retains >=3 anchors) + owner hand-audit + empirical labeler validation.",
+  "scope_extension_2026_07_18": "40 new tasks (swe_3-9, swe_27-59) derived 2026-07-18 by Claude Fable 5 from each blocker's description + resolution + example_questions in the registries (REGISTRY-ONLY: no collected traces exist for these tasks yet; signatures to be empirically reviewed against the first collection, per the swe_11-26 precedent). Audited by scripts/audit_class_artifact.py: 0 errors per batch (schema, canonical-at-0, no anchor==signature, no cross-class signature duplication); single-class anchor/signature substring overlaps eliminated; known limitation: matcher is case-insensitive so case-only class distinctions (e.g. swe_49 ClickHouse casing) are not derivable. Original 20-task entries byte-identical (FROZEN, gates already ran on them).",
+  "leak_repair_2026_07_18": "8 anchors that were verbatim-identical to a class signature dropped from 5 frozen blockers (swe_1/showall; swe_10/as-is,verbatim; swe_26/allowed_tags; swe_13/inventory,host_group_vars,vars_files; swe_14/relative path), found by scripts/audit_class_artifact.py. Robustness proven before repair: raw-h diagnostic on wta-a0-v2-14b identical with/without these anchors (models/v2_value_diag_leakfix.log) \u2014 none of the 5 blockers ever produced a measured fork. Every blocker retains >=3 anchors. Enforced from now on by harness/contract/test_class_artifact.py (zero artifact-leak errors)."
  },
  "swe_0": {
   "non_linux_distribution_source_precedence_on_conflict": {
@@ -204,7 +206,6 @@
   "missing_show_all_parameter": {
    "anchors": [
     "loadchildren",
-    "showall",
     "trashed items",
     "includes trashed",
     "parameter"
@@ -453,8 +454,6 @@
     "de-duplicat",
     "dedup",
     "canonical",
-    "as-is",
-    "verbatim",
     "sort"
    ],
    "classes": [
@@ -848,7 +847,6 @@
     "link markup",
     "preserved",
     "sanitization",
-    "allowed_tags",
     "which specific html tags",
     "safe set"
    ],
@@ -1039,9 +1037,6 @@
   },
   "contradictory_cache_versus_freshness": {
    "anchors": [
-    "inventory",
-    "host_group_vars",
-    "vars_files",
     "fresh reads",
     "freshness",
     "which cache mode"
@@ -2628,7 +2623,6 @@
   "data_path_format_validation": {
    "anchors": [
     "absolute",
-    "relative path",
     "data path",
     "metadata storage path",
     "filesystem path",
@@ -3362,6 +3356,4456 @@
       "becomes a function",
       "unsafeproxy is deprecated. use wrap_var",
       "return wrap_var(obj)"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_3": {
+  "missing_path_env_default_value": {
+   "anchors": [
+    "krb5env",
+    "kinit environment",
+    "environment dictionary",
+    "krb5ccname",
+    "path when it is not set"
+   ],
+   "classes": [
+    {
+     "name": "env_get_empty_default",
+     "canonical": true,
+     "signatures": [
+      "os.environ.get('path', '')",
+      "os.environ.get(\"path\", \"\")",
+      "path=os.environ.get('path'",
+      "get('path', '')"
+     ]
+    },
+    {
+     "name": "os_defpath_fallback",
+     "signatures": [
+      "os.defpath",
+      "'/bin:/usr/bin'"
+     ]
+    },
+    {
+     "name": "hardcoded_path",
+     "signatures": [
+      "'/usr/bin:/bin'",
+      "\"/usr/bin:/bin\"",
+      "path='/usr/bin"
+     ]
+    },
+    {
+     "name": "direct_environ_access",
+     "signatures": [
+      "os.environ['path']",
+      "os.environ[\"path\"]"
+     ]
+    }
+   ]
+  },
+  "missing_communicate_timeout_value": {
+   "anchors": [
+    "time limit",
+    "kinit process",
+    "hung",
+    "complete within",
+    "how many seconds"
+   ],
+   "classes": [
+    {
+     "name": "timeout_30",
+     "canonical": true,
+     "signatures": [
+      "timeout=30",
+      "timeout = 30"
+     ]
+    },
+    {
+     "name": "timeout_60",
+     "signatures": [
+      "timeout=60",
+      "timeout = 60"
+     ]
+    },
+    {
+     "name": "timeout_45",
+     "signatures": [
+      "timeout=45",
+      "timeout = 45"
+     ]
+    },
+    {
+     "name": "timeout_120",
+     "signatures": [
+      "timeout=120",
+      "timeout = 120"
+     ]
+    }
+   ]
+  },
+  "ambiguous_timeout_cleanup_sequence": {
+   "anchors": [
+    "timeoutexpired",
+    "cleanup",
+    "reap",
+    "timed out",
+    "exceeds the time limit"
+   ],
+   "classes": [
+    {
+     "name": "kill_then_wait",
+     "canonical": true,
+     "signatures": [
+      "p.kill()",
+      "proc.kill()",
+      "sigkill"
+     ]
+    },
+    {
+     "name": "terminate_first",
+     "signatures": [
+      "p.terminate()",
+      "proc.terminate()",
+      "sigterm"
+     ]
+    },
+    {
+     "name": "process_group_kill",
+     "signatures": [
+      "os.killpg",
+      "getpgid"
+     ]
+    }
+   ]
+  },
+  "contradictory_password_input_format": {
+   "anchors": [
+    "password",
+    "stdin",
+    "kinit prompt",
+    "line termination",
+    "raw bytes"
+   ],
+   "classes": [
+    {
+     "name": "raw_bytes_no_terminator",
+     "canonical": true,
+     "signatures": [
+      "input=b_password,",
+      "input=b_password)",
+      "without any appended",
+      "as-is without"
+     ]
+    },
+    {
+     "name": "newline_terminated",
+     "signatures": [
+      "b_password + b'\\n'",
+      "+ b'\\n'",
+      "b\"\\n\""
+     ]
+    },
+    {
+     "name": "crlf_terminated",
+     "signatures": [
+      "b'\\r\\n'",
+      "\"\\r\\n\""
+     ]
+    }
+   ]
+  }
+ },
+ "swe_4": {
+  "ambiguous_seed_input_framing": {
+   "anchors": [
+    "seed string",
+    "input string",
+    "framing",
+    "byte sequence",
+    "combination of the seed"
+   ],
+   "classes": [
+    {
+     "name": "unit_separator_0x1f",
+     "canonical": true,
+     "signatures": [
+      "0x1f",
+      "\\x1f",
+      "unit separator"
+     ]
+    },
+    {
+     "name": "plain_concatenation",
+     "signatures": [
+      "[]byte(seed+str)",
+      "[]byte(seed + str)",
+      "seed+str)",
+      "direct concatenation"
+     ]
+    },
+    {
+     "name": "nul_or_colon_separator",
+     "signatures": [
+      "\\x00",
+      "byte(0)",
+      "seed + \":\"",
+      "seed+\":\""
+     ]
+    },
+    {
+     "name": "input_before_seed",
+     "signatures": [
+      "str + seed",
+      "str+seed",
+      "input followed by the seed"
+     ]
+    }
+   ]
+  },
+  "missing_hasher_digest_and_auto_seed_rules": {
+   "anchors": [
+    "hasher",
+    "digest",
+    "auto-seed",
+    "deterministic",
+    "random integer"
+   ],
+   "classes": [
+    {
+     "name": "maphash_seed_field_random_int64",
+     "canonical": true,
+     "signatures": [
+      "maphash.makeseed",
+      "maphash.bytes(",
+      "random.int64(math.maxint64"
+     ]
+    },
+    {
+     "name": "fresh_hash_per_call",
+     "signatures": [
+      "maphash.hash{}",
+      "var h maphash.hash",
+      "h.sum64()"
+     ]
+    },
+    {
+     "name": "stdlib_rand_direct",
+     "signatures": [
+      "rand.int63",
+      "math/rand",
+      "crypto/rand"
+     ]
+    }
+   ]
+  },
+  "contradictory_auto_seed_serialization_and_digest_scope": {
+   "anchors": [
+    "persisted",
+    "serialization",
+    "interchange",
+    "collide",
+    "incorporated into the digest"
+   ],
+   "classes": [
+    {
+     "name": "decimal_persist_seed_only_digest",
+     "canonical": true,
+     "signatures": [
+      "strconv.formatint",
+      "itoa(",
+      "base-10",
+      "decimal digit string"
+     ]
+    },
+    {
+     "name": "hex_serialization",
+     "signatures": [
+      "formatint(n, 16",
+      "%x\"",
+      "hex encoding",
+      "lowercase hexadecimal"
+     ]
+    },
+    {
+     "name": "id_mixed_into_digest",
+     "signatures": [
+      "id + seed",
+      "id+seed",
+      "identifier into the hash",
+      "hash the id"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_5": {
+  "fixed_address_lookup_strategy": {
+   "anchors": [
+    "get_object_ref",
+    "wapi",
+    "lookup",
+    "existing fixed address",
+    "reference"
+   ],
+   "classes": [
+    {
+     "name": "mac_only_branch",
+     "canonical": true,
+     "signatures": [
+      "test_obj_filter",
+      "('mac', obj_filter['mac'])",
+      "dict([('mac'"
+     ]
+    },
+    {
+     "name": "full_filter_lookup",
+     "signatures": [
+      "self.get_object(ib_obj_type, obj_filter",
+      "full obj_filter",
+      "all ib_req fields"
+     ]
+    },
+    {
+     "name": "default_fallback_no_branch",
+     "signatures": [
+      "default fallback",
+      "no special handling",
+      "existing fallback is sufficient"
+     ]
+    }
+   ]
+  },
+  "missing_lease_action_param": {
+   "anchors": [
+    "provisioning",
+    "initial address",
+    "dhcp server handles",
+    "allocation"
+   ],
+   "classes": [
+    {
+     "name": "direct_assign_default",
+     "canonical": true,
+     "signatures": [
+      "'direct_assign'",
+      "\"direct_assign\""
+     ]
+    },
+    {
+     "name": "reserved_style",
+     "signatures": [
+      "'reserved'",
+      "\"reserved\"",
+      "reservation step"
+     ]
+    }
+   ]
+  },
+  "missing_match_client_param": {
+   "anchors": [
+    "client identification",
+    "client matching",
+    "matching key",
+    "option 61",
+    "binding"
+   ],
+   "classes": [
+    {
+     "name": "client_id_default",
+     "canonical": true,
+     "signatures": [
+      "'client_id'",
+      "\"client_id\""
+     ]
+    },
+    {
+     "name": "mac_address_match",
+     "signatures": [
+      "'mac_address'",
+      "\"mac_address\""
+     ]
+    },
+    {
+     "name": "circuit_id_match",
+     "signatures": [
+      "'circuit_id'",
+      "\"circuit_id\""
+     ]
+    }
+   ]
+  },
+  "name_required_vs_optional": {
+   "anchors": [
+    "hostname identifier",
+    "descriptive hostname",
+    "must be assigned",
+    "listed as optional"
+   ],
+   "classes": [
+    {
+     "name": "name_required",
+     "canonical": true,
+     "signatures": [
+      "name=dict(required=true",
+      "name=dict(required=1"
+     ]
+    },
+    {
+     "name": "name_optional",
+     "signatures": [
+      "name=dict()",
+      "name=dict(default",
+      "required=false",
+      "name stays optional"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_6": {
+  "missing_modal_startup_contract": {
+   "anchors": [
+    "modal mounts",
+    "startup",
+    "auto-start",
+    "explicit user action",
+    "launch policy"
+   ],
+   "classes": [
+    {
+     "name": "submit_path_only_omit_initial",
+     "canonical": true,
+     "signatures": [
+      "onprocess={",
+      "onprocess:",
+      "new abortcontroller"
+     ]
+    },
+    {
+     "name": "auto_start_initial_process",
+     "signatures": [
+      "initialprocess"
+     ]
+    }
+   ]
+  },
+  "ambiguous_redirect_metadata_ownership_boundary": {
+   "anchors": [
+    "redirect metadata",
+    "ownership boundary",
+    "verification callback",
+    "polling flow",
+    "extracted interface"
+   ],
+   "classes": [
+    {
+     "name": "private_to_verifier",
+     "canonical": true,
+     "signatures": [
+      "returnhost, approvalurl",
+      "approvalurl, signal",
+      "kept private"
+     ]
+    },
+    {
+     "name": "modal_props",
+     "signatures": [
+      "approvalurl={",
+      "returnhost={",
+      "props on the modal"
+     ]
+    }
+   ]
+  },
+  "contradictory_pre_verification_status_partition": {
+   "anchors": [
+    "tokenization",
+    "terminal",
+    "before verification",
+    "status partition"
+   ],
+   "classes": [
+    {
+     "name": "throw_terminal_before_verify",
+     "canonical": true,
+     "signatures": [
+      "payment process failed",
+      "payment process consumed",
+      "payment process not supported",
+      "unknown payment token status"
+     ]
+    },
+    {
+     "name": "forward_all_to_verify",
+     "signatures": [
+      "forwarded to verify",
+      "verify governs",
+      "all non-chargeable outcomes"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_7": {
+  "upsell_priority_level": {
+   "anchors": [
+    "priority level",
+    "display queue",
+    "upsell configuration",
+    "numeric value"
+   ],
+   "classes": [
+    {
+     "name": "priority_23",
+     "canonical": true,
+     "signatures": [
+      "priority: 23",
+      "priority:23"
+     ]
+    },
+    {
+     "name": "priority_1",
+     "signatures": [
+      "priority: 1,",
+      "priority:1,"
+     ]
+    },
+    {
+     "name": "priority_5_or_10",
+     "signatures": [
+      "priority: 5,",
+      "priority: 10,",
+      "priority:5,",
+      "priority:10,"
+     ]
+    },
+    {
+     "name": "priority_100",
+     "signatures": [
+      "priority: 100,",
+      "priority:100,"
+     ]
+    }
+   ]
+  },
+  "maximum_cycle_calculation": {
+   "anchors": [
+    "billing cycle",
+    "cycle constraints",
+    "cycle range",
+    "upgrade"
+   ],
+   "classes": [
+    {
+     "name": "monthly_to_yearly_else_current",
+     "canonical": true,
+     "signatures": [
+      "cycle.monthly ? cycle.yearly",
+      "=== cycle.monthly ? cycle.yearly : currentcycle"
+     ]
+    },
+    {
+     "name": "always_longest_cycle",
+     "signatures": [
+      "maximumcycle: cycle.two_years",
+      "longest cycle"
+     ]
+    },
+    {
+     "name": "lock_to_current_cycle",
+     "signatures": [
+      "maximumcycle: currentcycle,",
+      "maximumcycle: currentcycle }"
+     ]
+    }
+   ]
+  },
+  "disable_cycle_selector_conflict": {
+   "anchors": [
+    "cycle selector",
+    "lock the billing",
+    "checkout flow",
+    "flexibility"
+   ],
+   "classes": [
+    {
+     "name": "include_disable_true",
+     "canonical": true,
+     "signatures": [
+      "disablecycleselector: true",
+      "disablecycleselector:true"
+     ]
+    },
+    {
+     "name": "omit_disable_property",
+     "signatures": [
+      "not include disablecycleselector",
+      "omit disablecycleselector",
+      "without disablecycleselector"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_8": {
+  "missing_when_attribute_value": {
+   "anchors": [
+    "when attribute",
+    "completion task",
+    "conditional evaluation",
+    "tagged"
+   ],
+   "classes": [
+    {
+     "name": "python_boolean_true",
+     "canonical": true,
+     "signatures": [
+      ".when = true",
+      "when=true",
+      "eor_task.when = true"
+     ]
+    },
+    {
+     "name": "string_true",
+     "signatures": [
+      "when = 'true'",
+      "when = \"true\"",
+      "when='true'"
+     ]
+    },
+    {
+     "name": "unset_inherit_parent",
+     "signatures": [
+      "inherits parent when",
+      "leave when unset",
+      "no explicit when",
+      "inherit from its parent"
+     ]
+    }
+   ]
+  },
+  "ambiguous_block_context_initialization": {
+   "anchors": [
+    "execution context",
+    "compiled block list",
+    "role_complete",
+    "template resolution",
+    "file operations"
+   ],
+   "classes": [
+    {
+     "name": "from_role_instance",
+     "canonical": true,
+     "signatures": [
+      "= self._loader",
+      "self._variable_manager"
+     ]
+    },
+    {
+     "name": "from_play",
+     "signatures": [
+      "play._loader",
+      "play._variable_manager",
+      "from the play"
+     ]
+    },
+    {
+     "name": "constructor_kwargs",
+     "signatures": [
+      "block(loader=",
+      "variable_manager=self",
+      "loader=loader"
+     ]
+    }
+   ]
+  },
+  "contradictory_role_reference_assignment": {
+   "anchors": [
+    "meta handler",
+    "role association",
+    "task-block relationship",
+    "role_complete task"
+   ],
+   "classes": [
+    {
+     "name": "explicit_role_on_both",
+     "canonical": true,
+     "signatures": [
+      "eor_task._role = self",
+      "task._role = self",
+      "block._role = self"
+     ]
+    },
+    {
+     "name": "inherit_from_block",
+     "signatures": [
+      "inherit its role",
+      "from the parent block",
+      "block inheritance",
+      "automatically from"
+     ]
+    },
+    {
+     "name": "constructor_role_kwarg",
+     "signatures": [
+      "task(role=",
+      "block(role=",
+      "role=self)"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_9": {
+  "missing_create_default_vault_precheck_maxage": {
+   "anchors": [
+    "pre-check",
+    "createdefaultvault",
+    "existing default vault",
+    "cache be valid"
+   ],
+   "classes": [
+    {
+     "name": "unix_minute_times_7",
+     "canonical": true,
+     "signatures": [
+      "unix_minute * 7",
+      "unix_minute*7",
+      "seven minutes"
+     ]
+    },
+    {
+     "name": "zero_force_fresh",
+     "signatures": [
+      "maxage: 0",
+      "maxage = 0",
+      "force a fresh"
+     ]
+    },
+    {
+     "name": "other_duration",
+     "signatures": [
+      "unix_hour",
+      "unix_minute * 5",
+      "unix_minute * 10",
+      "unix_day"
+     ]
+    }
+   ]
+  },
+  "ambiguous_limit_count_source": {
+   "anchors": [
+    "hasreachedaliasescountlimit",
+    "plan limit",
+    "quota",
+    "count source"
+   ],
+   "classes": [
+    {
+     "name": "total_including_trashed",
+     "canonical": true,
+     "signatures": [
+      "totalvaultaliasescount",
+      "aliases.length >=",
+      "including trashed"
+     ]
+    },
+    {
+     "name": "active_only_filtered",
+     "signatures": [
+      "passaliasesitems.length >=",
+      "filteredaliases.length",
+      "excluding trashed",
+      "only active"
+     ]
+    }
+   ]
+  },
+  "contradictory_default_vault_creation_timing": {
+   "anchors": [
+    "no vault",
+    "initialization",
+    "initpassbridge",
+    "provisioning"
+   ],
+   "classes": [
+    {
+     "name": "provision_during_init",
+     "canonical": true,
+     "signatures": [
+      "createdefaultvault(",
+      "provision a new vault immediately",
+      "create the vault during init"
+     ]
+    },
+    {
+     "name": "defer_to_alias_options",
+     "signatures": [
+      "defer vault creation",
+      "getaliasoptions flow",
+      "on-demand",
+      "loading=false and defer"
+     ]
+    }
+   ]
+  },
+  "contradictory_no_vault_memoization_policy": {
+   "anchors": [
+    "drawer reopens",
+    "session-scoped",
+    "alias cache policy",
+    "across reopens"
+   ],
+   "classes": [
+    {
+     "name": "preserve_cached_aliases",
+     "canonical": true,
+     "signatures": [
+      "memoisedpassaliasesitems || []",
+      "do not dispatch any alias",
+      "keep previously cached",
+      "omitting them from the dispatch"
+     ]
+    },
+    {
+     "name": "reset_cached_aliases",
+     "signatures": [
+      "passaliasesitems: []",
+      "reset the cache",
+      "clear the session",
+      "null the list"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_27": {
+  "missing_max_compose_recipients": {
+   "anchors": [
+    "recipient ceiling",
+    "compose to the group",
+    "per-compose",
+    "email addresses"
+   ],
+   "classes": [
+    {
+     "name": "cap_25",
+     "canonical": true,
+     "signatures": [
+      "slice(0, 25)",
+      "slice(0,25)",
+      "max_recipients = 25"
+     ]
+    },
+    {
+     "name": "cap_50",
+     "signatures": [
+      "slice(0, 50)",
+      "slice(0,50)",
+      "max_recipients = 50"
+     ]
+    },
+    {
+     "name": "cap_100",
+     "signatures": [
+      "slice(0, 100)",
+      "slice(0,100)",
+      "max_recipients = 100"
+     ]
+    },
+    {
+     "name": "no_cap_all_recipients",
+     "signatures": [
+      "oncompose(recipients,",
+      "all recipients",
+      "no limit"
+     ]
+    }
+   ]
+  },
+  "ambiguous_contact_display_mode": {
+   "anchors": [
+    "group details modal",
+    "visual consistency",
+    "recipient item component",
+    "display each contact"
+   ],
+   "classes": [
+    {
+     "name": "recipient_dropdown_item",
+     "canonical": true,
+     "signatures": [
+      "recipientdropdownitem"
+     ]
+    },
+    {
+     "name": "keep_table_layout",
+     "signatures": [
+      "contactgrouptable",
+      "table layout",
+      "keep the table"
+     ]
+    },
+    {
+     "name": "custom_item_component",
+     "signatures": [
+      "new component",
+      "custom item component",
+      "own list item"
+     ]
+    }
+   ]
+  },
+  "conflicting_internal_vs_external_compose": {
+   "anchors": [
+    "compose pipeline",
+    "within the modal",
+    "compose action",
+    "management workflows"
+   ],
+   "classes": [
+    {
+     "name": "standard_pipeline_modal_stays_open",
+     "canonical": true,
+     "signatures": [
+      "oncompose(recipients",
+      "remain open",
+      "does not close itself"
+     ]
+    },
+    {
+     "name": "close_modal_on_compose",
+     "signatures": [
+      "onclose()",
+      "close the modal",
+      "then close"
+     ]
+    },
+    {
+     "name": "in_modal_composer",
+     "signatures": [
+      "inline composer",
+      "inside the modal",
+      "self-contained compose"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_28": {
+  "missing_inline_diagnostic_payload_byte_cap": {
+   "anchors": [
+    "inline diagnostic",
+    "payload",
+    "oversized records",
+    "parser-safe"
+   ],
+   "classes": [
+    {
+     "name": "cap_15360",
+     "canonical": true,
+     "signatures": [
+      "15360"
+     ]
+    },
+    {
+     "name": "cap_16384",
+     "signatures": [
+      "16384",
+      "16 * 1024"
+     ]
+    },
+    {
+     "name": "cap_4096_or_8192",
+     "signatures": [
+      "4096",
+      "8192"
+     ]
+    },
+    {
+     "name": "cap_10240",
+     "signatures": [
+      "10240",
+      "10 * 1024"
+     ]
+    }
+   ]
+  },
+  "ambiguous_diagnostic_overflow_truncation_strategy": {
+   "anchors": [
+    "exceeds the limit",
+    "deterministic strategy",
+    "over-limit",
+    "capping"
+   ],
+   "classes": [
+    {
+     "name": "tail_preserving_head_marker",
+     "canonical": true,
+     "signatures": [
+      "truncated_head_bytes",
+      "keep the remaining tail",
+      "drop content from the beginning"
+     ]
+    },
+    {
+     "name": "head_preserving",
+     "signatures": [
+      "keep the beginning",
+      "preserve earlier content",
+      "truncate the end",
+      "truncated_tail"
+     ]
+    },
+    {
+     "name": "middle_ellipsis",
+     "signatures": [
+      "ellipsis in the middle",
+      "keep both ends",
+      "middle of the content"
+     ]
+    }
+   ]
+  },
+  "conflicting_single_record_compatibility_vs_immutable_audit_history": {
+   "anchors": [
+    "results_file",
+    "lifecycle history",
+    "audit",
+    "existing parsers"
+   ],
+   "classes": [
+    {
+     "name": "sidecar_ndjson_history",
+     "canonical": true,
+     "signatures": [
+      ".history",
+      "ndjson",
+      "one json object per line",
+      "sidecar"
+     ]
+    },
+    {
+     "name": "embedded_history_array",
+     "signatures": [
+      "'history':",
+      "\"history\":",
+      "history array",
+      "append to the record"
+     ]
+    },
+    {
+     "name": "latest_state_only",
+     "signatures": [
+      "latest state only",
+      "no history file",
+      "just overwrite"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_29": {
+  "ignore_proxy_input_normalization": {
+   "anchors": [
+    "proxy option",
+    "user-provided values",
+    "boolean behavior",
+    "inventory"
+   ],
+   "classes": [
+    {
+     "name": "strict_true_y_on_raw",
+     "canonical": true,
+     "signatures": [
+      "('true', 'y')",
+      "'true', 'y'",
+      "raw value",
+      "in ('true', 'y')"
+     ]
+    },
+    {
+     "name": "framework_boolean_coercion",
+     "signatures": [
+      "boolean(",
+      "get_option('ignore_proxy')",
+      "'yes', '1'"
+     ]
+    }
+   ]
+  },
+  "certificate_validation_precedence": {
+   "anchors": [
+    "override order",
+    "certificate validation behavior",
+    "trust path",
+    "which input"
+   ],
+   "classes": [
+    {
+     "name": "ignore_then_path_then_true",
+     "canonical": true,
+     "signatures": [
+      "== 'ignore'",
+      "cert_validation = false",
+      "cert_validation = true"
+     ]
+    },
+    {
+     "name": "path_over_ignore",
+     "signatures": [
+      "path takes precedence",
+      "path overrides",
+      "cert_validation = ca_cert"
+     ]
+    },
+    {
+     "name": "always_boolean",
+     "signatures": [
+      "bool(cert",
+      "always true or false",
+      "coerce to boolean"
+     ]
+    }
+   ]
+  },
+  "undocumented_input_handling_conflict": {
+   "anchors": [
+    "undocumented",
+    "connection-related inputs",
+    "documented option",
+    "extra inventory"
+   ],
+   "classes": [
+    {
+     "name": "ignore_extras_debug_log",
+     "canonical": true,
+     "signatures": [
+      "display.debug",
+      "ignored key",
+      "debug-level"
+     ]
+    },
+    {
+     "name": "reject_unknown_inputs",
+     "signatures": [
+      "raise ansibleerror",
+      "fail the connection",
+      "reject unknown"
+     ]
+    },
+    {
+     "name": "apply_extra_inputs",
+     "signatures": [
+      "apply additional",
+      "pass through extra",
+      "merge extra"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_30": {
+  "ambiguous_non_collection_spec_ownership": {
+   "anchors": [
+    "non-collection",
+    "path-hook finder",
+    "spec-based probing",
+    "ownership",
+    "later importers"
+   ],
+   "classes": [
+    {
+     "name": "raise_attribute_error_decline",
+     "canonical": true,
+     "signatures": [
+      "raise attributeerror"
+     ]
+    },
+    {
+     "name": "delegate_wrapped_find_spec",
+     "signatures": [
+      "finder.find_spec(",
+      "delegate to the wrapped",
+      "surface the delegated spec"
+     ]
+    },
+    {
+     "name": "synthesize_module_spec",
+     "signatures": [
+      "spec_from_loader",
+      "modulespec("
+     ]
+    }
+   ]
+  },
+  "contradictory_path_argument_type": {
+   "anchors": [
+    "delegated call",
+    "path argument",
+    "stable snapshot",
+    "handoff",
+    "mutable container"
+   ],
+   "classes": [
+    {
+     "name": "tuple_snapshot",
+     "canonical": true,
+     "signatures": [
+      "(self._pathctx,)",
+      "path=(self._pathctx,)"
+     ]
+    },
+    {
+     "name": "single_element_list",
+     "signatures": [
+      "[self._pathctx]",
+      "path=[self._pathctx]"
+     ]
+    },
+    {
+     "name": "positional_path_argument",
+     "signatures": [
+      "find_module(fullname, self._pathctx",
+      "positional second argument"
+     ]
+    }
+   ]
+  },
+  "missing_filefinder_identification_rule": {
+   "anchors": [
+    "runtime identifier",
+    "special handling",
+    "cannot be imported",
+    "recognize the finder"
+   ],
+   "classes": [
+    {
+     "name": "frozen_importlib_string_match",
+     "canonical": true,
+     "signatures": [
+      "_frozen_importlib_external.filefinder"
+     ]
+    },
+    {
+     "name": "isinstance_import_check",
+     "signatures": [
+      "isinstance(finder, filefinder",
+      "from importlib.machinery import filefinder"
+     ]
+    },
+    {
+     "name": "class_name_only_match",
+     "signatures": [
+      "== 'filefinder'",
+      "== \"filefinder\"",
+      "endswith('filefinder')"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_31": {
+  "missing_commerce_copy_tokens": {
+   "anchors": [
+    "store label",
+    "user-facing text",
+    "account-navigation",
+    "commerce channel"
+   ],
+   "classes": [
+    {
+     "name": "policy_exact_tokens",
+     "canonical": true,
+     "signatures": [
+      "google play",
+      "apple app store",
+      "payments & subscriptions"
+     ]
+    },
+    {
+     "name": "generic_store_names",
+     "signatures": [
+      "play store",
+      "on the app store",
+      "itunes"
+     ]
+    }
+   ]
+  },
+  "ambiguous_delegated_context_body_density": {
+   "anchors": [
+    "delegated",
+    "admin mode",
+    "body content",
+    "minimum policy-required"
+   ],
+   "classes": [
+    {
+     "name": "single_paragraph_ownership_statement",
+     "canonical": true,
+     "signatures": [
+      "subscription for user id:",
+      "was purchased via an in-app purchase"
+     ]
+    },
+    {
+     "name": "multi_paragraph_instructional",
+     "signatures": [
+      "secondary instructional paragraph",
+      "second paragraph",
+      "multiple paragraphs"
+     ]
+    }
+   ]
+  },
+  "conflicting_modal_primitive_source_of_truth": {
+   "anchors": [
+    "warning surface",
+    "modal contract",
+    "primitives",
+    "source of truth"
+   ],
+   "classes": [
+    {
+     "name": "modaltwo_sections",
+     "canonical": true,
+     "signatures": [
+      "modaltwoheader",
+      "modaltwocontent",
+      "modaltwofooter",
+      "size=\"large\""
+     ]
+    },
+    {
+     "name": "prompt_contract",
+     "signatures": [
+      "<prompt",
+      "prompt-style",
+      "import { prompt"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_32": {
+  "missing_maximum_timeout_ceiling": {
+   "anchors": [
+    "upper bound",
+    "exceeds the maximum",
+    "ceiling",
+    "task-timeout validation"
+   ],
+   "classes": [
+    {
+     "name": "max_7200",
+     "canonical": true,
+     "signatures": [
+      "7200"
+     ]
+    },
+    {
+     "name": "max_3600",
+     "signatures": [
+      "3600"
+     ]
+    },
+    {
+     "name": "max_86400",
+     "signatures": [
+      "86400"
+     ]
+    }
+   ]
+  },
+  "missing_minimum_timeout_threshold": {
+   "anchors": [
+    "too small",
+    "smallest valid",
+    "minimum accepted",
+    "when enabled"
+   ],
+   "classes": [
+    {
+     "name": "min_5_zero_disabled",
+     "canonical": true,
+     "signatures": [
+      "at least 5 seconds",
+      "value < 5",
+      "< 5:"
+     ]
+    },
+    {
+     "name": "any_positive_valid",
+     "signatures": [
+      "any positive",
+      "> 0 is valid",
+      ">= 1 is"
+     ]
+    },
+    {
+     "name": "min_10",
+     "signatures": [
+      "at least 10 seconds",
+      "value < 10"
+     ]
+    }
+   ]
+  },
+  "ambiguous_async_timeout_interaction": {
+   "anchors": [
+    "both timeout controls",
+    "effective timeout",
+    "poll",
+    "both mechanisms"
+   ],
+   "classes": [
+    {
+     "name": "task_timeout_precedence",
+     "canonical": true,
+     "signatures": [
+      "task_timeout takes precedence",
+      "task_timeout always",
+      "use task_timeout"
+     ]
+    },
+    {
+     "name": "min_of_both",
+     "signatures": [
+      "min(task_timeout",
+      "min(timeout",
+      "minimum of the two"
+     ]
+    },
+    {
+     "name": "async_wins",
+     "signatures": [
+      "async_val takes",
+      "use async_val",
+      "async takes precedence"
+     ]
+    }
+   ]
+  },
+  "contradictory_timeout_granularity_restriction": {
+   "anchors": [
+    "help text",
+    "rejected values",
+    "acceptance rule",
+    "stricter subset"
+   ],
+   "classes": [
+    {
+     "name": "multiples_of_10_range_10_59",
+     "canonical": true,
+     "signatures": [
+      "10 through 59",
+      "10 to 59",
+      "range(10, 60)"
+     ]
+    },
+    {
+     "name": "uniform_multiples_of_10",
+     "signatures": [
+      "all values must be a multiple",
+      "uniformly",
+      "every timeout must be a multiple"
+     ]
+    },
+    {
+     "name": "no_granularity_rule",
+     "signatures": [
+      "no granularity",
+      "any positive integer is accepted",
+      "no multiple-of"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_33": {
+  "missing_return_property_names": {
+   "anchors": [
+    "property names",
+    "return object",
+    "array field",
+    "status indicator"
+   ],
+   "classes": [
+    {
+     "name": "cachedlinks_isdecrypting",
+     "canonical": true,
+     "signatures": [
+      "cachedlinks",
+      "isdecrypting"
+     ]
+    },
+    {
+     "name": "generic_names",
+     "signatures": [
+      "items:",
+      "results:",
+      "entries:",
+      "isloading",
+      "loading:"
+     ]
+    }
+   ]
+  },
+  "ambiguous_entity_reference_isolation": {
+   "anchors": [
+    "self-contained",
+    "object reference",
+    "internal store",
+    "isolated"
+   ],
+   "classes": [
+    {
+     "name": "shallow_copy_spread",
+     "canonical": true,
+     "signatures": [
+      "{ ...entity }",
+      "{...entity}",
+      "{ ...link }",
+      "{...link}",
+      "shallow copy"
+     ]
+    },
+    {
+     "name": "direct_references",
+     "signatures": [
+      "direct references",
+      "same reference",
+      "without copying"
+     ]
+    },
+    {
+     "name": "deep_clone",
+     "signatures": [
+      "structuredclone",
+      "json.parse(json.stringify"
+     ]
+    }
+   ]
+  },
+  "contradictory_immutability_depth": {
+   "anchors": [
+    "mutation",
+    "destructurable",
+    "access constraints",
+    "protected"
+   ],
+   "classes": [
+    {
+     "name": "object_freeze_result",
+     "canonical": true,
+     "signatures": [
+      "object.freeze"
+     ]
+    },
+    {
+     "name": "plain_unfrozen",
+     "signatures": [
+      "freely work",
+      "no freeze",
+      "without freezing",
+      "plain object without"
+     ]
+    },
+    {
+     "name": "proxy_or_readonly",
+     "signatures": [
+      "new proxy",
+      "readonly<",
+      "as const"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_34": {
+  "missing_sort_keys_default_value": {
+   "anchors": [
+    "line width",
+    "emit width",
+    "yaml filters",
+    "when none is provided"
+   ],
+   "classes": [
+    {
+     "name": "width_1048576_constant",
+     "canonical": true,
+     "signatures": [
+      "1048576",
+      "_default_to_yaml_emit_width"
+     ]
+    },
+    {
+     "name": "width_80",
+     "signatures": [
+      "width', 80",
+      "width=80",
+      "width = 80"
+     ]
+    },
+    {
+     "name": "width_4096",
+     "signatures": [
+      "4096"
+     ]
+    }
+   ]
+  },
+  "ambiguous_exception_preservation_mechanism": {
+   "anchors": [
+    "preserved",
+    "debugging",
+    "inspection",
+    "underlying exception"
+   ],
+   "classes": [
+    {
+     "name": "exception_chaining_from_e",
+     "canonical": true,
+     "signatures": [
+      ") from e",
+      "__cause__",
+      "exception chaining"
+     ]
+    },
+    {
+     "name": "orig_exc_attribute",
+     "signatures": [
+      "orig_exc"
+     ]
+    },
+    {
+     "name": "message_text_only",
+     "signatures": [
+      "in the error message",
+      "text is sufficient",
+      "% to_native(e)"
+     ]
+    }
+   ]
+  },
+  "contradictory_representer_raise_vs_no_raise": {
+   "anchors": [
+    "represent_undefined",
+    "ansibleundefined",
+    "yaml dumping",
+    "surface"
+   ],
+   "classes": [
+    {
+     "name": "return_bool_no_raise",
+     "canonical": true,
+     "signatures": [
+      "return bool(data)",
+      "bool(data)"
+     ]
+    },
+    {
+     "name": "raise_in_representer",
+     "signatures": [
+      "raise yaml.representererror",
+      "raise an error for undefined",
+      "representer must raise"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_35": {
+  "missing_seed_canonicalization_algorithm": {
+   "anchors": [
+    "canonicalization",
+    "key=value terms",
+    "stable across runtimes",
+    "before hashing"
+   ],
+   "classes": [
+    {
+     "name": "sha256",
+     "canonical": true,
+     "signatures": [
+      "'sha256'",
+      "\"sha256\""
+     ]
+    },
+    {
+     "name": "md5_or_sha1",
+     "signatures": [
+      "'md5'",
+      "'sha1'",
+      "\"md5\"",
+      "\"sha1\""
+     ]
+    },
+    {
+     "name": "sha512",
+     "signatures": [
+      "'sha512'",
+      "\"sha512\""
+     ]
+    }
+   ]
+  },
+  "ambiguous_chars_option_type_handling": {
+   "anchors": [
+    "input formats",
+    "processed consistently",
+    "comma-splitting",
+    "plugin default"
+   ],
+   "classes": [
+    {
+     "name": "string_guard_list_unchanged",
+     "canonical": true,
+     "signatures": [
+      "isinstance(params['chars'], string_types)",
+      "string_types):",
+      "leave it unchanged"
+     ]
+    },
+    {
+     "name": "always_split",
+     "signatures": [
+      "split(',') regardless",
+      "always split",
+      "same processing for both"
+     ]
+    },
+    {
+     "name": "join_list_first",
+     "signatures": [
+      "','.join",
+      "\",\".join",
+      "convert the list to a string"
+     ]
+    }
+   ]
+  },
+  "contradictory_parse_parameters_scope": {
+   "anchors": [
+    "parsing defaults",
+    "refactoring",
+    "lookupmodule",
+    "calling patterns"
+   ],
+   "classes": [
+    {
+     "name": "instance_method_only",
+     "canonical": true,
+     "signatures": [
+      "def _parse_parameters(self",
+      "self._parse_parameters(",
+      "self.get_option("
+     ]
+    },
+    {
+     "name": "keep_module_level",
+     "signatures": [
+      "remain at module level",
+      "def _parse_parameters(term",
+      "module-level function stays"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_36": {
+  "runtime_replacement_import_path": {
+   "anchors": [
+    "runtime files",
+    "collection abcs",
+    "approved runtime-safe",
+    "migrate"
+   ],
+   "classes": [
+    {
+     "name": "six_moves_collections_abc",
+     "canonical": true,
+     "signatures": [
+      "six.moves.collections_abc"
+     ]
+    },
+    {
+     "name": "stdlib_collections_abc_runtime",
+     "signatures": [
+      "from collections.abc import"
+     ]
+    },
+    {
+     "name": "keep_legacy_shim_runtime",
+     "signatures": [
+      "common._collections_compat import"
+     ]
+    }
+   ]
+  },
+  "controller_replacement_import_path": {
+   "anchors": [
+    "controller-side",
+    "shell plugins",
+    "replacement target",
+    "legacy shim"
+   ],
+   "classes": [
+    {
+     "name": "stdlib_collections_abc",
+     "canonical": true,
+     "signatures": [
+      "from collections.abc import"
+     ]
+    },
+    {
+     "name": "six_moves_path_controller",
+     "signatures": [
+      "six.moves.collections_abc"
+     ]
+    },
+    {
+     "name": "keep_shim_controller",
+     "signatures": [
+      "common._collections_compat"
+     ]
+    }
+   ]
+  },
+  "shim_transition_signal_mode": {
+   "anchors": [
+    "transitional",
+    "shim",
+    "signal",
+    "migration guidance"
+   ],
+   "classes": [
+    {
+     "name": "documentation_only",
+     "canonical": true,
+     "signatures": [
+      "docstring",
+      "documentation-only",
+      "do not emit runtime warnings",
+      "single unconditional import"
+     ]
+    },
+    {
+     "name": "runtime_deprecation_warning",
+     "signatures": [
+      "warnings.warn",
+      "deprecationwarning",
+      "deprecate("
+     ]
+    }
+   ]
+  },
+  "packaging_shim_inclusion_condition": {
+   "anchors": [
+    "dependency discovery",
+    "runtime artifacts",
+    "third-party callers",
+    "inclusion rule"
+   ],
+   "classes": [
+    {
+     "name": "two_surface_precedence",
+     "canonical": true,
+     "signatures": [
+      "only when there is an explicit",
+      "keep bundling",
+      "two-surface"
+     ]
+    },
+    {
+     "name": "drop_everywhere",
+     "signatures": [
+      "drop the shim from both",
+      "exclude from the bundle",
+      "remove from packaging"
+     ]
+    },
+    {
+     "name": "include_everywhere",
+     "signatures": [
+      "always include",
+      "in both surfaces",
+      "unconditionally include"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_37": {
+  "cancellation_context_parameter": {
+   "anchors": [
+    "cancellation context",
+    "second argument",
+    "call sites",
+    "utility entry point"
+   ],
+   "classes": [
+    {
+     "name": "boolean_cancelled_default_false",
+     "canonical": true,
+     "signatures": [
+      "cancelled = false",
+      "cancelled: boolean",
+      "cancelled?: boolean",
+      "subscription, true)"
+     ]
+    },
+    {
+     "name": "options_object",
+     "signatures": [
+      "{ cancelled",
+      "options object",
+      "opts.cancel"
+     ]
+    },
+    {
+     "name": "mode_string_param",
+     "signatures": [
+      "mode: 'cancel",
+      "'cancellation'",
+      "mode ==="
+     ]
+    }
+   ]
+  },
+  "forced_renewal_flags_when_cancelled": {
+   "anchors": [
+    "renewal-related fields",
+    "auto-renew",
+    "non-renewing",
+    "billing data"
+   ],
+   "classes": [
+    {
+     "name": "forced_nonrenew_presentation",
+     "canonical": true,
+     "signatures": [
+      "renewdisabled: true",
+      "renewdisabled = true",
+      "!renewdisabled"
+     ]
+    },
+    {
+     "name": "billing_fidelity",
+     "signatures": [
+      "renew === renew.enabled",
+      "stay tied to billing",
+      "actual renew state"
+     ]
+    }
+   ]
+  },
+  "renew_disabled_ignores_upcoming": {
+   "anchors": [
+    "scheduled subscription changes",
+    "base subscription",
+    "bypass",
+    "outside of cancellation"
+   ],
+   "classes": [
+    {
+     "name": "renew_disabled_ignores",
+     "canonical": true,
+     "signatures": [
+      "renew.disabled",
+      "=== renew.disabled"
+     ]
+    },
+    {
+     "name": "always_honor_upcoming",
+     "signatures": [
+      "always use the upcoming",
+      "upcoming when present",
+      "honor scheduled"
+     ]
+    }
+   ]
+  },
+  "conflicting_subscription_data": {
+   "anchors": [
+    "cancellation-aware",
+    "snapshot",
+    "the cancelling term",
+    "active paid term"
+   ],
+   "classes": [
+    {
+     "name": "base_subscription_in_cancellation",
+     "canonical": true,
+     "signatures": [
+      "base subscription only",
+      "return the base subscription",
+      "ignore upcoming in cancellation"
+     ]
+    },
+    {
+     "name": "scheduled_primary",
+     "signatures": [
+      "scheduled configuration",
+      "upcoming as primary",
+      "prefer the upcoming"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_38": {
+  "missing_max_active_entries_limit": {
+   "anchors": [
+    "active entries",
+    "memory policy",
+    "overflow",
+    "entry-count"
+   ],
+   "classes": [
+    {
+     "name": "max_256_error",
+     "canonical": true,
+     "signatures": [
+      "256"
+     ]
+    },
+    {
+     "name": "other_power_limit",
+     "signatures": [
+      "128",
+      "512",
+      "1024"
+     ]
+    },
+    {
+     "name": "evict_oldest",
+     "signatures": [
+      "evict",
+      "remove the oldest",
+      "lru"
+     ]
+    }
+   ]
+  },
+  "ambiguous_expired_entry_refresh_failure_behavior": {
+   "anchors": [
+    "refresh loader",
+    "expired",
+    "getwithloader",
+    "previously cached"
+   ],
+   "classes": [
+    {
+     "name": "serve_stale_not_reactivated",
+     "canonical": true,
+     "signatures": [
+      "return the stale",
+      "stale cached value",
+      "not restore"
+     ]
+    },
+    {
+     "name": "fail_closed_error",
+     "signatures": [
+      "return the loader error",
+      "fail closed",
+      "propagate the error"
+     ]
+    },
+    {
+     "name": "reactivate_stale",
+     "signatures": [
+      "reinsert",
+      "restore that key as active",
+      "re-add the entry"
+     ]
+    }
+   ]
+  },
+  "contradiction_non_positive_lifetime_write_policy": {
+   "anchors": [
+    "addwithttl",
+    "non-positive",
+    "write paths",
+    "loader-provided"
+   ],
+   "classes": [
+    {
+     "name": "nonactive_error_and_passthrough",
+     "canonical": true,
+     "signatures": [
+      "ttl <= 0",
+      "return a non-nil error",
+      "must not store"
+     ]
+    },
+    {
+     "name": "store_as_infinite",
+     "signatures": [
+      "never expires",
+      "no expiration",
+      "treat as infinite"
+     ]
+    },
+    {
+     "name": "clamp_to_default",
+     "signatures": [
+      "default ttl",
+      "clamp",
+      "minimum lifetime"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_39": {
+  "songcount_zero_behavior": {
+   "anchors": [
+    "songcount is zero",
+    "normalized mode",
+    "zero denominator",
+    "fallback"
+   ],
+   "classes": [
+    {
+     "name": "playcount_zero",
+     "canonical": true,
+     "signatures": [
+      "playcount = 0",
+      "playcount=0"
+     ]
+    },
+    {
+     "name": "skip_normalization",
+     "signatures": [
+      "skip normalization",
+      "leave playcount unchanged",
+      "return early"
+     ]
+    },
+    {
+     "name": "return_error",
+     "signatures": [
+      "return err",
+      "division by zero error",
+      "return an error"
+     ]
+    }
+   ]
+  },
+  "playcount_rounding_strategy": {
+   "anchors": [
+    "rounding",
+    "established convention",
+    "nearest integer"
+   ],
+   "classes": [
+    {
+     "name": "math_floor",
+     "canonical": true,
+     "signatures": [
+      "math.floor"
+     ]
+    },
+    {
+     "name": "math_round",
+     "signatures": [
+      "math.round"
+     ]
+    }
+   ]
+  },
+  "compilation_album_normalization": {
+   "anchors": [
+    "compilation albums",
+    "uniformly",
+    "metadata flags"
+   ],
+   "classes": [
+    {
+     "name": "normalize_all_albums",
+     "canonical": true,
+     "signatures": [
+      "all albums",
+      "regardless of",
+      "do not check the compilation"
+     ]
+    },
+    {
+     "name": "exclude_compilations",
+     "signatures": [
+      "album.compilation",
+      "if compilation",
+      "only normalize non-compilation"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_40": {
+  "share_generated_password_length": {
+   "anchors": [
+    "generated password",
+    "shareurl",
+    "splitting",
+    "segmentation"
+   ],
+   "classes": [
+    {
+     "name": "length_18",
+     "canonical": true,
+     "signatures": [
+      "share_generated_password_length = 18",
+      "substring(0, 18)",
+      "(0, 18)"
+     ]
+    },
+    {
+     "name": "length_12",
+     "signatures": [
+      "substring(0, 12)",
+      "(0, 12)"
+     ]
+    },
+    {
+     "name": "length_16",
+     "signatures": [
+      "substring(0, 16)",
+      "(0, 16)"
+     ]
+    }
+   ]
+  },
+  "flags_value_normalization": {
+   "anchors": [
+    "flags value",
+    "bit evaluation",
+    "not a strict integer",
+    "incoming"
+   ],
+   "classes": [
+    {
+     "name": "unsigned32_coercion",
+     "canonical": true,
+     "signatures": [
+      ">>> 0",
+      "number(flagsvalue)",
+      "normalizedflags"
+     ]
+    },
+    {
+     "name": "strict_no_coercion",
+     "signatures": [
+      "already-valid integer",
+      "without any coercion",
+      "typeof flags !== 'number'"
+     ]
+    }
+   ]
+  },
+  "legacy_flags_property_compatibility": {
+   "anchors": [
+    "legacy flags",
+    "representations",
+    "coexist",
+    "disagree"
+   ],
+   "classes": [
+    {
+     "name": "conflict_resolves_to_zero",
+     "canonical": true,
+     "signatures": [
+      "treat the effective flags value as 0",
+      "differ, treat",
+      "conflict as 0"
+     ]
+    },
+    {
+     "name": "canonical_wins",
+     "signatures": [
+      "prefer the canonical",
+      "canonical takes precedence",
+      "new flags wins"
+     ]
+    },
+    {
+     "name": "legacy_wins",
+     "signatures": [
+      "prefer the legacy",
+      "legacy takes precedence",
+      "capital flags wins"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_41": {
+  "missing_album_refresh_chunk_size": {
+   "anchors": [
+    "batch",
+    "album ids",
+    "refresh",
+    "chunk"
+   ],
+   "classes": [
+    {
+     "name": "chunk_70",
+     "canonical": true,
+     "signatures": [
+      "ids, 70)",
+      ", 70)"
+     ]
+    },
+    {
+     "name": "chunk_100",
+     "signatures": [
+      "ids, 100)",
+      ", 100)"
+     ]
+    },
+    {
+     "name": "chunk_50",
+     "signatures": [
+      "ids, 50)",
+      ", 50)"
+     ]
+    }
+   ]
+  },
+  "conflicting_path_separator": {
+   "anchors": [
+    "between paths",
+    "concatenated",
+    "image paths",
+    "csv"
+   ],
+   "classes": [
+    {
+     "name": "pipe_separator",
+     "canonical": true,
+     "signatures": [
+      "\"|\"",
+      "'|'"
+     ]
+    },
+    {
+     "name": "comma_separator",
+     "signatures": [
+      "pathslice, \",\"",
+      "join(paths, \",\""
+     ]
+    },
+    {
+     "name": "os_list_separator",
+     "signatures": [
+      "os.pathlistseparator",
+      "\";\""
+     ]
+    }
+   ]
+  },
+  "conflicting_path_normalization": {
+   "anchors": [
+    "stored paths",
+    "library root",
+    "portability",
+    "resolve files"
+   ],
+   "classes": [
+    {
+     "name": "absolute_toslash",
+     "canonical": true,
+     "signatures": [
+      "filepath.toslash",
+      "fully qualified"
+     ]
+    },
+    {
+     "name": "relative_paths",
+     "signatures": [
+      "filepath.rel",
+      "relative to the",
+      "strip the root"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_42": {
+  "missing_min_password_length": {
+   "anchors": [
+    "basicauth",
+    "metrics endpoint",
+    "threshold",
+    "minimum required length"
+   ],
+   "classes": [
+    {
+     "name": "min_7",
+     "canonical": true,
+     "signatures": [
+      "len(password) >= 7",
+      ">= 7",
+      "< 7"
+     ]
+    },
+    {
+     "name": "min_8",
+     "signatures": [
+      "len(password) >= 8",
+      ">= 8",
+      "< 8"
+     ]
+    },
+    {
+     "name": "min_12",
+     "signatures": [
+      ">= 12",
+      "< 12"
+     ]
+    }
+   ]
+  },
+  "missing_max_bearer_token_length": {
+   "anchors": [
+    "bearer token",
+    "oversized",
+    "tokenfromheader"
+   ],
+   "classes": [
+    {
+     "name": "max_2000",
+     "canonical": true,
+     "signatures": [
+      "2000"
+     ]
+    },
+    {
+     "name": "max_4096",
+     "signatures": [
+      "4096"
+     ]
+    },
+    {
+     "name": "max_1024",
+     "signatures": [
+      "1024"
+     ]
+    }
+   ]
+  },
+  "missing_prometheus_max_concurrent": {
+   "anchors": [
+    "concurrent",
+    "throttle",
+    "scrape requests"
+   ],
+   "classes": [
+    {
+     "name": "limit_6",
+     "canonical": true,
+     "signatures": [
+      "throttle(6)",
+      "middleware.throttle(6"
+     ]
+    },
+    {
+     "name": "limit_10",
+     "signatures": [
+      "throttle(10)"
+     ]
+    },
+    {
+     "name": "limit_100",
+     "signatures": [
+      "throttle(100)"
+     ]
+    }
+   ]
+  },
+  "ambiguous_write_after_scan_scope": {
+   "anchors": [
+    "writeafterscanmetrics",
+    "record metrics",
+    "success boolean"
+   ],
+   "classes": [
+    {
+     "name": "scan_only_success_counter",
+     "canonical": true,
+     "signatures": [
+      "only the lastmediascan",
+      "if success {",
+      "must not access the datastore"
+     ]
+    },
+    {
+     "name": "also_db_counts",
+     "signatures": [
+      "processsqlaggregatemetrics(",
+      "db model counts after scan",
+      "update the gauges after"
+     ]
+    }
+   ]
+  },
+  "contradictory_metrics_detail_when_to_record_counts": {
+   "anchors": [
+    "which levels",
+    "model counts",
+    "writeinitialmetrics"
+   ],
+   "classes": [
+    {
+     "name": "full_and_timestamps_only",
+     "canonical": true,
+     "signatures": [
+      "full\" || ",
+      "or timestamps_only",
+      "timestamps_only\" {"
+     ]
+    },
+    {
+     "name": "full_only",
+     "signatures": [
+      "only when the detail level is full",
+      "full only",
+      "just \"full\""
+     ]
+    }
+   ]
+  }
+ },
+ "swe_43": {
+  "state_value": {
+   "anchors": [
+    "value field",
+    "batch entry",
+    "response entries"
+   ],
+   "classes": [
+    {
+     "name": "lowercase_disabled_literal",
+     "canonical": true,
+     "signatures": [
+      "\"value\": \"disabled\"",
+      "value: \"disabled\"",
+      "value = \"disabled\""
+     ]
+    },
+    {
+     "name": "empty_string_value",
+     "signatures": [
+      "\"value\": \"\"",
+      "value: \"\""
+     ]
+    },
+    {
+     "name": "off_or_inactive",
+     "signatures": [
+      "\"off\"",
+      "\"inactive\""
+     ]
+    }
+   ]
+  },
+  "disabled_duration": {
+   "anchors": [
+    "duration field",
+    "no evaluation",
+    "report for disabled"
+   ],
+   "classes": [
+    {
+     "name": "zero_duration",
+     "canonical": true,
+     "signatures": [
+      "request_duration_millis: 0",
+      "millis = 0.0",
+      "duration of 0.0"
+     ]
+    },
+    {
+     "name": "elapsed_time",
+     "signatures": [
+      "elapsed",
+      "time.since(start"
+     ]
+    },
+    {
+     "name": "sentinel_negative",
+     "signatures": [
+      "-1"
+     ]
+    }
+   ]
+  },
+  "batch_stamp": {
+   "anchors": [
+    "timestamp",
+    "batch mode",
+    "entries processed"
+   ],
+   "classes": [
+    {
+     "name": "single_start_timestamp",
+     "canonical": true,
+     "signatures": [
+      "once at the start",
+      "same timestamp to every",
+      "batchtimestamp"
+     ]
+    },
+    {
+     "name": "per_entry_fresh",
+     "signatures": [
+      "fresh timestamp per",
+      "time.now() for each",
+      "per-entry timestamp"
+     ]
+    },
+    {
+     "name": "completion_time",
+     "signatures": [
+      "completion time",
+      "after the batch finishes"
+     ]
+    }
+   ]
+  },
+  "entry_id": {
+   "anchors": [
+    "entry identifier",
+    "traceability",
+    "identification"
+   ],
+   "classes": [
+    {
+     "name": "compound_batch_colon_flag",
+     "canonical": true,
+     "signatures": [
+      "%s:%s",
+      "+ \":\" +",
+      "requestid + \":\""
+     ]
+    },
+    {
+     "name": "copy_batch_id",
+     "signatures": [
+      "copy the batch",
+      "same request_id for all",
+      "batch id directly"
+     ]
+    },
+    {
+     "name": "uuid_per_entry",
+     "signatures": [
+      "uuid.new",
+      "uuid per"
+     ]
+    }
+   ]
+  },
+  "abort_rule": {
+   "anchors": [
+    "mid-batch",
+    "hard failure",
+    "abort",
+    "return shape"
+   ],
+   "classes": [
+    {
+     "name": "partial_plus_error",
+     "canonical": true,
+     "signatures": [
+      "partial results",
+      "collected so far"
+     ]
+    },
+    {
+     "name": "nil_with_error",
+     "signatures": [
+      "return nil,",
+      "nil, err"
+     ]
+    },
+    {
+     "name": "continue_all",
+     "signatures": [
+      "continue evaluating",
+      "regardless of outcomes",
+      "skip the failed"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_44": {
+  "missing_deprecation_call_parameters": {
+   "anchors": [
+    "deprecation warning",
+    "py3compat.environ",
+    "removal version"
+   ],
+   "classes": [
+    {
+     "name": "display_deprecated_220",
+     "canonical": true,
+     "signatures": [
+      "deprecated(",
+      "version='2.20'",
+      "\"2.20\""
+     ]
+    },
+    {
+     "name": "warnings_warn",
+     "signatures": [
+      "warnings.warn"
+     ]
+    },
+    {
+     "name": "other_target_version",
+     "signatures": [
+      "'2.18'",
+      "'2.19'",
+      "\"2.18\"",
+      "\"2.19\""
+     ]
+    }
+   ]
+  },
+  "ambiguous_migration_scope": {
+   "anchors": [
+    "modules updated",
+    "component field",
+    "which files"
+   ],
+   "classes": [
+    {
+     "name": "env_and_manager",
+     "canonical": true,
+     "signatures": [
+      "config/manager.py",
+      "manager.py"
+     ]
+    },
+    {
+     "name": "env_only",
+     "signatures": [
+      "only env.py",
+      "just the env lookup",
+      "single file"
+     ]
+    },
+    {
+     "name": "all_three_including_junit",
+     "signatures": [
+      "junit.py",
+      "callback/junit",
+      "all three files"
+     ]
+    }
+   ]
+  },
+  "contradictory_duplicate_versus_unique_values": {
+   "anchors": [
+    "environ access",
+    "duplicate",
+    "__getattr__"
+   ],
+   "classes": [
+    {
+     "name": "filter_duplicate_values",
+     "canonical": true,
+     "signatures": [
+      "values_seen",
+      "not values_seen.add",
+      "if v not in values_seen"
+     ]
+    },
+    {
+     "name": "return_unchanged",
+     "signatures": [
+      "return os.environ\n",
+      "without any other change",
+      "os.environ directly"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_45": {
+  "missing_refresh_chunk_size": {
+   "anchors": [
+    "refreshartists",
+    "batching",
+    "large scans",
+    "chunk size"
+   ],
+   "classes": [
+    {
+     "name": "chunk_73",
+     "canonical": true,
+     "signatures": [
+      "73"
+     ]
+    },
+    {
+     "name": "chunk_100",
+     "signatures": [
+      "ids, 100)",
+      "chunk of 100"
+     ]
+    },
+    {
+     "name": "chunk_other_round",
+     "signatures": [
+      "ids, 50)",
+      "ids, 200)",
+      "chunk of 50"
+     ]
+    }
+   ]
+  },
+  "missing_mbz_absent_sentinel": {
+   "anchors": [
+    "musicbrainz",
+    "placeholder",
+    "dominant identifier",
+    "candidate pool"
+   ],
+   "classes": [
+    {
+     "name": "empty_string_excluded",
+     "canonical": true,
+     "signatures": [
+      "!= \"\"",
+      "non-empty",
+      "exclude the empty string"
+     ]
+    },
+    {
+     "name": "no_filtering",
+     "signatures": [
+      "do not exclude",
+      "all values including",
+      "without filtering"
+     ]
+    },
+    {
+     "name": "other_sentinel_string",
+     "signatures": [
+      "\"unknown\"",
+      "\"none\"",
+      "\"n/a\""
+     ]
+    }
+   ]
+  },
+  "ambiguous_mbz_tiebreak": {
+   "anchors": [
+    "dominance",
+    "tied",
+    "most commonly occurring",
+    "selection algorithm"
+   ],
+   "classes": [
+    {
+     "name": "frequency_last_wins_gte",
+     "canonical": true,
+     "signatures": [
+      "count >= max",
+      ">= maxcount",
+      "last to reach"
+     ]
+    },
+    {
+     "name": "most_frequent_first_wins",
+     "signatures": [
+      "slice.mostfrequent",
+      "> maxcount",
+      "first to reach"
+     ]
+    },
+    {
+     "name": "iteration_first_encountered",
+     "signatures": [
+      "first value encountered",
+      "first non-empty",
+      "iteration order"
+     ]
+    }
+   ]
+  },
+  "contradictory_refresh_approach": {
+   "anchors": [
+    "scanner",
+    "artist data",
+    "artist updates",
+    "computation path"
+   ],
+   "classes": [
+    {
+     "name": "model_level_aggregation",
+     "canonical": true,
+     "signatures": [
+      "toalbumartist()",
+      "artistrepository.put(",
+      "group them by artist"
+     ]
+    },
+    {
+     "name": "keep_sql_refresh",
+     "signatures": [
+      "keep the refresh method",
+      "continue calling refresh",
+      "sql aggregation stays"
+     ]
+    }
+   ]
+  },
+  "contradictory_genre_dedup_equality": {
+   "anchors": [
+    "genres",
+    "deduplicated",
+    "aggregated artist"
+   ],
+   "classes": [
+    {
+     "name": "dedup_by_id_desc_first_kept",
+     "canonical": true,
+     "signatures": [
+      "by genre.id",
+      "descending",
+      "keep the first occurrence"
+     ]
+    },
+    {
+     "name": "full_struct_equality",
+     "signatures": [
+      "slices.compact",
+      "structural equality",
+      "full equality"
+     ]
+    },
+    {
+     "name": "id_only_stripped",
+     "signatures": [
+      "only the id field",
+      "strip genre",
+      "id-only genre"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_46": {
+  "missing_referral_sender_eligibility_scope": {
+   "anchors": [
+    "referral gating",
+    "eligible",
+    "compose flow",
+    "sender scope"
+   ],
+   "classes": [
+    {
+     "name": "primary_sender_only",
+     "canonical": true,
+     "signatures": [
+      "primary sender",
+      "non-primary",
+      "isprimary"
+     ]
+    },
+    {
+     "name": "all_senders_eligible",
+     "signatures": [
+      "every sender",
+      "all senders",
+      "regardless of sender"
+     ]
+    }
+   ]
+  },
+  "missing_referral_render_mapping_parameter": {
+   "anchors": [
+    "render",
+    "signature format",
+    "referral output"
+   ],
+   "classes": [
+    {
+     "name": "format_specific_mapping",
+     "canonical": true,
+     "signatures": [
+      "<a href",
+      "own new line",
+      "one anchor"
+     ]
+    },
+    {
+     "name": "raw_text_in_both",
+     "signatures": [
+      "raw text in both",
+      "same form for both",
+      "plain url in html"
+     ]
+    }
+   ]
+  },
+  "missing_empty_referral_settings_fallback_parameter": {
+   "anchors": [
+    "fallback",
+    "user-settings shape",
+    "unavailable"
+   ],
+   "classes": [
+    {
+     "name": "referral_undefined_shape",
+     "canonical": true,
+     "signatures": [
+      "referral: undefined",
+      "safe_empty_user_settings"
+     ]
+    },
+    {
+     "name": "empty_object_settings",
+     "signatures": [
+      "settings: {}",
+      "empty object"
+     ]
+    },
+    {
+     "name": "null_settings",
+     "signatures": [
+      "settings = null",
+      "settings as null",
+      "pass null"
+     ]
+    }
+   ]
+  },
+  "ambiguous_sender_switch_preservation_scope": {
+   "anchors": [
+    "sender-switch",
+    "signature updates",
+    "user-visible"
+   ],
+   "classes": [
+    {
+     "name": "preserve_body_remove_referral",
+     "canonical": true,
+     "signatures": [
+      "remove only the",
+      "preserve the current",
+      "strip the referral"
+     ]
+    },
+    {
+     "name": "rebuild_from_sender_data",
+     "signatures": [
+      "rebuild",
+      "regenerate the signature",
+      "from sender data"
+     ]
+    }
+   ]
+  },
+  "conflicting_referral_query_handling_rules": {
+   "anchors": [
+    "query keys",
+    "sanitized",
+    "referral url",
+    "query-handling"
+   ],
+   "classes": [
+    {
+     "name": "keep_ref_key_only",
+     "canonical": true,
+     "signatures": [
+      "only query key",
+      "'ref'",
+      "\"ref\""
+     ]
+    },
+    {
+     "name": "preserve_all_params",
+     "signatures": [
+      "preserve attribution",
+      "keep all query",
+      "all parameters"
+     ]
+    },
+    {
+     "name": "strip_all_params",
+     "signatures": [
+      "remove all query",
+      "bare url",
+      "no query at all"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_47": {
+  "missing_selection_state_wire_labels": {
+   "anchors": [
+    "serialized",
+    "selection state",
+    "persistence",
+    "restoration"
+   ],
+   "classes": [
+    {
+     "name": "clear_mixed_complete",
+     "canonical": true,
+     "signatures": [
+      "'clear'",
+      "'mixed'",
+      "'complete'"
+     ]
+    },
+    {
+     "name": "none_some_all_literals",
+     "signatures": [
+      "'none'",
+      "'some'",
+      "'all'"
+     ]
+    },
+    {
+     "name": "empty_partial_full_literals",
+     "signatures": [
+      "'empty'",
+      "'partial'",
+      "'full'"
+     ]
+    }
+   ]
+  },
+  "ambiguous_checkbox_toggle_behavior": {
+   "anchors": [
+    "toggle-all",
+    "partial selection",
+    "clicking"
+   ],
+   "classes": [
+    {
+     "name": "any_selected_clears",
+     "canonical": true,
+     "signatures": [
+      "ids.length > 0 ?",
+      "length > 0 ? []"
+     ]
+    },
+    {
+     "name": "full_only_clears",
+     "signatures": [
+      "=== itemids.length",
+      "length === item"
+     ]
+    }
+   ]
+  },
+  "contradictory_enum_definition_location": {
+   "anchors": [
+    "selection-state type",
+    "module",
+    "co-location",
+    "consumers import"
+   ],
+   "classes": [
+    {
+     "name": "hooks_useselectioncontrols",
+     "canonical": true,
+     "signatures": [
+      "useselectioncontrols"
+     ]
+    },
+    {
+     "name": "state_useselection",
+     "signatures": [
+      "state/useselection",
+      "useselection.tsx"
+     ]
+    },
+    {
+     "name": "shared_types_file",
+     "signatures": [
+      "types.ts",
+      "shared types file"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_48": {
+  "legacy_delegate_resolution_deprecation_version_unspecified": {
+   "anchors": [
+    "scheduled removal",
+    "legacy delegation",
+    "deprecation warning"
+   ],
+   "classes": [
+    {
+     "name": "version_220",
+     "canonical": true,
+     "signatures": [
+      "'2.20'",
+      "\"2.20\""
+     ]
+    },
+    {
+     "name": "other_removal_version",
+     "signatures": [
+      "'2.18'",
+      "'2.19'",
+      "\"2.19\"",
+      "\"2.18\""
+     ]
+    }
+   ]
+  },
+  "delegate_target_resolution_precedence_unspecified": {
+   "anchors": [
+    "delegated target",
+    "not a direct inventory",
+    "precedence strategy"
+   ],
+   "classes": [
+    {
+     "name": "gethost_then_address_then_synthetic",
+     "canonical": true,
+     "signatures": [
+      "ignore_limits=true",
+      "host.address ==",
+      "host(name=delegated"
+     ]
+    },
+    {
+     "name": "gethost_then_synthetic_only",
+     "signatures": [
+      "directly construct",
+      "skip the address",
+      "without the address scan"
+     ]
+    },
+    {
+     "name": "address_scan_first",
+     "signatures": [
+      "address match first",
+      "before get_host"
+     ]
+    }
+   ]
+  },
+  "delegate_to_resolution_stage_in_execution_unspecified": {
+   "anchors": [
+    "execution stage",
+    "pre-loop",
+    "one-time",
+    "loop item processing"
+   ],
+   "classes": [
+    {
+     "name": "before_post_validate",
+     "canonical": true,
+     "signatures": [
+      "before task.post_validate",
+      "_calculate_delegate_to",
+      "before post_validate"
+     ]
+    },
+    {
+     "name": "after_post_validate",
+     "signatures": [
+      "after task.post_validate runs",
+      "once post_validate completes"
+     ]
+    },
+    {
+     "name": "per_loop_item",
+     "signatures": [
+      "per item",
+      "inside the loop",
+      "each loop iteration"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_49": {
+  "analytics_storage_backend_string_value": {
+   "anchors": [
+    "string() method",
+    "storage backend",
+    "identifying"
+   ],
+   "classes": [
+    {
+     "name": "clickhouse_word",
+     "canonical": true,
+     "signatures": [
+      "return \"clickhouse\"",
+      "\"clickhouse\""
+     ]
+    },
+    {
+     "name": "separator_variants",
+     "signatures": [
+      "click_house",
+      "click-house"
+     ]
+    },
+    {
+     "name": "short_ch",
+     "signatures": [
+      "return \"ch\""
+     ]
+    }
+   ]
+  },
+  "analytics_field_json_representation_when_disabled": {
+   "anchors": [
+    "analytics key",
+    "telemetry payload",
+    "disabled"
+   ],
+   "classes": [
+    {
+     "name": "null_value",
+     "canonical": true,
+     "signatures": [
+      "\"analytics\": null",
+      "analytics: null"
+     ]
+    },
+    {
+     "name": "omit_key",
+     "signatures": [
+      "omit the key",
+      "omitempty",
+      "key not present"
+     ]
+    },
+    {
+     "name": "empty_object_value",
+     "signatures": [
+      "analytics\": {}",
+      "empty object"
+     ]
+    }
+   ]
+  },
+  "uuid_rotation_vs_persistence_policy": {
+   "anchors": [
+    "telemetry uuid",
+    "across runs",
+    "restart"
+   ],
+   "classes": [
+    {
+     "name": "rotate_fresh_each_start",
+     "canonical": true,
+     "signatures": [
+      "generate a fresh",
+      "even if a prior",
+      "new uuid on every"
+     ]
+    },
+    {
+     "name": "reuse_persisted",
+     "signatures": [
+      "previously stored",
+      "reuse the existing",
+      "keep the stored uuid"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_50": {
+  "unspecified_mime_detection_precedence_and_fallback_chain": {
+   "anchors": [
+    "mime detection",
+    "evaluation order",
+    "authoritative source",
+    "file metadata"
+   ],
+   "classes": [
+    {
+     "name": "type_then_extension_then_default",
+     "canonical": true,
+     "signatures": [
+      "input.type ||",
+      "input.type ?",
+      "'application/octet-stream'"
+     ]
+    },
+    {
+     "name": "extension_first",
+     "signatures": [
+      "extension first",
+      "lookup before the type",
+      "name.split('.').pop"
+     ]
+    },
+    {
+     "name": "content_sniffing",
+     "signatures": [
+      "file bytes",
+      "sniff",
+      "magic number",
+      "filereader"
+     ]
+    }
+   ]
+  },
+  "missing_safari_version_threshold_and_validation": {
+   "anchors": [
+    "safari version",
+    "native format decoding",
+    "gate functions"
+   ],
+   "classes": [
+    {
+     "name": "version_17_class_check",
+     "canonical": true,
+     "signatures": [
+      "isgreaterthanorequal('17'",
+      "'17'"
+     ]
+    },
+    {
+     "name": "other_version_number",
+     "signatures": [
+      "'16'",
+      "'18'"
+     ]
+    },
+    {
+     "name": "manual_major_parse",
+     "signatures": [
+      "parseint(",
+      "split('.')[0]",
+      "major version"
+     ]
+    }
+   ]
+  },
+  "conflicting_jxl_ios_support_directive": {
+   "anchors": [
+    "ios safari",
+    "support scope",
+    "conditional support"
+   ],
+   "classes": [
+    {
+     "name": "ios_supported_same_as_heic",
+     "canonical": true,
+     "signatures": [
+      "same platform",
+      "alongside heic",
+      "equally apply"
+     ]
+    },
+    {
+     "name": "desktop_only_jxl",
+     "signatures": [
+      "desktop-only",
+      "return false on ios",
+      "!ismobile &&"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_51": {
+  "missing_share_default_expiration_duration": {
+   "anchors": [
+    "no expiration",
+    "default",
+    "share saved"
+   ],
+   "classes": [
+    {
+     "name": "days_90",
+     "canonical": true,
+     "signatures": [
+      "adddate(0, 0, 90",
+      "90 days",
+      "24 * 90"
+     ]
+    },
+    {
+     "name": "days_30",
+     "signatures": [
+      "adddate(0, 0, 30",
+      "30 days",
+      "24 * 30"
+     ]
+    },
+    {
+     "name": "one_year",
+     "signatures": [
+      "365",
+      "adddate(1, 0, 0",
+      "one year"
+     ]
+    }
+   ]
+  },
+  "ambiguous_which_timestamp_fields_nullable": {
+   "anchors": [
+    "timestamp fields",
+    "absent values",
+    "optional"
+   ],
+   "classes": [
+    {
+     "name": "expiration_and_lastvisited_only",
+     "canonical": true,
+     "signatures": [
+      "lastvisitedat *time.time",
+      "remain non-optional",
+      "only the share expiration"
+     ]
+    },
+    {
+     "name": "all_timestamps_optional",
+     "signatures": [
+      "externalinfoupdatedat *time.time",
+      "all timestamps optional",
+      "every timestamp field"
+     ]
+    },
+    {
+     "name": "only_expiration_nullable",
+     "signatures": [
+      "only expires",
+      "just the expiration"
+     ]
+    }
+   ]
+  },
+  "contradictory_share_visit_option_parameter_name": {
+   "anchors": [
+    "boolean option",
+    "load-options",
+    "parameter name"
+   ],
+   "classes": [
+    {
+     "name": "both_names_exposed",
+     "canonical": true,
+     "signatures": [
+      "updatevisitonload and trackvisitonload",
+      "both option names",
+      "expose both"
+     ]
+    },
+    {
+     "name": "update_visit_only",
+     "signatures": [
+      "only updatevisitonload",
+      "just updatevisitonload"
+     ]
+    },
+    {
+     "name": "track_visit_only",
+     "signatures": [
+      "only trackvisitonload",
+      "just trackvisitonload"
+     ]
+    }
+   ]
+  },
+  "contradictory_share_visit_update_policy": {
+   "anchors": [
+    "sharelinkupdatepolicy",
+    "visit timestamp",
+    "share load"
+   ],
+   "classes": [
+    {
+     "name": "fast_or_balanced",
+     "canonical": true,
+     "signatures": [
+      "fast\" || ",
+      "|| policy",
+      "or balanced"
+     ]
+    },
+    {
+     "name": "fast_only",
+     "signatures": [
+      "only when fast",
+      "just fast"
+     ]
+    },
+    {
+     "name": "balanced_only",
+     "signatures": [
+      "only when balanced",
+      "just balanced"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_52": {
+  "missing_default_value_for_max_idle_connections": {
+   "anchors": [
+    "idle database connections",
+    "default",
+    "not configured"
+   ],
+   "classes": [
+    {
+     "name": "idle_4",
+     "canonical": true,
+     "signatures": [
+      "maxidleconn: 4"
+     ]
+    },
+    {
+     "name": "idle_5",
+     "signatures": [
+      "maxidleconn: 5"
+     ]
+    },
+    {
+     "name": "idle_10_or_0",
+     "signatures": [
+      "maxidleconn: 10",
+      "maxidleconn: 0"
+     ]
+    }
+   ]
+  },
+  "missing_default_values_for_open_connections_and_connection_lifetime": {
+   "anchors": [
+    "open connections",
+    "connection lifetime",
+    "pool configuration"
+   ],
+   "classes": [
+    {
+     "name": "open1_lifetime1s",
+     "canonical": true,
+     "signatures": [
+      "maxopenconn: 1,",
+      "1 * time.second"
+     ]
+    },
+    {
+     "name": "open_10_or_more",
+     "signatures": [
+      "maxopenconn: 10",
+      "maxopenconn: 25"
+     ]
+    },
+    {
+     "name": "longer_lifetime",
+     "signatures": [
+      "30 * time.second",
+      "time.minute",
+      "time.hour"
+     ]
+    }
+   ]
+  },
+  "missing_yaml_key_name_for_database_connection_lifetime": {
+   "anchors": [
+    "yaml key",
+    "configuration loader",
+    "lifetime configuration"
+   ],
+   "classes": [
+    {
+     "name": "pool_conn_ttl",
+     "canonical": true,
+     "signatures": [
+      "pool_conn_ttl"
+     ]
+    },
+    {
+     "name": "lifetime_named_keys",
+     "signatures": [
+      "conn_max_lifetime",
+      "connection_max_lifetime",
+      "max_conn_lifetime"
+     ]
+    }
+   ]
+  },
+  "contradictory_pool_adjustment_when_idle_exceeds_open": {
+   "anchors": [
+    "idle exceeds",
+    "pool limits",
+    "adjust"
+   ],
+   "classes": [
+    {
+     "name": "raise_open_to_idle",
+     "canonical": true,
+     "signatures": [
+      "maxopenconn = maxidleconn",
+      "raise open"
+     ]
+    },
+    {
+     "name": "cap_idle_to_open",
+     "signatures": [
+      "maxidleconn = maxopenconn",
+      "cap idle",
+      "capped down"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_53": {
+  "upgrade_deps_depth_limit": {
+   "anchors": [
+    "dependency depth",
+    "transitive",
+    "propagation"
+   ],
+   "classes": [
+    {
+     "name": "depth_1_limit",
+     "canonical": true,
+     "signatures": [
+      "_dep_depth",
+      "depth > 1",
+      "depth + 1"
+     ]
+    },
+    {
+     "name": "all_levels_upgraded",
+     "signatures": [
+      "all levels",
+      "every transitive",
+      "unlimited depth"
+     ]
+    },
+    {
+     "name": "depth_2_limit",
+     "signatures": [
+      "depth > 2",
+      "two levels"
+     ]
+    }
+   ]
+  },
+  "upgrade_candidate_version_limit": {
+   "anchors": [
+    "candidate versions",
+    "upgrade resolution",
+    "efficiently"
+   ],
+   "classes": [
+    {
+     "name": "count_25",
+     "canonical": true,
+     "signatures": [
+      "[:25]",
+      "25 most recent",
+      "at most 25"
+     ]
+    },
+    {
+     "name": "other_count_limit",
+     "signatures": [
+      "[:10]",
+      "[:50]",
+      "[:100]"
+     ]
+    },
+    {
+     "name": "age_based_limit",
+     "signatures": [
+      "version age",
+      "recency window",
+      "released within"
+     ]
+    }
+   ]
+  },
+  "upgrade_source_fallback_depth": {
+   "anchors": [
+    "galaxy servers",
+    "server priority",
+    "sources"
+   ],
+   "classes": [
+    {
+     "name": "primary_server_only",
+     "canonical": true,
+     "signatures": [
+      "first server",
+      "primary server only"
+     ]
+    },
+    {
+     "name": "all_servers_checked",
+     "signatures": [
+      "all configured",
+      "every server",
+      "check secondary"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_54": {
+  "missing_deprecation_target_version": {
+   "anchors": [
+    "deprecation notices",
+    "target version",
+    "redirects"
+   ],
+   "classes": [
+    {
+     "name": "numeric_214",
+     "canonical": true,
+     "signatures": [
+      "version=2.14"
+     ]
+    },
+    {
+     "name": "string_214",
+     "signatures": [
+      "version='2.14'",
+      "version=\"2.14\""
+     ]
+    },
+    {
+     "name": "other_target",
+     "signatures": [
+      "2.15",
+      "2.16"
+     ]
+    }
+   ]
+  },
+  "ambiguous_iterating_states_base_class": {
+   "anchors": [
+    "base class",
+    "inheritance",
+    "directly comparable"
+   ],
+   "classes": [
+    {
+     "name": "intenum_base",
+     "canonical": true,
+     "signatures": [
+      "(intenum)"
+     ]
+    },
+    {
+     "name": "plain_enum_base",
+     "signatures": [
+      "(enum)"
+     ]
+    },
+    {
+     "name": "intflag_base",
+     "signatures": [
+      "(intflag)"
+     ]
+    }
+   ]
+  },
+  "hoststate_str_state_label_prefix_convention": {
+   "anchors": [
+    "__str__",
+    "labels",
+    "hoststate"
+   ],
+   "classes": [
+    {
+     "name": "bare_member_names",
+     "canonical": true,
+     "signatures": [
+      "run_state.name",
+      "'|'.join",
+      ".name for"
+     ]
+    },
+    {
+     "name": "legacy_prefixed_labels",
+     "signatures": [
+      "iterating_",
+      "failed_"
+     ]
+    }
+   ]
+  },
+  "module_public_api_exposure": {
+   "anchors": [
+    "export surface",
+    "public api",
+    "play_iterator.py"
+   ],
+   "classes": [
+    {
+     "name": "all_three_exported",
+     "canonical": true,
+     "signatures": [
+      "'playiterator', 'iteratingstates'"
+     ]
+    },
+    {
+     "name": "enums_only_exported",
+     "signatures": [
+      "__all__ = ['iteratingstates'",
+      "only the enum types"
+     ]
+    },
+    {
+     "name": "no_all_defined",
+     "signatures": [
+      "no __all__",
+      "without __all__"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_55": {
+  "mp_auth_store_no_db_path": {
+   "anchors": [
+    "no-database path",
+    "authentication store",
+    "requiresdatabase"
+   ],
+   "classes": [
+    {
+     "name": "memory_store",
+     "canonical": true,
+     "signatures": [
+      "storageauthmemory.newstore"
+     ]
+    },
+    {
+     "name": "sql_store_anyway",
+     "signatures": [
+      "storagesql",
+      "database store even",
+      "sql-based store"
+     ]
+    },
+    {
+     "name": "nil_store",
+     "signatures": [
+      "store = nil",
+      "nil store",
+      "pass nil"
+     ]
+    }
+   ]
+  },
+  "mp_validate_cleanup_rejects_non_db_methods": {
+   "anchors": [
+    "validate()",
+    "cleanup schedule",
+    "grace-period"
+   ],
+   "classes": [
+    {
+     "name": "reject_with_error",
+     "canonical": true,
+     "signatures": [
+      "does not require a database",
+      "&& !info.requiresdatabase",
+      "return fmt.errorf(\"cleanup"
+     ]
+    },
+    {
+     "name": "allow_silently",
+     "signatures": [
+      "ignore the cleanup",
+      "no error for non-database",
+      "skip silently"
+     ]
+    }
+   ]
+  },
+  "amb_should_run_cleanup_db_filter": {
+   "anchors": [
+    "shouldruncleanup",
+    "guard",
+    "cleanup service"
+   ],
+   "classes": [
+    {
+     "name": "three_condition_guard",
+     "canonical": true,
+     "signatures": [
+      "info.enabled && info.requiresdatabase && info.cleanup"
+     ]
+    },
+    {
+     "name": "delegate_to_run",
+     "signatures": [
+      "run method is responsible",
+      "delegated to run",
+      "only enabled and cleanup"
+     ]
+    }
+   ]
+  },
+  "contra_cleanup_defaults_for_enabled_non_db_methods": {
+   "anchors": [
+    "configuration defaulting",
+    "default cleanup",
+    "enabled jwt"
+   ],
+   "classes": [
+    {
+     "name": "skip_default_for_non_db",
+     "canonical": true,
+     "signatures": [
+      "must not populate",
+      "skip the default for",
+      "no cleanup default"
+     ]
+    },
+    {
+     "name": "default_for_all_enabled",
+     "signatures": [
+      "all enabled methods receive",
+      "jwt receives",
+      "populate cleanup for every"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_56": {
+  "missing_invisible_character_stripping": {
+   "anchors": [
+    "invisible",
+    "non-printing",
+    "boundaries"
+   ],
+   "classes": [
+    {
+     "name": "strip_bom_zwsp_then_trim",
+     "canonical": true,
+     "signatures": [
+      "\\ufeff",
+      "\\u200b",
+      "u+feff"
+     ]
+    },
+    {
+     "name": "trim_only",
+     "signatures": [
+      "just trim()",
+      "only trim",
+      "no special stripping"
+     ]
+    }
+   ]
+  },
+  "ambiguous_slash_delimited_numeric_dates": {
+   "anchors": [
+    "slash",
+    "disambiguation",
+    "numeric dates"
+   ],
+   "classes": [
+    {
+     "name": "segment_gt12_rules",
+     "canonical": true,
+     "signatures": [
+      "greater than 12",
+      "'d/m/yyyy'",
+      "'m/d/yyyy'"
+     ]
+    },
+    {
+     "name": "always_day_first",
+     "signatures": [
+      "always day-first",
+      "day-first default",
+      "d/m by default"
+     ]
+    },
+    {
+     "name": "always_month_first",
+     "signatures": [
+      "always month-first",
+      "us format default",
+      "m/d by default"
+     ]
+    }
+   ]
+  },
+  "contradictory_unset_vs_vcard_fallback": {
+   "anchors": [
+    "fallback",
+    "unparseable",
+    "serialization"
+   ],
+   "classes": [
+    {
+     "name": "epoch_date_zero",
+     "canonical": true,
+     "signatures": [
+      "new date(0)",
+      "unix epoch"
+     ]
+    },
+    {
+     "name": "current_timestamp",
+     "signatures": [
+      "new date()",
+      "current timestamp"
+     ]
+    },
+    {
+     "name": "undefined_return",
+     "signatures": [
+      "return undefined",
+      "leave unset"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_57": {
+  "unexpected_layer_handling_policy": {
+   "anchors": [
+    "unsupported layer",
+    "media type",
+    "ingestion"
+   ],
+   "classes": [
+    {
+     "name": "error_on_unsupported",
+     "canonical": true,
+     "signatures": [
+      "return an error when",
+      "unexpected media type",
+      "unsupported layer media"
+     ]
+    },
+    {
+     "name": "skip_unknown_layers",
+     "signatures": [
+      "silently skip",
+      "ignore non-flipt",
+      "continue processing the rest"
+     ]
+    }
+   ]
+  },
+  "max_layers_per_manifest": {
+   "anchors": [
+    "manifest layers",
+    "upper bound",
+    "fetch operation"
+   ],
+   "classes": [
+    {
+     "name": "max_256_layers",
+     "canonical": true,
+     "signatures": [
+      "> 256",
+      "256 layers"
+     ]
+    },
+    {
+     "name": "other_layer_limit",
+     "signatures": [
+      "> 100",
+      "> 512",
+      "> 1000"
+     ]
+    }
+   ]
+  },
+  "features_annotation_requirement_policy": {
+   "anchors": [
+    "annotation",
+    "namespace metadata",
+    "descriptor"
+   ],
+   "classes": [
+    {
+     "name": "annotation_required",
+     "canonical": true,
+     "signatures": [
+      "must be treated as required",
+      "error even if the payload",
+      "missing or empty"
+     ]
+    },
+    {
+     "name": "optional_with_payload_fallback",
+     "signatures": [
+      "fall back to the payload",
+      "optional when payload",
+      "payload namespace suffices"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_58": {
+  "read_only_error_code_token": {
+   "anchors": [
+    "machine-readable code",
+    "code()",
+    "policy routing"
+   ],
+   "classes": [
+    {
+     "name": "storage_mutation_blocked",
+     "canonical": true,
+     "signatures": [
+      "storage_mutation_blocked"
+     ]
+    },
+    {
+     "name": "other_code_token",
+     "signatures": [
+      "read_only_violation",
+      "readonly_mode",
+      "store_read_only"
+     ]
+    }
+   ]
+  },
+  "read_only_http_status_code": {
+   "anchors": [
+    "http status",
+    "statuscode()",
+    "response mapping"
+   ],
+   "classes": [
+    {
+     "name": "status_423_locked",
+     "canonical": true,
+     "signatures": [
+      "423"
+     ]
+    },
+    {
+     "name": "other_status",
+     "signatures": [
+      "403",
+      "405",
+      "return 400"
+     ]
+    }
+   ]
+  },
+  "unmodifiable_store_identifier": {
+   "anchors": [
+    "string()",
+    "debugging and logging",
+    "identifier"
+   ],
+   "classes": [
+    {
+     "name": "fenced_store",
+     "canonical": true,
+     "signatures": [
+      "fenced-store"
+     ]
+    },
+    {
+     "name": "other_identifier",
+     "signatures": [
+      "read-only-store",
+      "readonly store",
+      "\"readonlystore\""
+     ]
+    }
+   ]
+  },
+  "invalid_request_precedence_in_read_only_mode": {
+   "anchors": [
+    "underlying store",
+    "writes",
+    "wrapper behavior"
+   ],
+   "classes": [
+    {
+     "name": "own_error_immediate",
+     "canonical": true,
+     "signatures": [
+      "errreadonly",
+      "without delegating",
+      "own error immediately"
+     ]
+    },
+    {
+     "name": "reuse_errnotimplemented",
+     "signatures": [
+      "errnotimplemented",
+      "intercept its error",
+      "reuse that same error"
+     ]
+    }
+   ]
+  },
+  "uniform_sentinel_vs_operation_specific_context": {
+   "anchors": [
+    "mutating methods",
+    "uniform",
+    "which operation"
+   ],
+   "classes": [
+    {
+     "name": "uniform_sentinel",
+     "canonical": true,
+     "signatures": [
+      "same error instance",
+      "identical message"
+     ]
+    },
+    {
+     "name": "per_operation_context",
+     "signatures": [
+      "operation name in",
+      "which operation was rejected",
+      "wrap with the method"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_59": {
+  "missing_calendar_url_max_length": {
+   "anchors": [
+    "max_lengths_api",
+    "url length",
+    "too long"
+   ],
+   "classes": [
+    {
+     "name": "len_10000",
+     "canonical": true,
+     "signatures": [
+      "10000"
+     ]
+    },
+    {
+     "name": "len_other",
+     "signatures": [
+      "10240",
+      "8192",
+      "4096",
+      "2048"
+     ]
+    }
+   ]
+  },
+  "missing_provider_url_match_patterns": {
+   "anchors": [
+    "google public",
+    "feed link",
+    "pattern"
+   ],
+   "classes": [
+    {
+     "name": "regex_public_word_ics",
+     "canonical": true,
+     "signatures": [
+      "public\\/\\w+",
+      "\\w+\\.ics"
+     ]
+    },
+    {
+     "name": "simple_includes_public",
+     "signatures": [
+      "includes('/public/')",
+      "indexof('/public/')"
+     ]
+    }
+   ]
+  },
+  "ambiguous_ics_extension_detection": {
+   "anchors": [
+    "extension check",
+    "query strings",
+    "fragments"
+   ],
+   "classes": [
+    {
+     "name": "pathname_endswith",
+     "canonical": true,
+     "signatures": [
+      "pathname.endswith('.ics')",
+      "new url(calendarurl"
+     ]
+    },
+    {
+     "name": "raw_string_endswith",
+     "signatures": [
+      "calendarurl.endswith('.ics')",
+      "full raw string"
+     ]
+    }
+   ]
+  },
+  "contradictory_warning_priority_order": {
+   "anchors": [
+    "getwarning",
+    "priority",
+    "more than one condition"
+   ],
+   "classes": [
+    {
+     "name": "length_first",
+     "canonical": true,
+     "signatures": [
+      "if (isurltoolong)",
+      "length warning first",
+      "length-limit first"
+     ]
+    },
+    {
+     "name": "extension_first",
+     "signatures": [
+      "extension concern first",
+      "ics warning first",
+      "extension check first"
+     ]
+    }
+   ]
+  },
+  "contradictory_input_normalization_policy": {
+   "anchors": [
+    "onchange",
+    "before storing",
+    "as the user provides"
+   ],
+   "classes": [
+    {
+     "name": "trim_on_change",
+     "canonical": true,
+     "signatures": [
+      "e.target.value.trim()",
+      "value.trim())"
+     ]
+    },
+    {
+     "name": "store_raw_value",
+     "signatures": [
+      "exactly as the user",
+      "raw unprocessed",
+      "without any preprocessing"
      ]
     }
    ]

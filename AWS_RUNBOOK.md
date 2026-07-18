@@ -61,6 +61,31 @@ Runs 8 seeded agent trajectories per task inside each task's docker container
 `data/a0_v2/` back to the laptop when done. For the 32B pass afterwards:
 same command + `--model-id Qwen/Qwen2.5-Coder-32B-Instruct` on a g5.12xlarge.
 
+## 2c. SCALE collection — 60 train tasks at 14B (decisions/018) — CURRENT step
+
+```bash
+git pull && python -m pytest -q          # expect 117 green
+python scripts/collect_v2.py \
+    --model-id Qwen/Qwen2.5-Coder-14B-Instruct \
+    --n-tasks 60 \
+    --classes data/interpretation_classes.json \
+    --scratch-dir /opt/dlami/nvme/wta-scratch
+```
+
+Notes that matter:
+- `--classes` is REQUIRED here: it restricts collection to the 60 tasks with
+  class artifacts (the train pool). Without it, sorted-dir order reaches
+  swe_60+ — the SEALED TEST POOL — before swe_7/8/9. Do not collect swe_60+.
+- g6e.xlarge (L40S) spot, same as the 14B run. Budget ~20 GPU-h for the ~40
+  new tasks (~320 runs); the previously collected 20 tasks resume as
+  "already-present" if data/a0_v2 still exists on the box (ephemeral NVMe —
+  if wiped, they re-collect, adding ~6 GPU-h; both fine).
+- Broken images are skipped and logged (they still count toward --n-tasks;
+  check the manifest for "SKIPPED" entries and report them).
+- Watch per-run: steps, finished, reads_by_trigger (nonzero value), actions.
+- When done: tarball data/a0_v2/ back to the laptop, print sha256. Laptop
+  then reruns audit_labels + sweep + run_full_gates --kfold 5 (step 3).
+
 ## 3. Offline training + sweeps + gates (laptop, CPU — no AWS)
 
 ```bash

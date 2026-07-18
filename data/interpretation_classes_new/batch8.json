@@ -1,0 +1,535 @@
+{
+  "swe_55": {
+    "mp_auth_store_no_db_path": {
+      "anchors": [
+        "no-database path",
+        "authentication store",
+        "requiresdatabase"
+      ],
+      "classes": [
+        {
+          "name": "memory_store",
+          "canonical": true,
+          "signatures": [
+            "storageauthmemory.newstore"
+          ]
+        },
+        {
+          "name": "sql_store_anyway",
+          "signatures": [
+            "storagesql",
+            "database store even",
+            "sql-based store"
+          ]
+        },
+        {
+          "name": "nil_store",
+          "signatures": [
+            "store = nil",
+            "nil store",
+            "pass nil"
+          ]
+        }
+      ]
+    },
+    "mp_validate_cleanup_rejects_non_db_methods": {
+      "anchors": [
+        "validate()",
+        "cleanup schedule",
+        "grace-period"
+      ],
+      "classes": [
+        {
+          "name": "reject_with_error",
+          "canonical": true,
+          "signatures": [
+            "does not require a database",
+            "&& !info.requiresdatabase",
+            "return fmt.errorf(\"cleanup"
+          ]
+        },
+        {
+          "name": "allow_silently",
+          "signatures": [
+            "ignore the cleanup",
+            "no error for non-database",
+            "skip silently"
+          ]
+        }
+      ]
+    },
+    "amb_should_run_cleanup_db_filter": {
+      "anchors": [
+        "shouldruncleanup",
+        "guard",
+        "cleanup service"
+      ],
+      "classes": [
+        {
+          "name": "three_condition_guard",
+          "canonical": true,
+          "signatures": [
+            "info.enabled && info.requiresdatabase && info.cleanup"
+          ]
+        },
+        {
+          "name": "delegate_to_run",
+          "signatures": [
+            "run method is responsible",
+            "delegated to run",
+            "only enabled and cleanup"
+          ]
+        }
+      ]
+    },
+    "contra_cleanup_defaults_for_enabled_non_db_methods": {
+      "anchors": [
+        "configuration defaulting",
+        "default cleanup",
+        "enabled jwt"
+      ],
+      "classes": [
+        {
+          "name": "skip_default_for_non_db",
+          "canonical": true,
+          "signatures": [
+            "must not populate",
+            "skip the default for",
+            "no cleanup default"
+          ]
+        },
+        {
+          "name": "default_for_all_enabled",
+          "signatures": [
+            "all enabled methods receive",
+            "jwt receives",
+            "populate cleanup for every"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_56": {
+    "missing_invisible_character_stripping": {
+      "anchors": [
+        "invisible",
+        "non-printing",
+        "boundaries"
+      ],
+      "classes": [
+        {
+          "name": "strip_bom_zwsp_then_trim",
+          "canonical": true,
+          "signatures": [
+            "\\ufeff",
+            "\\u200b",
+            "u+feff"
+          ]
+        },
+        {
+          "name": "trim_only",
+          "signatures": [
+            "just trim()",
+            "only trim",
+            "no special stripping"
+          ]
+        }
+      ]
+    },
+    "ambiguous_slash_delimited_numeric_dates": {
+      "anchors": [
+        "slash",
+        "disambiguation",
+        "numeric dates"
+      ],
+      "classes": [
+        {
+          "name": "segment_gt12_rules",
+          "canonical": true,
+          "signatures": [
+            "greater than 12",
+            "'d/m/yyyy'",
+            "'m/d/yyyy'"
+          ]
+        },
+        {
+          "name": "always_day_first",
+          "signatures": [
+            "always day-first",
+            "day-first default",
+            "d/m by default"
+          ]
+        },
+        {
+          "name": "always_month_first",
+          "signatures": [
+            "always month-first",
+            "us format default",
+            "m/d by default"
+          ]
+        }
+      ]
+    },
+    "contradictory_unset_vs_vcard_fallback": {
+      "anchors": [
+        "fallback",
+        "unparseable",
+        "serialization"
+      ],
+      "classes": [
+        {
+          "name": "epoch_date_zero",
+          "canonical": true,
+          "signatures": [
+            "new date(0)",
+            "unix epoch"
+          ]
+        },
+        {
+          "name": "current_timestamp",
+          "signatures": [
+            "new date()",
+            "current timestamp"
+          ]
+        },
+        {
+          "name": "undefined_return",
+          "signatures": [
+            "return undefined",
+            "leave unset"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_57": {
+    "unexpected_layer_handling_policy": {
+      "anchors": [
+        "unsupported layer",
+        "media type",
+        "ingestion"
+      ],
+      "classes": [
+        {
+          "name": "error_on_unsupported",
+          "canonical": true,
+          "signatures": [
+            "return an error when",
+            "unexpected media type",
+            "unsupported layer media"
+          ]
+        },
+        {
+          "name": "skip_unknown_layers",
+          "signatures": [
+            "silently skip",
+            "ignore non-flipt",
+            "continue processing the rest"
+          ]
+        }
+      ]
+    },
+    "max_layers_per_manifest": {
+      "anchors": [
+        "manifest layers",
+        "upper bound",
+        "fetch operation"
+      ],
+      "classes": [
+        {
+          "name": "max_256_layers",
+          "canonical": true,
+          "signatures": [
+            "> 256",
+            "256 layers"
+          ]
+        },
+        {
+          "name": "other_layer_limit",
+          "signatures": [
+            "> 100",
+            "> 512",
+            "> 1000"
+          ]
+        }
+      ]
+    },
+    "features_annotation_requirement_policy": {
+      "anchors": [
+        "annotation",
+        "namespace metadata",
+        "descriptor"
+      ],
+      "classes": [
+        {
+          "name": "annotation_required",
+          "canonical": true,
+          "signatures": [
+            "must be treated as required",
+            "error even if the payload",
+            "missing or empty"
+          ]
+        },
+        {
+          "name": "optional_with_payload_fallback",
+          "signatures": [
+            "fall back to the payload",
+            "optional when payload",
+            "payload namespace suffices"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_58": {
+    "read_only_error_code_token": {
+      "anchors": [
+        "machine-readable code",
+        "code()",
+        "policy routing"
+      ],
+      "classes": [
+        {
+          "name": "storage_mutation_blocked",
+          "canonical": true,
+          "signatures": [
+            "storage_mutation_blocked"
+          ]
+        },
+        {
+          "name": "other_code_token",
+          "signatures": [
+            "read_only_violation",
+            "readonly_mode",
+            "store_read_only"
+          ]
+        }
+      ]
+    },
+    "read_only_http_status_code": {
+      "anchors": [
+        "http status",
+        "statuscode()",
+        "response mapping"
+      ],
+      "classes": [
+        {
+          "name": "status_423_locked",
+          "canonical": true,
+          "signatures": [
+            "423"
+          ]
+        },
+        {
+          "name": "other_status",
+          "signatures": [
+            "403",
+            "405",
+            "return 400"
+          ]
+        }
+      ]
+    },
+    "unmodifiable_store_identifier": {
+      "anchors": [
+        "string()",
+        "debugging and logging",
+        "identifier"
+      ],
+      "classes": [
+        {
+          "name": "fenced_store",
+          "canonical": true,
+          "signatures": [
+            "fenced-store"
+          ]
+        },
+        {
+          "name": "other_identifier",
+          "signatures": [
+            "read-only-store",
+            "readonly store",
+            "\"readonlystore\""
+          ]
+        }
+      ]
+    },
+    "invalid_request_precedence_in_read_only_mode": {
+      "anchors": [
+        "underlying store",
+        "writes",
+        "wrapper behavior"
+      ],
+      "classes": [
+        {
+          "name": "own_error_immediate",
+          "canonical": true,
+          "signatures": [
+            "errreadonly",
+            "without delegating",
+            "own error immediately"
+          ]
+        },
+        {
+          "name": "reuse_errnotimplemented",
+          "signatures": [
+            "errnotimplemented",
+            "intercept its error",
+            "reuse that same error"
+          ]
+        }
+      ]
+    },
+    "uniform_sentinel_vs_operation_specific_context": {
+      "anchors": [
+        "mutating methods",
+        "uniform",
+        "which operation"
+      ],
+      "classes": [
+        {
+          "name": "uniform_sentinel",
+          "canonical": true,
+          "signatures": [
+            "same error instance",
+            "identical message"
+          ]
+        },
+        {
+          "name": "per_operation_context",
+          "signatures": [
+            "operation name in",
+            "which operation was rejected",
+            "wrap with the method"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_59": {
+    "missing_calendar_url_max_length": {
+      "anchors": [
+        "max_lengths_api",
+        "url length",
+        "too long"
+      ],
+      "classes": [
+        {
+          "name": "len_10000",
+          "canonical": true,
+          "signatures": [
+            "10000"
+          ]
+        },
+        {
+          "name": "len_other",
+          "signatures": [
+            "10240",
+            "8192",
+            "4096",
+            "2048"
+          ]
+        }
+      ]
+    },
+    "missing_provider_url_match_patterns": {
+      "anchors": [
+        "google public",
+        "feed link",
+        "pattern"
+      ],
+      "classes": [
+        {
+          "name": "regex_public_word_ics",
+          "canonical": true,
+          "signatures": [
+            "public\\/\\w+",
+            "\\w+\\.ics"
+          ]
+        },
+        {
+          "name": "simple_includes_public",
+          "signatures": [
+            "includes('/public/')",
+            "indexof('/public/')"
+          ]
+        }
+      ]
+    },
+    "ambiguous_ics_extension_detection": {
+      "anchors": [
+        "extension check",
+        "query strings",
+        "fragments"
+      ],
+      "classes": [
+        {
+          "name": "pathname_endswith",
+          "canonical": true,
+          "signatures": [
+            "pathname.endswith('.ics')",
+            "new url(calendarurl"
+          ]
+        },
+        {
+          "name": "raw_string_endswith",
+          "signatures": [
+            "calendarurl.endswith('.ics')",
+            "full raw string"
+          ]
+        }
+      ]
+    },
+    "contradictory_warning_priority_order": {
+      "anchors": [
+        "getwarning",
+        "priority",
+        "more than one condition"
+      ],
+      "classes": [
+        {
+          "name": "length_first",
+          "canonical": true,
+          "signatures": [
+            "if (isurltoolong)",
+            "length warning first",
+            "length-limit first"
+          ]
+        },
+        {
+          "name": "extension_first",
+          "signatures": [
+            "extension concern first",
+            "ics warning first",
+            "extension check first"
+          ]
+        }
+      ]
+    },
+    "contradictory_input_normalization_policy": {
+      "anchors": [
+        "onchange",
+        "before storing",
+        "as the user provides"
+      ],
+      "classes": [
+        {
+          "name": "trim_on_change",
+          "canonical": true,
+          "signatures": [
+            "e.target.value.trim()",
+            "value.trim())"
+          ]
+        },
+        {
+          "name": "store_raw_value",
+          "signatures": [
+            "exactly as the user",
+            "raw unprocessed",
+            "without any preprocessing"
+          ]
+        }
+      ]
+    }
+  }
+}

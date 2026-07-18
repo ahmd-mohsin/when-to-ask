@@ -109,7 +109,9 @@ def main() -> int:
             if m.sum() < args.window + 1:
                 too_short += 1
                 continue
-            order = np.argsort(ds.read_token_idx[m])
+            # generation order == row order; token_idx restarts per v2 segment
+            # (decisions/017), so sorting by it would interleave turns.
+            order = np.arange(int(m.sum()))
             r_seq = model.encode_lean(ds.h[m][order])
             seqs.append(r_seq)
             seq_lens.append(int(m.sum()))

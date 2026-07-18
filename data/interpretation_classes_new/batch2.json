@@ -1,0 +1,138 @@
+{
+  "swe_8": {
+    "missing_when_attribute_value": {
+      "anchors": ["when attribute", "completion task", "conditional evaluation", "tagged"],
+      "classes": [
+        {"name": "python_boolean_true", "canonical": true, "signatures": [".when = true", "when=true", "eor_task.when = true"]},
+        {"name": "string_true", "signatures": ["when = 'true'", "when = \"true\"", "when='true'"]},
+        {"name": "unset_inherit_parent", "signatures": ["inherits parent when", "leave when unset", "no explicit when", "inherit from its parent"]}
+      ]
+    },
+    "ambiguous_block_context_initialization": {
+      "anchors": ["execution context", "compiled block list", "role_complete", "template resolution", "file operations"],
+      "classes": [
+        {"name": "from_role_instance", "canonical": true, "signatures": ["= self._loader", "self._variable_manager"]},
+        {"name": "from_play", "signatures": ["play._loader", "play._variable_manager", "from the play"]},
+        {"name": "constructor_kwargs", "signatures": ["block(loader=", "variable_manager=self", "loader=loader"]}
+      ]
+    },
+    "contradictory_role_reference_assignment": {
+      "anchors": ["meta handler", "role association", "task-block relationship", "role_complete task"],
+      "classes": [
+        {"name": "explicit_role_on_both", "canonical": true, "signatures": ["eor_task._role = self", "task._role = self", "block._role = self"]},
+        {"name": "inherit_from_block", "signatures": ["inherit its role", "from the parent block", "block inheritance", "automatically from"]},
+        {"name": "constructor_role_kwarg", "signatures": ["task(role=", "block(role=", "role=self)"]}
+      ]
+    }
+  },
+  "swe_9": {
+    "missing_create_default_vault_precheck_maxage": {
+      "anchors": ["pre-check", "createdefaultvault", "existing default vault", "cache be valid"],
+      "classes": [
+        {"name": "unix_minute_times_7", "canonical": true, "signatures": ["unix_minute * 7", "unix_minute*7", "seven minutes"]},
+        {"name": "zero_force_fresh", "signatures": ["maxage: 0", "maxage = 0", "force a fresh"]},
+        {"name": "other_duration", "signatures": ["unix_hour", "unix_minute * 5", "unix_minute * 10", "unix_day"]}
+      ]
+    },
+    "ambiguous_limit_count_source": {
+      "anchors": ["hasreachedaliasescountlimit", "plan limit", "quota", "count source"],
+      "classes": [
+        {"name": "total_including_trashed", "canonical": true, "signatures": ["totalvaultaliasescount", "aliases.length >=", "including trashed"]},
+        {"name": "active_only_filtered", "signatures": ["passaliasesitems.length >=", "filteredaliases.length", "excluding trashed", "only active"]}
+      ]
+    },
+    "contradictory_default_vault_creation_timing": {
+      "anchors": ["no vault", "initialization", "initpassbridge", "provisioning"],
+      "classes": [
+        {"name": "provision_during_init", "canonical": true, "signatures": ["createdefaultvault(", "provision a new vault immediately", "create the vault during init"]},
+        {"name": "defer_to_alias_options", "signatures": ["defer vault creation", "getaliasoptions flow", "on-demand", "loading=false and defer"]}
+      ]
+    },
+    "contradictory_no_vault_memoization_policy": {
+      "anchors": ["drawer reopens", "session-scoped", "alias cache policy", "across reopens"],
+      "classes": [
+        {"name": "preserve_cached_aliases", "canonical": true, "signatures": ["memoisedpassaliasesitems || []", "do not dispatch any alias", "keep previously cached", "omitting them from the dispatch"]},
+        {"name": "reset_cached_aliases", "signatures": ["passaliasesitems: []", "reset the cache", "clear the session", "null the list"]}
+      ]
+    }
+  },
+  "swe_27": {
+    "missing_max_compose_recipients": {
+      "anchors": ["recipient ceiling", "compose to the group", "per-compose", "email addresses"],
+      "classes": [
+        {"name": "cap_25", "canonical": true, "signatures": ["slice(0, 25)", "slice(0,25)", "max_recipients = 25"]},
+        {"name": "cap_50", "signatures": ["slice(0, 50)", "slice(0,50)", "max_recipients = 50"]},
+        {"name": "cap_100", "signatures": ["slice(0, 100)", "slice(0,100)", "max_recipients = 100"]},
+        {"name": "no_cap_all_recipients", "signatures": ["oncompose(recipients,", "all recipients", "no limit"]}
+      ]
+    },
+    "ambiguous_contact_display_mode": {
+      "anchors": ["group details modal", "visual consistency", "recipient item component", "display each contact"],
+      "classes": [
+        {"name": "recipient_dropdown_item", "canonical": true, "signatures": ["recipientdropdownitem"]},
+        {"name": "keep_table_layout", "signatures": ["contactgrouptable", "table layout", "keep the table"]},
+        {"name": "custom_item_component", "signatures": ["new component", "custom item component", "own list item"]}
+      ]
+    },
+    "conflicting_internal_vs_external_compose": {
+      "anchors": ["compose pipeline", "within the modal", "compose action", "management workflows"],
+      "classes": [
+        {"name": "standard_pipeline_modal_stays_open", "canonical": true, "signatures": ["oncompose(recipients", "remain open", "does not close itself"]},
+        {"name": "close_modal_on_compose", "signatures": ["onclose()", "close the modal", "then close"]},
+        {"name": "in_modal_composer", "signatures": ["inline composer", "inside the modal", "self-contained compose"]}
+      ]
+    }
+  },
+  "swe_28": {
+    "missing_inline_diagnostic_payload_byte_cap": {
+      "anchors": ["inline diagnostic", "payload", "oversized records", "parser-safe"],
+      "classes": [
+        {"name": "cap_15360", "canonical": true, "signatures": ["15360"]},
+        {"name": "cap_16384", "signatures": ["16384", "16 * 1024"]},
+        {"name": "cap_4096_or_8192", "signatures": ["4096", "8192"]},
+        {"name": "cap_10240", "signatures": ["10240", "10 * 1024"]}
+      ]
+    },
+    "ambiguous_diagnostic_overflow_truncation_strategy": {
+      "anchors": ["exceeds the limit", "deterministic strategy", "over-limit", "capping"],
+      "classes": [
+        {"name": "tail_preserving_head_marker", "canonical": true, "signatures": ["truncated_head_bytes", "keep the remaining tail", "drop content from the beginning"]},
+        {"name": "head_preserving", "signatures": ["keep the beginning", "preserve earlier content", "truncate the end", "truncated_tail"]},
+        {"name": "middle_ellipsis", "signatures": ["ellipsis in the middle", "keep both ends", "middle of the content"]}
+      ]
+    },
+    "conflicting_single_record_compatibility_vs_immutable_audit_history": {
+      "anchors": ["results_file", "lifecycle history", "audit", "existing parsers"],
+      "classes": [
+        {"name": "sidecar_ndjson_history", "canonical": true, "signatures": [".history", "ndjson", "one json object per line", "sidecar"]},
+        {"name": "embedded_history_array", "signatures": ["'history':", "\"history\":", "history array", "append to the record"]},
+        {"name": "latest_state_only", "signatures": ["latest state only", "no history file", "just overwrite"]}
+      ]
+    }
+  },
+  "swe_29": {
+    "ignore_proxy_input_normalization": {
+      "anchors": ["proxy option", "user-provided values", "boolean behavior", "inventory"],
+      "classes": [
+        {"name": "strict_true_y_on_raw", "canonical": true, "signatures": ["('true', 'y')", "'true', 'y'", "raw value", "in ('true', 'y')"]},
+        {"name": "framework_boolean_coercion", "signatures": ["boolean(", "get_option('ignore_proxy')", "'yes', '1'"]}
+      ]
+    },
+    "certificate_validation_precedence": {
+      "anchors": ["override order", "certificate validation behavior", "trust path", "which input"],
+      "classes": [
+        {"name": "ignore_then_path_then_true", "canonical": true, "signatures": ["== 'ignore'", "cert_validation = false", "cert_validation = true"]},
+        {"name": "path_over_ignore", "signatures": ["path takes precedence", "path overrides", "cert_validation = ca_cert"]},
+        {"name": "always_boolean", "signatures": ["bool(cert", "always true or false", "coerce to boolean"]}
+      ]
+    },
+    "undocumented_input_handling_conflict": {
+      "anchors": ["undocumented", "connection-related inputs", "documented option", "extra inventory"],
+      "classes": [
+        {"name": "ignore_extras_debug_log", "canonical": true, "signatures": ["display.debug", "ignored key", "debug-level"]},
+        {"name": "reject_unknown_inputs", "signatures": ["raise ansibleerror", "fail the connection", "reject unknown"]},
+        {"name": "apply_extra_inputs", "signatures": ["apply additional", "pass through extra", "merge extra"]}
+      ]
+    }
+  }
+}

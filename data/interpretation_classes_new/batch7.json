@@ -1,0 +1,552 @@
+{
+  "swe_50": {
+    "unspecified_mime_detection_precedence_and_fallback_chain": {
+      "anchors": [
+        "mime detection",
+        "evaluation order",
+        "authoritative source",
+        "file metadata"
+      ],
+      "classes": [
+        {
+          "name": "type_then_extension_then_default",
+          "canonical": true,
+          "signatures": [
+            "input.type ||",
+            "input.type ?",
+            "'application/octet-stream'"
+          ]
+        },
+        {
+          "name": "extension_first",
+          "signatures": [
+            "extension first",
+            "lookup before the type",
+            "name.split('.').pop"
+          ]
+        },
+        {
+          "name": "content_sniffing",
+          "signatures": [
+            "file bytes",
+            "sniff",
+            "magic number",
+            "filereader"
+          ]
+        }
+      ]
+    },
+    "missing_safari_version_threshold_and_validation": {
+      "anchors": [
+        "safari version",
+        "native format decoding",
+        "gate functions"
+      ],
+      "classes": [
+        {
+          "name": "version_17_class_check",
+          "canonical": true,
+          "signatures": [
+            "isgreaterthanorequal('17'",
+            "'17'"
+          ]
+        },
+        {
+          "name": "other_version_number",
+          "signatures": [
+            "'16'",
+            "'18'"
+          ]
+        },
+        {
+          "name": "manual_major_parse",
+          "signatures": [
+            "parseint(",
+            "split('.')[0]",
+            "major version"
+          ]
+        }
+      ]
+    },
+    "conflicting_jxl_ios_support_directive": {
+      "anchors": [
+        "ios safari",
+        "support scope",
+        "conditional support"
+      ],
+      "classes": [
+        {
+          "name": "ios_supported_same_as_heic",
+          "canonical": true,
+          "signatures": [
+            "same platform",
+            "alongside heic",
+            "equally apply"
+          ]
+        },
+        {
+          "name": "desktop_only_jxl",
+          "signatures": [
+            "desktop-only",
+            "return false on ios",
+            "!ismobile &&"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_51": {
+    "missing_share_default_expiration_duration": {
+      "anchors": [
+        "no expiration",
+        "default",
+        "share saved"
+      ],
+      "classes": [
+        {
+          "name": "days_90",
+          "canonical": true,
+          "signatures": [
+            "adddate(0, 0, 90",
+            "90 days",
+            "24 * 90"
+          ]
+        },
+        {
+          "name": "days_30",
+          "signatures": [
+            "adddate(0, 0, 30",
+            "30 days",
+            "24 * 30"
+          ]
+        },
+        {
+          "name": "one_year",
+          "signatures": [
+            "365",
+            "adddate(1, 0, 0",
+            "one year"
+          ]
+        }
+      ]
+    },
+    "ambiguous_which_timestamp_fields_nullable": {
+      "anchors": [
+        "timestamp fields",
+        "absent values",
+        "optional"
+      ],
+      "classes": [
+        {
+          "name": "expiration_and_lastvisited_only",
+          "canonical": true,
+          "signatures": [
+            "lastvisitedat *time.time",
+            "remain non-optional",
+            "only the share expiration"
+          ]
+        },
+        {
+          "name": "all_timestamps_optional",
+          "signatures": [
+            "externalinfoupdatedat *time.time",
+            "all timestamps optional",
+            "every timestamp field"
+          ]
+        },
+        {
+          "name": "only_expiration_nullable",
+          "signatures": [
+            "only expires",
+            "just the expiration"
+          ]
+        }
+      ]
+    },
+    "contradictory_share_visit_option_parameter_name": {
+      "anchors": [
+        "boolean option",
+        "load-options",
+        "parameter name"
+      ],
+      "classes": [
+        {
+          "name": "both_names_exposed",
+          "canonical": true,
+          "signatures": [
+            "updatevisitonload and trackvisitonload",
+            "both option names",
+            "expose both"
+          ]
+        },
+        {
+          "name": "update_visit_only",
+          "signatures": [
+            "only updatevisitonload",
+            "just updatevisitonload"
+          ]
+        },
+        {
+          "name": "track_visit_only",
+          "signatures": [
+            "only trackvisitonload",
+            "just trackvisitonload"
+          ]
+        }
+      ]
+    },
+    "contradictory_share_visit_update_policy": {
+      "anchors": [
+        "sharelinkupdatepolicy",
+        "visit timestamp",
+        "share load"
+      ],
+      "classes": [
+        {
+          "name": "fast_or_balanced",
+          "canonical": true,
+          "signatures": [
+            "fast\" || ",
+            "|| policy",
+            "or balanced"
+          ]
+        },
+        {
+          "name": "fast_only",
+          "signatures": [
+            "only when fast",
+            "just fast"
+          ]
+        },
+        {
+          "name": "balanced_only",
+          "signatures": [
+            "only when balanced",
+            "just balanced"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_52": {
+    "missing_default_value_for_max_idle_connections": {
+      "anchors": [
+        "idle database connections",
+        "default",
+        "not configured"
+      ],
+      "classes": [
+        {
+          "name": "idle_4",
+          "canonical": true,
+          "signatures": [
+            "maxidleconn: 4"
+          ]
+        },
+        {
+          "name": "idle_5",
+          "signatures": [
+            "maxidleconn: 5"
+          ]
+        },
+        {
+          "name": "idle_10_or_0",
+          "signatures": [
+            "maxidleconn: 10",
+            "maxidleconn: 0"
+          ]
+        }
+      ]
+    },
+    "missing_default_values_for_open_connections_and_connection_lifetime": {
+      "anchors": [
+        "open connections",
+        "connection lifetime",
+        "pool configuration"
+      ],
+      "classes": [
+        {
+          "name": "open1_lifetime1s",
+          "canonical": true,
+          "signatures": [
+            "maxopenconn: 1,",
+            "1 * time.second"
+          ]
+        },
+        {
+          "name": "open_10_or_more",
+          "signatures": [
+            "maxopenconn: 10",
+            "maxopenconn: 25"
+          ]
+        },
+        {
+          "name": "longer_lifetime",
+          "signatures": [
+            "30 * time.second",
+            "time.minute",
+            "time.hour"
+          ]
+        }
+      ]
+    },
+    "missing_yaml_key_name_for_database_connection_lifetime": {
+      "anchors": [
+        "yaml key",
+        "configuration loader",
+        "lifetime configuration"
+      ],
+      "classes": [
+        {
+          "name": "pool_conn_ttl",
+          "canonical": true,
+          "signatures": [
+            "pool_conn_ttl"
+          ]
+        },
+        {
+          "name": "lifetime_named_keys",
+          "signatures": [
+            "conn_max_lifetime",
+            "connection_max_lifetime",
+            "max_conn_lifetime"
+          ]
+        }
+      ]
+    },
+    "contradictory_pool_adjustment_when_idle_exceeds_open": {
+      "anchors": [
+        "idle exceeds",
+        "pool limits",
+        "adjust"
+      ],
+      "classes": [
+        {
+          "name": "raise_open_to_idle",
+          "canonical": true,
+          "signatures": [
+            "maxopenconn = maxidleconn",
+            "raise open"
+          ]
+        },
+        {
+          "name": "cap_idle_to_open",
+          "signatures": [
+            "maxidleconn = maxopenconn",
+            "cap idle",
+            "capped down"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_53": {
+    "upgrade_deps_depth_limit": {
+      "anchors": [
+        "dependency depth",
+        "transitive",
+        "propagation"
+      ],
+      "classes": [
+        {
+          "name": "depth_1_limit",
+          "canonical": true,
+          "signatures": [
+            "_dep_depth",
+            "depth > 1",
+            "depth + 1"
+          ]
+        },
+        {
+          "name": "all_levels_upgraded",
+          "signatures": [
+            "all levels",
+            "every transitive",
+            "unlimited depth"
+          ]
+        },
+        {
+          "name": "depth_2_limit",
+          "signatures": [
+            "depth > 2",
+            "two levels"
+          ]
+        }
+      ]
+    },
+    "upgrade_candidate_version_limit": {
+      "anchors": [
+        "candidate versions",
+        "upgrade resolution",
+        "efficiently"
+      ],
+      "classes": [
+        {
+          "name": "count_25",
+          "canonical": true,
+          "signatures": [
+            "[:25]",
+            "25 most recent",
+            "at most 25"
+          ]
+        },
+        {
+          "name": "other_count_limit",
+          "signatures": [
+            "[:10]",
+            "[:50]",
+            "[:100]"
+          ]
+        },
+        {
+          "name": "age_based_limit",
+          "signatures": [
+            "version age",
+            "recency window",
+            "released within"
+          ]
+        }
+      ]
+    },
+    "upgrade_source_fallback_depth": {
+      "anchors": [
+        "galaxy servers",
+        "server priority",
+        "sources"
+      ],
+      "classes": [
+        {
+          "name": "primary_server_only",
+          "canonical": true,
+          "signatures": [
+            "first server",
+            "primary server only"
+          ]
+        },
+        {
+          "name": "all_servers_checked",
+          "signatures": [
+            "all configured",
+            "every server",
+            "check secondary"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_54": {
+    "missing_deprecation_target_version": {
+      "anchors": [
+        "deprecation notices",
+        "target version",
+        "redirects"
+      ],
+      "classes": [
+        {
+          "name": "numeric_214",
+          "canonical": true,
+          "signatures": [
+            "version=2.14"
+          ]
+        },
+        {
+          "name": "string_214",
+          "signatures": [
+            "version='2.14'",
+            "version=\"2.14\""
+          ]
+        },
+        {
+          "name": "other_target",
+          "signatures": [
+            "2.15",
+            "2.16"
+          ]
+        }
+      ]
+    },
+    "ambiguous_iterating_states_base_class": {
+      "anchors": [
+        "base class",
+        "inheritance",
+        "directly comparable"
+      ],
+      "classes": [
+        {
+          "name": "intenum_base",
+          "canonical": true,
+          "signatures": [
+            "(intenum)"
+          ]
+        },
+        {
+          "name": "plain_enum_base",
+          "signatures": [
+            "(enum)"
+          ]
+        },
+        {
+          "name": "intflag_base",
+          "signatures": [
+            "(intflag)"
+          ]
+        }
+      ]
+    },
+    "hoststate_str_state_label_prefix_convention": {
+      "anchors": [
+        "__str__",
+        "labels",
+        "hoststate"
+      ],
+      "classes": [
+        {
+          "name": "bare_member_names",
+          "canonical": true,
+          "signatures": [
+            "run_state.name",
+            "'|'.join",
+            ".name for"
+          ]
+        },
+        {
+          "name": "legacy_prefixed_labels",
+          "signatures": [
+            "iterating_",
+            "failed_"
+          ]
+        }
+      ]
+    },
+    "module_public_api_exposure": {
+      "anchors": [
+        "export surface",
+        "public api",
+        "play_iterator.py"
+      ],
+      "classes": [
+        {
+          "name": "all_three_exported",
+          "canonical": true,
+          "signatures": [
+            "'playiterator', 'iteratingstates'"
+          ]
+        },
+        {
+          "name": "enums_only_exported",
+          "signatures": [
+            "__all__ = ['iteratingstates'",
+            "only the enum types"
+          ]
+        },
+        {
+          "name": "no_all_defined",
+          "signatures": [
+            "no __all__",
+            "without __all__"
+          ]
+        }
+      ]
+    }
+  }
+}

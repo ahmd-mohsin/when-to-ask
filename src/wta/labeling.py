@@ -77,6 +77,16 @@ def _hits(text_norm: str, terms: list[str]) -> int:
     return sum(text_norm.count(_norm(t)) for t in terms)
 
 
+# spec labels.md "v2: action-based commitment": writing to files is the
+# behavioural commitment; read-only exploration must not count.
+_MUTATING_TOKENS = ("sed -i", ">", ">>", "tee ", "patch ", "git apply",
+                    "perl -i")
+
+
+def _is_mutating(cmd: str) -> bool:
+    return any(t in cmd for t in _MUTATING_TOKENS)
+
+
 def token_char_positions(text: str, tokenizer) -> list[int]:
     """Char start offset per token of the re-tokenized trace. Approximates
     generation-time positions (spec labels.md caveat 5)."""
@@ -202,24 +212,53 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
             runs.append((task, run_id))
             r_i = len(runs) - 1
 
-            # per (run, decision): committed class + behavioural commitment char
+            # per (run, decision): committed class + behavioural commitment char.
+            # v2 (spec labels.md "v2: action-based commitment"): mutating
+            # actions are scored FIRST — deliberation mentions must not commit;
+            # trace scoring is the v1 fallback. label_source records which won.
+            mut_actions = [a for a in log.actions if _is_mutating(a.action_text)]
+            mut_norm = _norm("\n".join(a.action_text for a in mut_actions))
             committed: dict[int, tuple[int, int]] = {}  # did -> (global cls, commit_char)
             for did, spec in task_specs[task]:
-                scores = [_hits(text_norm, c["signatures"]) for c in spec["classes"]]
-                order = np.argsort(scores)[::-1]
                 blocker = vocab.decisions[did][1]
-                if scores[order[0]] >= min_sig_hits and scores[order[0]] > scores[order[1]]:
-                    local = int(order[0])
-                    sig_terms = spec["classes"][local]["signatures"]
-                    pos = min((p for t in sig_terms
-                               if (p := text_norm.find(_norm(t))) >= 0),
-                              default=-1)
+                local, pos, source = -1, -1, None
+                if mut_norm:
+                    a_scores = [_hits(mut_norm, c["signatures"])
+                                for c in spec["classes"]]
+                    a_order = np.argsort(a_scores)[::-1]
+                    if (a_scores[a_order[0]] >= min_sig_hits
+                            and a_scores[a_order[0]] > a_scores[a_order[1]]):
+                        cand = int(a_order[0])
+                        sig_norms = [_norm(t) for t in
+                                     spec["classes"][cand]["signatures"]]
+                        for a in mut_actions:
+                            if any(s in _norm(a.action_text) for s in sig_norms):
+                                seg = min(a.segment_idx, len(seg_starts) - 1)
+                                s_st = seg_starts[seg]
+                                pos = offs[seg] + (s_st[min(a.token_idx,
+                                                            len(s_st) - 1)]
+                                                   if s_st else 0)
+                                local, source, scores = cand, "actions", a_scores
+                                break
+                if source is None:
+                    scores = [_hits(text_norm, c["signatures"])
+                              for c in spec["classes"]]
+                    order = np.argsort(scores)[::-1]
+                    if (scores[order[0]] >= min_sig_hits
+                            and scores[order[0]] > scores[order[1]]):
+                        local = int(order[0])
+                        sig_terms = spec["classes"][local]["signatures"]
+                        pos = min((p for t in sig_terms
+                                   if (p := text_norm.find(_norm(t))) >= 0),
+                                  default=-1)
+                        source = "trace"
+                if source is not None:
                     gcls = vocab.class_of_decision[did][local]
                     committed[did] = (gcls, pos)
                     name = spec["classes"][local]["name"]
                     cov["committed_classes"].setdefault(blocker, set()).add(name)
                     dwrite(kind="commitment", run=run_id, blocker=blocker,
-                           chosen=name, commit_char=pos,
+                           chosen=name, commit_char=pos, label_source=source,
                            scores={c["name"]: s for c, s in
                                    zip(spec["classes"], scores)},
                            snippet=text[max(0, pos - 60):pos + 120] if pos >= 0 else "")

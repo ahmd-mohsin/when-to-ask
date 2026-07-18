@@ -23,6 +23,36 @@ RESOLUTION).
 | `class_id` | per (run, blocker): signature scoring over the FULL trace; argmax with ≥`min_hits` and strict margin over runner-up, else unlabeled. Applied only to reads whose `decision_id` matches and that fall at/after the behavioural commitment point | global flattened int (decision-local classes offset into one vocabulary), −1 = unlabeled |
 | `phase` | behavioural commitment proxy: the first read whose preceding text contains a signature of the run's committed class for that decision → reads before = `should_ask`, at/after = `settled` | for A1's matched contrast + A3's stabilization label + lead-time reference |
 
+## v2: action-based commitment (2026-07-18, after the 14B mislabel finding)
+
+v2 runs log `ActionEvent`s (decisions/017) — the agent's actual commands.
+On multi-turn agent traces, whole-trace signature scoring mislabels VALUE
+commitments: agents mention several candidate values while deliberating
+before writing one (verified mislabels on wta-a0-v2-14b: swe_2 sentinel
+labeled from a discussion mention while the action clamps; a `return 0` in an
+unrelated function matched `zero_or_placeholder_sentinel`).
+
+Fix, per (run, blocker), when the run has actions:
+
+1. Score class signatures over the concatenation of **mutating** action texts
+   only (commands matching `sed -i`, `>`/`>>` redirection, `tee `, `patch `,
+   `git apply`, `perl -i` — writing to files IS the behavioural commitment;
+   read-only exploration like `grep 30 file` must not count).
+2. Same argmax + `min_sig_hits` + strict-margin rules as trace scoring.
+3. Commitment position = the FIRST mutating action containing a winning-class
+   signature, mapped through its own segment's token→char table (same
+   mapping as reads). Reads before that action are `should_ask` even if the
+   winning signature was *mentioned* earlier — that is the point of the fix.
+4. Fallback: no mutating actions, no hits, or a tie → whole-trace scoring
+   (the v1 path, unchanged). Every commitment's `label_source`
+   (`actions` | `trace`) is recorded in the debug trail so coverage by
+   source is auditable.
+
+Honesty caveats: the mutating-command lexicon is a heuristic (a `>` inside
+quoted code counts as mutating); v1 data has no actions and is untouched;
+prose-only commitments (agent states a choice, never edits) fall back to the
+noisy trace path and stay measurable in the audit.
+
 ## Design decisions (and their honesty caveats)
 
 1. **Class ids are flattened globally** (each (blocker, class) pair is one id)

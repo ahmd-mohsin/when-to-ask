@@ -84,8 +84,10 @@ def fit_a2(ds, train, epochs: int, out: Path | None = None):
 
 
 def seq_by_run_decision(ds, mask, model):
-    """{decision -> [(r_seq, committed_class|-1)]} over masked reads, ordered
-    within each (run, decision) by token index."""
+    """{decision -> [(r_seq, committed_class|-1)]} over masked reads, in
+    generation order. build_labels appends a run's reads chronologically, so
+    row order IS generation order; sorting by read_token_idx would interleave
+    v2 turns (token_idx restarts per segment, decisions/017)."""
     groups: dict = {}
     for r in range(len(ds.runs)):
         for dec in set(ds.decision[(ds.run_idx == r) & mask].tolist()):
@@ -94,42 +96,103 @@ def seq_by_run_decision(ds, mask, model):
             m = (ds.run_idx == r) & (ds.decision == dec) & mask
             if m.sum() < 2:
                 continue
-            order = np.argsort(ds.read_token_idx[m])
+            order = np.arange(int(m.sum()))
             cl = ds.cls[m][order]
             cl = cl[cl >= 0]
             groups.setdefault(dec, []).append(
-                (model.encode_lean(ds.h[m][order]), int(cl[0]) if len(cl) else -1))
+                (model.encode_lean(ds.h[m][order]), int(cl[0]) if len(cl) else -1, r))
     return groups
+
+
+def real_action_reads(ds, a0_dir, classes_path) -> dict:
+    """{(run_idx, decision) -> read index of the FIRST ActionEvent whose
+    command matches the run's committed-class signatures; -1 = never acted}.
+
+    The v2 replacement for gate7's end-of-trace proxy (decisions/017): the
+    behavioural commitment moment is the tool call that writes the choice,
+    located by (segment_idx, token_idx) against the (run, decision) read
+    sequence. Runs without logged actions (v1 data) produce no entries."""
+    from wta.labeling import _norm, load_class_artifact
+
+    art = load_class_artifact(classes_path)
+    sigs_of: dict[int, list[str]] = {}
+    for did, (task, blocker) in enumerate(ds.vocab.decisions):
+        spec = art[task][blocker]
+        for local, gcls in enumerate(ds.vocab.class_of_decision[did]):
+            sigs_of[gcls] = [_norm(s) for s in spec["classes"][local]["signatures"]]
+
+    out: dict = {}
+    for r, (task, run_id) in enumerate(ds.runs):
+        meta = json.loads((Path(a0_dir) / task / f"{run_id}.json")
+                          .read_text(encoding="utf-8"))
+        actions = meta.get("actions") or []
+        if not actions:
+            continue
+        # ds rows for run r are meta["reads"] in order (build_labels appends
+        # every read), so ordinal k here == ordinal position in the row block
+        pos_of_read = [(rd.get("segment_idx", 0), rd["token_idx"])
+                       for rd in meta["reads"]]
+        rows = np.where(ds.run_idx == r)[0]
+        for dec in set(ds.decision[rows].tolist()):
+            if dec < 0:
+                continue
+            in_dec = ds.decision[rows] == dec
+            cls_vals = ds.cls[rows[in_dec]]
+            cls_vals = cls_vals[cls_vals >= 0]
+            if not len(cls_vals):
+                continue
+            sigs = [s for s in sigs_of.get(int(cls_vals[0]), []) if s]
+            a_pos = next(((a.get("segment_idx", 0), a["token_idx"])
+                          for a in actions
+                          if any(s in _norm(a.get("action_text", "")) for s in sigs)),
+                         None)
+            if a_pos is None:
+                out[(r, dec)] = -1
+                continue
+            seq_pos = [pos_of_read[k] for k in np.where(in_dec)[0]]
+            n_before = sum(1 for p in seq_pos if p <= a_pos)
+            out[(r, dec)] = max(n_before - 1, 0)
+    return out
 
 
 def fit_a3(ds, model, train, eps: float, window: int):
     grp = seq_by_run_decision(ds, train, model)
-    seqs = [s for lst in grp.values() for s, _ in lst]
+    seqs = [s for lst in grp.values() for s, *_ in lst]
     calib = calibrate_tau(seqs, window=window, eps_settle=eps)
-    ref, n_pairs = benign_spread_reference(list(grp.values()), window, eps)
+    ref, n_pairs = benign_spread_reference(
+        [[(s, c) for s, c, _ in lst] for lst in grp.values()], window, eps)
     return calib, ref, n_pairs, len(seqs)
 
 
-def compute_gate7(ds, model, evalm, calib, window) -> "object | None":
+def compute_gate7(ds, model, evalm, calib, window,
+                  action_reads: dict | None = None) -> "object | None":
+    """action_reads: real behavioural-commit indices from real_action_reads();
+    None -> the v1 end-of-trace proxy."""
     per_dec = []
     for dec, lst in seq_by_run_decision(ds, evalm, model).items():
-        if len({c for _, c in lst if c >= 0}) < 2:
+        if len({c for _, c, _ in lst if c >= 0}) < 2:
             continue
-        R = min(len(s) for s, _ in lst)
+        R = min(len(s) for s, *_ in lst)
         if R < window + 1:
             continue
-        r_by = np.stack([s[:R] for s, _ in lst])
+        r_by = np.stack([s[:R] for s, *_ in lst])
         weights = np.zeros(r_by.shape[:2])
-        action_read = np.full(len(lst), R - 1)  # proxy: end-of-trace commit
-        for i, (s_seq, _) in enumerate(lst):
+        if action_reads is None:
+            action_read = np.full(len(lst), R - 1)  # proxy: end-of-trace commit
+        else:
+            action_read = np.array([min(action_reads.get((r, dec), -1), R - 1)
+                                    for _, _, r in lst])
+        for i, (s_seq, *_) in enumerate(lst):
             det = CommitmentDetector(tau=calib.tau, s_ref=1e9, window=window,
                                      l_scale=calib.l_scale)
             for k in range(R):
                 _, weights[i, k] = det.step(s_seq[k], s=0.0)
-        g = gate7_lead_time(r_by, weights, action_read, np.array([c for _, c in lst]))
+        g = gate7_lead_time(r_by, weights, action_read,
+                            np.array([c for _, c, _ in lst]))
         if g:
             per_dec.append(g)
-    return gate7_aggregate(per_dec, proxy=True) if per_dec else None
+    return (gate7_aggregate(per_dec, proxy=action_reads is None)
+            if per_dec else None)
 
 
 def gates_1to6(ds, model, split, out_notes: list):
@@ -172,7 +235,7 @@ def gates_1to6(ds, model, split, out_notes: list):
 
 
 def kfold_gates(ds, split, k: int, epochs: int, eps: float, window: int,
-                seed: int = 0) -> dict:
+                seed: int = 0, action_reads: dict | None = None) -> dict:
     """N-fold cross-fit over non-OOD (task, seed) groups; pool gates 1/5/7
     (decisions/014). Retrains A2 per fold."""
     base = split["lab"] & ~split["is_ood"]
@@ -192,7 +255,7 @@ def kfold_gates(ds, split, k: int, epochs: int, eps: float, window: int,
         g5 = gate5_lean_separation(model.encode_lean(ds.h[evalm]),
                                    ds.decision[evalm], ds.cls[evalm]).numbers
         calib, *_ = fit_a3(ds, model, train, eps, window)
-        g7 = compute_gate7(ds, model, evalm, calib, window)
+        g7 = compute_gate7(ds, model, evalm, calib, window, action_reads)
         acc["folds"] += 1
         if "within_decision_class_from_T_acc" in g1:
             acc["g1_acc"].append(g1["within_decision_class_from_T_acc"])
@@ -259,9 +322,21 @@ def main() -> int:
     print(f"reads: {split['lab'].sum()} labeled | train {split['train'].sum()} | "
           f"eval {split['evalm'].sum()} | ood {(split['lab'] & split['is_ood']).sum()}")
 
+    action_reads = real_action_reads(ds, args.a0, args.classes)
+    if action_reads:
+        acted = sum(1 for v in action_reads.values() if v >= 0)
+        print(f"real action-commit reads (gate7, decisions/017): "
+              f"{acted}/{len(action_reads)} committed (run, decision) pairs "
+              f"matched to an ActionEvent; unmatched -> never-acted")
+    else:
+        action_reads = None
+        print("no ActionEvents in this collection -> gate7 uses the "
+              "end-of-trace PROXY")
+
     if args.kfold > 0:
         print(f"\n=== {args.kfold}-FOLD CROSS-FIT GATES (eps={epss[0]}, window={windows[0]}) ===")
-        acc = kfold_gates(ds, split, args.kfold, args.epochs, epss[0], windows[0])
+        acc = kfold_gates(ds, split, args.kfold, args.epochs, epss[0], windows[0],
+                          action_reads=action_reads)
         g1 = _ms(acc["g1_acc"]); g1c = _ms(acc["g1_chance"]); g1e = _ms(acc["g1_eta2"])
         g5r = _ms(acc["g5_ratio"]); g5s = _ms(acc["g5_sil"])
         g7 = _ms(acc["g7_medK"]); g7f = _ms(acc["g7_fracpos"])
@@ -298,7 +373,7 @@ def main() -> int:
         for window in windows:
             calib, ref, n_pairs, n_seq = fit_a3(ds, model, split["train"], eps, window)
             rate = calib.n_points / max(n_seq, 1)
-            g7 = compute_gate7(ds, model, split["evalm"], calib, window)
+            g7 = compute_gate7(ds, model, split["evalm"], calib, window, action_reads)
             k = g7.numbers["median_K"] if g7 else float("nan")
             print(f"  eps={eps} window={window}: settle {calib.n_points}/{n_seq} "
                   f"({rate:.0%}), tau={calib.tau:.3f}, benign ref={ref:.3f} "

@@ -1,0 +1,513 @@
+{
+  "swe_30": {
+    "ambiguous_non_collection_spec_ownership": {
+      "anchors": [
+        "non-collection",
+        "path-hook finder",
+        "spec-based probing",
+        "ownership",
+        "later importers"
+      ],
+      "classes": [
+        {
+          "name": "raise_attribute_error_decline",
+          "canonical": true,
+          "signatures": [
+            "raise attributeerror"
+          ]
+        },
+        {
+          "name": "delegate_wrapped_find_spec",
+          "signatures": [
+            "finder.find_spec(",
+            "delegate to the wrapped",
+            "surface the delegated spec"
+          ]
+        },
+        {
+          "name": "synthesize_module_spec",
+          "signatures": [
+            "spec_from_loader",
+            "modulespec("
+          ]
+        }
+      ]
+    },
+    "contradictory_path_argument_type": {
+      "anchors": [
+        "delegated call",
+        "path argument",
+        "stable snapshot",
+        "handoff",
+        "mutable container"
+      ],
+      "classes": [
+        {
+          "name": "tuple_snapshot",
+          "canonical": true,
+          "signatures": [
+            "(self._pathctx,)",
+            "path=(self._pathctx,)"
+          ]
+        },
+        {
+          "name": "single_element_list",
+          "signatures": [
+            "[self._pathctx]",
+            "path=[self._pathctx]"
+          ]
+        },
+        {
+          "name": "positional_path_argument",
+          "signatures": [
+            "find_module(fullname, self._pathctx",
+            "positional second argument"
+          ]
+        }
+      ]
+    },
+    "missing_filefinder_identification_rule": {
+      "anchors": [
+        "runtime identifier",
+        "special handling",
+        "cannot be imported",
+        "recognize the finder"
+      ],
+      "classes": [
+        {
+          "name": "frozen_importlib_string_match",
+          "canonical": true,
+          "signatures": [
+            "_frozen_importlib_external.filefinder"
+          ]
+        },
+        {
+          "name": "isinstance_import_check",
+          "signatures": [
+            "isinstance(finder, filefinder",
+            "from importlib.machinery import filefinder"
+          ]
+        },
+        {
+          "name": "class_name_only_match",
+          "signatures": [
+            "== 'filefinder'",
+            "== \"filefinder\"",
+            "endswith('filefinder')"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_31": {
+    "missing_commerce_copy_tokens": {
+      "anchors": [
+        "store label",
+        "user-facing text",
+        "account-navigation",
+        "commerce channel"
+      ],
+      "classes": [
+        {
+          "name": "policy_exact_tokens",
+          "canonical": true,
+          "signatures": [
+            "google play",
+            "apple app store",
+            "payments & subscriptions"
+          ]
+        },
+        {
+          "name": "generic_store_names",
+          "signatures": [
+            "play store",
+            "on the app store",
+            "itunes"
+          ]
+        }
+      ]
+    },
+    "ambiguous_delegated_context_body_density": {
+      "anchors": [
+        "delegated",
+        "admin mode",
+        "body content",
+        "minimum policy-required"
+      ],
+      "classes": [
+        {
+          "name": "single_paragraph_ownership_statement",
+          "canonical": true,
+          "signatures": [
+            "subscription for user id:",
+            "was purchased via an in-app purchase"
+          ]
+        },
+        {
+          "name": "multi_paragraph_instructional",
+          "signatures": [
+            "secondary instructional paragraph",
+            "second paragraph",
+            "multiple paragraphs"
+          ]
+        }
+      ]
+    },
+    "conflicting_modal_primitive_source_of_truth": {
+      "anchors": [
+        "warning surface",
+        "modal contract",
+        "primitives",
+        "source of truth"
+      ],
+      "classes": [
+        {
+          "name": "modaltwo_sections",
+          "canonical": true,
+          "signatures": [
+            "modaltwoheader",
+            "modaltwocontent",
+            "modaltwofooter",
+            "size=\"large\""
+          ]
+        },
+        {
+          "name": "prompt_contract",
+          "signatures": [
+            "<prompt",
+            "prompt-style",
+            "import { prompt"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_32": {
+    "missing_maximum_timeout_ceiling": {
+      "anchors": [
+        "upper bound",
+        "exceeds the maximum",
+        "ceiling",
+        "task-timeout validation"
+      ],
+      "classes": [
+        {
+          "name": "max_7200",
+          "canonical": true,
+          "signatures": [
+            "7200"
+          ]
+        },
+        {
+          "name": "max_3600",
+          "signatures": [
+            "3600"
+          ]
+        },
+        {
+          "name": "max_86400",
+          "signatures": [
+            "86400"
+          ]
+        }
+      ]
+    },
+    "missing_minimum_timeout_threshold": {
+      "anchors": [
+        "too small",
+        "smallest valid",
+        "minimum accepted",
+        "when enabled"
+      ],
+      "classes": [
+        {
+          "name": "min_5_zero_disabled",
+          "canonical": true,
+          "signatures": [
+            "at least 5 seconds",
+            "value < 5",
+            "< 5:"
+          ]
+        },
+        {
+          "name": "any_positive_valid",
+          "signatures": [
+            "any positive",
+            "> 0 is valid",
+            ">= 1 is"
+          ]
+        },
+        {
+          "name": "min_10",
+          "signatures": [
+            "at least 10 seconds",
+            "value < 10"
+          ]
+        }
+      ]
+    },
+    "ambiguous_async_timeout_interaction": {
+      "anchors": [
+        "both timeout controls",
+        "effective timeout",
+        "poll",
+        "both mechanisms"
+      ],
+      "classes": [
+        {
+          "name": "task_timeout_precedence",
+          "canonical": true,
+          "signatures": [
+            "task_timeout takes precedence",
+            "task_timeout always",
+            "use task_timeout"
+          ]
+        },
+        {
+          "name": "min_of_both",
+          "signatures": [
+            "min(task_timeout",
+            "min(timeout",
+            "minimum of the two"
+          ]
+        },
+        {
+          "name": "async_wins",
+          "signatures": [
+            "async_val takes",
+            "use async_val",
+            "async takes precedence"
+          ]
+        }
+      ]
+    },
+    "contradictory_timeout_granularity_restriction": {
+      "anchors": [
+        "help text",
+        "rejected values",
+        "acceptance rule",
+        "stricter subset"
+      ],
+      "classes": [
+        {
+          "name": "multiples_of_10_range_10_59",
+          "canonical": true,
+          "signatures": [
+            "10 through 59",
+            "10 to 59",
+            "range(10, 60)"
+          ]
+        },
+        {
+          "name": "uniform_multiples_of_10",
+          "signatures": [
+            "all values must be a multiple",
+            "uniformly",
+            "every timeout must be a multiple"
+          ]
+        },
+        {
+          "name": "no_granularity_rule",
+          "signatures": [
+            "no granularity",
+            "any positive integer is accepted",
+            "no multiple-of"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_33": {
+    "missing_return_property_names": {
+      "anchors": [
+        "property names",
+        "return object",
+        "array field",
+        "status indicator"
+      ],
+      "classes": [
+        {
+          "name": "cachedlinks_isdecrypting",
+          "canonical": true,
+          "signatures": [
+            "cachedlinks",
+            "isdecrypting"
+          ]
+        },
+        {
+          "name": "generic_names",
+          "signatures": [
+            "items:",
+            "results:",
+            "entries:",
+            "isloading",
+            "loading:"
+          ]
+        }
+      ]
+    },
+    "ambiguous_entity_reference_isolation": {
+      "anchors": [
+        "self-contained",
+        "object reference",
+        "internal store",
+        "isolated"
+      ],
+      "classes": [
+        {
+          "name": "shallow_copy_spread",
+          "canonical": true,
+          "signatures": [
+            "{ ...entity }",
+            "{...entity}",
+            "{ ...link }",
+            "{...link}",
+            "shallow copy"
+          ]
+        },
+        {
+          "name": "direct_references",
+          "signatures": [
+            "direct references",
+            "same reference",
+            "without copying"
+          ]
+        },
+        {
+          "name": "deep_clone",
+          "signatures": [
+            "structuredclone",
+            "json.parse(json.stringify"
+          ]
+        }
+      ]
+    },
+    "contradictory_immutability_depth": {
+      "anchors": [
+        "mutation",
+        "destructurable",
+        "access constraints",
+        "protected"
+      ],
+      "classes": [
+        {
+          "name": "object_freeze_result",
+          "canonical": true,
+          "signatures": [
+            "object.freeze"
+          ]
+        },
+        {
+          "name": "plain_unfrozen",
+          "signatures": [
+            "freely work",
+            "no freeze",
+            "without freezing",
+            "plain object without"
+          ]
+        },
+        {
+          "name": "proxy_or_readonly",
+          "signatures": [
+            "new proxy",
+            "readonly<",
+            "as const"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_34": {
+    "missing_sort_keys_default_value": {
+      "anchors": [
+        "line width",
+        "emit width",
+        "yaml filters",
+        "when none is provided"
+      ],
+      "classes": [
+        {
+          "name": "width_1048576_constant",
+          "canonical": true,
+          "signatures": [
+            "1048576",
+            "_default_to_yaml_emit_width"
+          ]
+        },
+        {
+          "name": "width_80",
+          "signatures": [
+            "width', 80",
+            "width=80",
+            "width = 80"
+          ]
+        },
+        {
+          "name": "width_4096",
+          "signatures": [
+            "4096"
+          ]
+        }
+      ]
+    },
+    "ambiguous_exception_preservation_mechanism": {
+      "anchors": [
+        "preserved",
+        "debugging",
+        "inspection",
+        "underlying exception"
+      ],
+      "classes": [
+        {
+          "name": "exception_chaining_from_e",
+          "canonical": true,
+          "signatures": [
+            ") from e",
+            "__cause__",
+            "exception chaining"
+          ]
+        },
+        {
+          "name": "orig_exc_attribute",
+          "signatures": [
+            "orig_exc"
+          ]
+        },
+        {
+          "name": "message_text_only",
+          "signatures": [
+            "in the error message",
+            "text is sufficient",
+            "% to_native(e)"
+          ]
+        }
+      ]
+    },
+    "contradictory_representer_raise_vs_no_raise": {
+      "anchors": [
+        "represent_undefined",
+        "ansibleundefined",
+        "yaml dumping",
+        "surface"
+      ],
+      "classes": [
+        {
+          "name": "return_bool_no_raise",
+          "canonical": true,
+          "signatures": [
+            "return bool(data)",
+            "bool(data)"
+          ]
+        },
+        {
+          "name": "raise_in_representer",
+          "signatures": [
+            "raise yaml.representererror",
+            "raise an error for undefined",
+            "representer must raise"
+          ]
+        }
+      ]
+    }
+  }
+}

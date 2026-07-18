@@ -51,3 +51,20 @@ def test_answer_signature_uses_last_code_block():
     # block-less fallback is deterministic and text-sensitive
     assert answer_signature("no code here") == answer_signature("no code here")
     assert answer_signature("no code here") != answer_signature("other text")
+
+
+def test_artifact_task_ids_filters_train_pool(tmp_path):
+    """collect_v2 --classes: only artifact tasks are collectable (sorted-dir
+    order interleaves swe_60 before swe_7 — the filter is what keeps the
+    sealed test pool untouched)."""
+    import json
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+    from collect_v2 import artifact_task_ids
+
+    art = {"_provenance": {"note": "x"}, "swe_0": {}, "swe_59": {}}
+    p = tmp_path / "classes.json"
+    p.write_text(json.dumps(art), encoding="utf-8")
+    assert artifact_task_ids(p) == {"swe_0", "swe_59"}

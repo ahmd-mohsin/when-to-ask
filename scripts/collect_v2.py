@@ -36,9 +36,21 @@ from wta.logging_schema import save_run_log  # noqa: E402
 from wta.reads import DEFAULT_VALUE_PATTERN  # noqa: E402
 
 
+def artifact_task_ids(classes_path) -> set[str]:
+    """Task ids covered by an interpretation-class artifact (train pool)."""
+    art = json.loads(Path(classes_path).read_text(encoding="utf-8"))
+    return {k for k in art if not k.startswith("_")}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--tasks-dir", default="third_party/hil-bench/harbor_swe")
+    ap.add_argument("--classes", default=None,
+                    help="path to interpretation_classes.json: collect ONLY "
+                         "tasks with a class artifact (the train pool). "
+                         "Without this, tasks are taken in sorted-dir order, "
+                         "which interleaves numbering (swe_60 before swe_7) "
+                         "and would touch the sealed test pool.")
     ap.add_argument("--model-id", default="Qwen/Qwen2.5-Coder-7B-Instruct")
     ap.add_argument("--n-tasks", type=int, default=20)
     ap.add_argument("--n-runs", type=int, default=8)
@@ -73,10 +85,13 @@ def main() -> int:
     log_event(events, event="v2_collection_start", args=vars(args))
 
     tasks_dir = Path(args.tasks_dir)
+    class_tasks = artifact_task_ids(args.classes) if args.classes else None
     done = 0
     for task_dir in sorted(p for p in tasks_dir.iterdir() if p.is_dir()):
         if done >= args.n_tasks:
             break
+        if class_tasks is not None and task_dir.name not in class_tasks:
+            continue
         instr_f = task_dir / "baseline" / "instruction.md"
         ref_f = task_dir / "shared" / "image_ref.txt"
         if not instr_f.exists() or not ref_f.exists():

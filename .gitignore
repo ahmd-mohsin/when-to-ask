@@ -24,6 +24,7 @@ third_party/*/*
 # (a research artifact, decisions/005, not a run product)
 data/*
 !data/interpretation_classes.json
+!data/interpretation_classes_new/
 logs/
 models/
 *.pt

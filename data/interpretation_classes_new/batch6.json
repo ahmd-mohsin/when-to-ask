@@ -1,0 +1,592 @@
+{
+  "swe_45": {
+    "missing_refresh_chunk_size": {
+      "anchors": [
+        "refreshartists",
+        "batching",
+        "large scans",
+        "chunk size"
+      ],
+      "classes": [
+        {
+          "name": "chunk_73",
+          "canonical": true,
+          "signatures": [
+            "73"
+          ]
+        },
+        {
+          "name": "chunk_100",
+          "signatures": [
+            "ids, 100)",
+            "chunk of 100"
+          ]
+        },
+        {
+          "name": "chunk_other_round",
+          "signatures": [
+            "ids, 50)",
+            "ids, 200)",
+            "chunk of 50"
+          ]
+        }
+      ]
+    },
+    "missing_mbz_absent_sentinel": {
+      "anchors": [
+        "musicbrainz",
+        "placeholder",
+        "dominant identifier",
+        "candidate pool"
+      ],
+      "classes": [
+        {
+          "name": "empty_string_excluded",
+          "canonical": true,
+          "signatures": [
+            "!= \"\"",
+            "non-empty",
+            "exclude the empty string"
+          ]
+        },
+        {
+          "name": "no_filtering",
+          "signatures": [
+            "do not exclude",
+            "all values including",
+            "without filtering"
+          ]
+        },
+        {
+          "name": "other_sentinel_string",
+          "signatures": [
+            "\"unknown\"",
+            "\"none\"",
+            "\"n/a\""
+          ]
+        }
+      ]
+    },
+    "ambiguous_mbz_tiebreak": {
+      "anchors": [
+        "dominance",
+        "tied",
+        "most commonly occurring",
+        "selection algorithm"
+      ],
+      "classes": [
+        {
+          "name": "frequency_last_wins_gte",
+          "canonical": true,
+          "signatures": [
+            "count >= max",
+            ">= maxcount",
+            "last to reach"
+          ]
+        },
+        {
+          "name": "most_frequent_first_wins",
+          "signatures": [
+            "slice.mostfrequent",
+            "> maxcount",
+            "first to reach"
+          ]
+        },
+        {
+          "name": "iteration_first_encountered",
+          "signatures": [
+            "first value encountered",
+            "first non-empty",
+            "iteration order"
+          ]
+        }
+      ]
+    },
+    "contradictory_refresh_approach": {
+      "anchors": [
+        "scanner",
+        "artist data",
+        "artist updates",
+        "computation path"
+      ],
+      "classes": [
+        {
+          "name": "model_level_aggregation",
+          "canonical": true,
+          "signatures": [
+            "toalbumartist()",
+            "artistrepository.put(",
+            "group them by artist"
+          ]
+        },
+        {
+          "name": "keep_sql_refresh",
+          "signatures": [
+            "keep the refresh method",
+            "continue calling refresh",
+            "sql aggregation stays"
+          ]
+        }
+      ]
+    },
+    "contradictory_genre_dedup_equality": {
+      "anchors": [
+        "genres",
+        "deduplicated",
+        "aggregated artist"
+      ],
+      "classes": [
+        {
+          "name": "dedup_by_id_desc_first_kept",
+          "canonical": true,
+          "signatures": [
+            "by genre.id",
+            "descending",
+            "keep the first occurrence"
+          ]
+        },
+        {
+          "name": "full_struct_equality",
+          "signatures": [
+            "slices.compact",
+            "structural equality",
+            "full equality"
+          ]
+        },
+        {
+          "name": "id_only_stripped",
+          "signatures": [
+            "only the id field",
+            "strip genre",
+            "id-only genre"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_46": {
+    "missing_referral_sender_eligibility_scope": {
+      "anchors": [
+        "referral gating",
+        "eligible",
+        "compose flow",
+        "sender scope"
+      ],
+      "classes": [
+        {
+          "name": "primary_sender_only",
+          "canonical": true,
+          "signatures": [
+            "primary sender",
+            "non-primary",
+            "isprimary"
+          ]
+        },
+        {
+          "name": "all_senders_eligible",
+          "signatures": [
+            "every sender",
+            "all senders",
+            "regardless of sender"
+          ]
+        }
+      ]
+    },
+    "missing_referral_render_mapping_parameter": {
+      "anchors": [
+        "render",
+        "signature format",
+        "referral output"
+      ],
+      "classes": [
+        {
+          "name": "format_specific_mapping",
+          "canonical": true,
+          "signatures": [
+            "<a href",
+            "own new line",
+            "one anchor"
+          ]
+        },
+        {
+          "name": "raw_text_in_both",
+          "signatures": [
+            "raw text in both",
+            "same form for both",
+            "plain url in html"
+          ]
+        }
+      ]
+    },
+    "missing_empty_referral_settings_fallback_parameter": {
+      "anchors": [
+        "fallback",
+        "user-settings shape",
+        "unavailable"
+      ],
+      "classes": [
+        {
+          "name": "referral_undefined_shape",
+          "canonical": true,
+          "signatures": [
+            "referral: undefined",
+            "safe_empty_user_settings"
+          ]
+        },
+        {
+          "name": "empty_object_settings",
+          "signatures": [
+            "settings: {}",
+            "empty object"
+          ]
+        },
+        {
+          "name": "null_settings",
+          "signatures": [
+            "settings = null",
+            "settings as null",
+            "pass null"
+          ]
+        }
+      ]
+    },
+    "ambiguous_sender_switch_preservation_scope": {
+      "anchors": [
+        "sender-switch",
+        "signature updates",
+        "user-visible"
+      ],
+      "classes": [
+        {
+          "name": "preserve_body_remove_referral",
+          "canonical": true,
+          "signatures": [
+            "remove only the",
+            "preserve the current",
+            "strip the referral"
+          ]
+        },
+        {
+          "name": "rebuild_from_sender_data",
+          "signatures": [
+            "rebuild",
+            "regenerate the signature",
+            "from sender data"
+          ]
+        }
+      ]
+    },
+    "conflicting_referral_query_handling_rules": {
+      "anchors": [
+        "query keys",
+        "sanitized",
+        "referral url",
+        "query-handling"
+      ],
+      "classes": [
+        {
+          "name": "keep_ref_key_only",
+          "canonical": true,
+          "signatures": [
+            "only query key",
+            "'ref'",
+            "\"ref\""
+          ]
+        },
+        {
+          "name": "preserve_all_params",
+          "signatures": [
+            "preserve attribution",
+            "keep all query",
+            "all parameters"
+          ]
+        },
+        {
+          "name": "strip_all_params",
+          "signatures": [
+            "remove all query",
+            "bare url",
+            "no query at all"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_47": {
+    "missing_selection_state_wire_labels": {
+      "anchors": [
+        "serialized",
+        "selection state",
+        "persistence",
+        "restoration"
+      ],
+      "classes": [
+        {
+          "name": "clear_mixed_complete",
+          "canonical": true,
+          "signatures": [
+            "'clear'",
+            "'mixed'",
+            "'complete'"
+          ]
+        },
+        {
+          "name": "none_some_all_literals",
+          "signatures": [
+            "'none'",
+            "'some'",
+            "'all'"
+          ]
+        },
+        {
+          "name": "empty_partial_full_literals",
+          "signatures": [
+            "'empty'",
+            "'partial'",
+            "'full'"
+          ]
+        }
+      ]
+    },
+    "ambiguous_checkbox_toggle_behavior": {
+      "anchors": [
+        "toggle-all",
+        "partial selection",
+        "clicking"
+      ],
+      "classes": [
+        {
+          "name": "any_selected_clears",
+          "canonical": true,
+          "signatures": [
+            "ids.length > 0 ?",
+            "length > 0 ? []"
+          ]
+        },
+        {
+          "name": "full_only_clears",
+          "signatures": [
+            "=== itemids.length",
+            "length === item"
+          ]
+        }
+      ]
+    },
+    "contradictory_enum_definition_location": {
+      "anchors": [
+        "selection-state type",
+        "module",
+        "co-location",
+        "consumers import"
+      ],
+      "classes": [
+        {
+          "name": "hooks_useselectioncontrols",
+          "canonical": true,
+          "signatures": [
+            "useselectioncontrols"
+          ]
+        },
+        {
+          "name": "state_useselection",
+          "signatures": [
+            "state/useselection",
+            "useselection.tsx"
+          ]
+        },
+        {
+          "name": "shared_types_file",
+          "signatures": [
+            "types.ts",
+            "shared types file"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_48": {
+    "legacy_delegate_resolution_deprecation_version_unspecified": {
+      "anchors": [
+        "scheduled removal",
+        "legacy delegation",
+        "deprecation warning"
+      ],
+      "classes": [
+        {
+          "name": "version_220",
+          "canonical": true,
+          "signatures": [
+            "'2.20'",
+            "\"2.20\""
+          ]
+        },
+        {
+          "name": "other_removal_version",
+          "signatures": [
+            "'2.18'",
+            "'2.19'",
+            "\"2.19\"",
+            "\"2.18\""
+          ]
+        }
+      ]
+    },
+    "delegate_target_resolution_precedence_unspecified": {
+      "anchors": [
+        "delegated target",
+        "not a direct inventory",
+        "precedence strategy"
+      ],
+      "classes": [
+        {
+          "name": "gethost_then_address_then_synthetic",
+          "canonical": true,
+          "signatures": [
+            "ignore_limits=true",
+            "host.address ==",
+            "host(name=delegated"
+          ]
+        },
+        {
+          "name": "gethost_then_synthetic_only",
+          "signatures": [
+            "directly construct",
+            "skip the address",
+            "without the address scan"
+          ]
+        },
+        {
+          "name": "address_scan_first",
+          "signatures": [
+            "address match first",
+            "before get_host"
+          ]
+        }
+      ]
+    },
+    "delegate_to_resolution_stage_in_execution_unspecified": {
+      "anchors": [
+        "execution stage",
+        "pre-loop",
+        "one-time",
+        "loop item processing"
+      ],
+      "classes": [
+        {
+          "name": "before_post_validate",
+          "canonical": true,
+          "signatures": [
+            "before task.post_validate",
+            "_calculate_delegate_to",
+            "before post_validate"
+          ]
+        },
+        {
+          "name": "after_post_validate",
+          "signatures": [
+            "after task.post_validate runs",
+            "once post_validate completes"
+          ]
+        },
+        {
+          "name": "per_loop_item",
+          "signatures": [
+            "per item",
+            "inside the loop",
+            "each loop iteration"
+          ]
+        }
+      ]
+    }
+  },
+  "swe_49": {
+    "analytics_storage_backend_string_value": {
+      "anchors": [
+        "string() method",
+        "storage backend",
+        "identifying"
+      ],
+      "classes": [
+        {
+          "name": "clickhouse_word",
+          "canonical": true,
+          "signatures": [
+            "return \"clickhouse\"",
+            "\"clickhouse\""
+          ]
+        },
+        {
+          "name": "separator_variants",
+          "signatures": [
+            "click_house",
+            "click-house"
+          ]
+        },
+        {
+          "name": "short_ch",
+          "signatures": [
+            "return \"ch\""
+          ]
+        }
+      ]
+    },
+    "analytics_field_json_representation_when_disabled": {
+      "anchors": [
+        "analytics key",
+        "telemetry payload",
+        "disabled"
+      ],
+      "classes": [
+        {
+          "name": "null_value",
+          "canonical": true,
+          "signatures": [
+            "\"analytics\": null",
+            "analytics: null"
+          ]
+        },
+        {
+          "name": "omit_key",
+          "signatures": [
+            "omit the key",
+            "omitempty",
+            "key not present"
+          ]
+        },
+        {
+          "name": "empty_object_value",
+          "signatures": [
+            "analytics\": {}",
+            "empty object"
+          ]
+        }
+      ]
+    },
+    "uuid_rotation_vs_persistence_policy": {
+      "anchors": [
+        "telemetry uuid",
+        "across runs",
+        "restart"
+      ],
+      "classes": [
+        {
+          "name": "rotate_fresh_each_start",
+          "canonical": true,
+          "signatures": [
+            "generate a fresh",
+            "even if a prior",
+            "new uuid on every"
+          ]
+        },
+        {
+          "name": "reuse_persisted",
+          "signatures": [
+            "previously stored",
+            "reuse the existing",
+            "keep the stored uuid"
+          ]
+        }
+      ]
+    }
+  }
+}
