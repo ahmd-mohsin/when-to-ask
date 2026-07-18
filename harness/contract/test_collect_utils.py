@@ -68,3 +68,29 @@ def test_artifact_task_ids_filters_train_pool(tmp_path):
     p = tmp_path / "classes.json"
     p.write_text(json.dumps(art), encoding="utf-8")
     assert artifact_task_ids(p) == {"swe_0", "swe_59"}
+
+
+def test_reader_pins_thinking_mode_kwarg():
+    """decisions/019: enable_thinking must reach apply_chat_template (Qwen3
+    templates default it ON); None omits the kwarg (legacy Qwen2.5 path)."""
+    from wta.hf_reader import HFStreamReader
+
+    class FakeTok:
+        chat_template = "x"
+
+        def __init__(self):
+            self.kwargs = None
+
+        def apply_chat_template(self, msgs, **kw):
+            self.kwargs = kw
+            return "formatted"
+
+    r = HFStreamReader.__new__(HFStreamReader)
+    r.tokenizer = FakeTok()
+    r.enable_thinking = False
+    assert r._format("hi") == "formatted"
+    assert r.tokenizer.kwargs["enable_thinking"] is False
+
+    r.enable_thinking = None
+    r._format("hi")
+    assert "enable_thinking" not in r.tokenizer.kwargs

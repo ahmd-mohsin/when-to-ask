@@ -61,30 +61,51 @@ Runs 8 seeded agent trajectories per task inside each task's docker container
 `data/a0_v2/` back to the laptop when done. For the 32B pass afterwards:
 same command + `--model-id Qwen/Qwen2.5-Coder-32B-Instruct` on a g5.12xlarge.
 
-## 2c. SCALE collection — 60 train tasks at 14B (decisions/018) — CURRENT step
+## 2c. SCALE collection — 60 train tasks at Qwen3-32B (decisions/018+019) —
+##     CURRENT step. Instance: **g5.12xlarge** (4x A10G, spot ~$2-2.5/hr).
+##     NOT the g6e.xlarge — 32B bf16 (~65 GB) exceeds the L40S's 48 GB.
 
 ```bash
-git pull && python -m pytest -q          # expect 117 green
+git pull && python -m pytest -q          # expect 118 green
+
+# (a) SMOKE FIRST (~1-2 h, <$10) — Qwen3-32B has never run in this harness.
+#     3 tasks x 2 runs; verifies: no <think> blocks in segments (thinking
+#     pinned OFF by default, decisions/019), one-bash-block protocol
+#     compliance, memory fits, and gives a measured per-run time for the
+#     full-run cost estimate. PASTE THE MANIFEST + one .txt back to Claude
+#     BEFORE launching the full run.
 python scripts/collect_v2.py \
-    --model-id Qwen/Qwen2.5-Coder-14B-Instruct \
+    --model-id Qwen/Qwen3-32B \
+    --n-tasks 3 --n-runs 2 \
+    --classes data/interpretation_classes.json \
+    --out data/a0_v2_32b_smoke \
+    --scratch-dir /opt/dlami/nvme/wta-scratch
+
+# (b) FULL RUN (only after smoke review) — 60 train tasks x 8 seeds.
+python scripts/collect_v2.py \
+    --model-id Qwen/Qwen3-32B \
     --n-tasks 60 \
     --classes data/interpretation_classes.json \
+    --out data/a0_v2_32b \
     --scratch-dir /opt/dlami/nvme/wta-scratch
 ```
 
 Notes that matter:
-- `--classes` is REQUIRED here: it restricts collection to the 60 tasks with
-  class artifacts (the train pool). Without it, sorted-dir order reaches
-  swe_60+ — the SEALED TEST POOL — before swe_7/8/9. Do not collect swe_60+.
-- g6e.xlarge (L40S) spot, same as the 14B run. Budget ~20 GPU-h for the ~40
-  new tasks (~320 runs); the previously collected 20 tasks resume as
-  "already-present" if data/a0_v2 still exists on the box (ephemeral NVMe —
-  if wiped, they re-collect, adding ~6 GPU-h; both fine).
+- `--classes` is REQUIRED: restricts collection to the 60 artifact (train)
+  tasks. Without it, sorted-dir order reaches swe_60+ — the SEALED TEST
+  POOL — before swe_7/8/9. Never collect swe_60+.
+- Thinking mode is OFF by default and recorded in the manifest (do NOT pass
+  --enable-thinking). If smoke segments still contain <think> text, STOP and
+  report — that's a template regression, not something to work around.
+- Rough full-run budget: 480 runs; at 14B a run averaged ~2.5 min, sharded
+  32B is ~2-4x slower → expect ~40-80 box-hours (~$100-200 spot). The smoke
+  run replaces this guess with a measured number — trust the measurement.
 - Broken images are skipped and logged (they still count toward --n-tasks;
-  check the manifest for "SKIPPED" entries and report them).
+  report "SKIPPED" manifest entries).
 - Watch per-run: steps, finished, reads_by_trigger (nonzero value), actions.
-- When done: tarball data/a0_v2/ back to the laptop, print sha256. Laptop
-  then reruns audit_labels + sweep + run_full_gates --kfold 5 (step 3).
+- When done: tarball data/a0_v2_32b/ back to the laptop, print sha256.
+  Laptop then reruns audit_labels + sweep + run_full_gates --kfold 5
+  (step 3) against the 32B data.
 
 ## 3. Offline training + sweeps + gates (laptop, CPU — no AWS)
 

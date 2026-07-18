@@ -60,6 +60,12 @@ def main() -> int:
     ap.add_argument("--no-value-reads", action="store_true",
                     help="disable value-triggered reads (ON by default in v2, "
                          "decisions/016)")
+    ap.add_argument("--enable-thinking", action="store_true", default=False,
+                    help="Qwen3 hybrid thinking mode. Default OFF and pinned "
+                         "explicitly (decisions/019 addendum: the paper is "
+                         "silent, the hil-bench repo's own Qwen configs use "
+                         "the non-thinking Instruct variant). Recorded in the "
+                         "manifest. No-op for Qwen2.5 templates.")
     ap.add_argument("--max-steps", type=int, default=15)
     ap.add_argument("--max-new-tokens", type=int, default=1024)
     ap.add_argument("--exec-timeout", type=int, default=120)
@@ -76,7 +82,8 @@ def main() -> int:
     reader = HFStreamReader(
         args.model_id, mid_layer=args.mid_layer, layers=layer_specs,
         cadence=args.cadence,
-        value_pattern=None if args.no_value_reads else DEFAULT_VALUE_PATTERN)
+        value_pattern=None if args.no_value_reads else DEFAULT_VALUE_PATTERN,
+        enable_thinking=args.enable_thinking)
     manifest = {"args": vars(args), "env": env_info(),
                 "reader": {"n_layers": reader.n_layers, "hidden_dim": reader.hidden_dim,
                            "mid_layer": reader.mid_layer,

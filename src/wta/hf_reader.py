@@ -44,7 +44,8 @@ class HFStreamReader:
                  dtype: str = "bfloat16", device: str = "cuda",
                  cadence: int = 32, cues: tuple[str, ...] = DEFAULT_CUES,
                  value_pattern: str | None = None, value_cooldown: int = 8,
-                 load_in_4bit: bool = False):
+                 load_in_4bit: bool = False,
+                 enable_thinking: bool | None = None):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -52,6 +53,10 @@ class HFStreamReader:
         self.model_id = model_id
         self.cadence = cadence
         self.cues = cues
+        # decisions/019: Qwen3 chat templates default to thinking mode ON;
+        # False pins non-thinking (a no-op variable for templates that don't
+        # read it, e.g. Qwen2.5); None omits the kwarg entirely (legacy).
+        self.enable_thinking = enable_thinking
         self.value_pattern = value_pattern
         self.value_cooldown = value_cooldown
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
@@ -74,11 +79,15 @@ class HFStreamReader:
         # exactly one layer; the saved h stays 1-D for schema compatibility)
         self._capture_layers = self.layer_indices or [self.mid_layer]
 
+    def _template_kwargs(self) -> dict:
+        return ({} if self.enable_thinking is None
+                else {"enable_thinking": self.enable_thinking})
+
     def _format(self, prompt: str) -> str:
         if self.tokenizer.chat_template:
             return self.tokenizer.apply_chat_template(
                 [{"role": "user", "content": prompt}], tokenize=False,
-                add_generation_prompt=True,
+                add_generation_prompt=True, **self._template_kwargs(),
             )
         return prompt
 
@@ -94,7 +103,8 @@ class HFStreamReader:
         torch = self._torch
         torch.manual_seed(seed * 100003 + segment_idx)
         text_in = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True)
+            messages, tokenize=False, add_generation_prompt=True,
+            **self._template_kwargs())
         inputs = self.tokenizer(text_in, return_tensors="pt").to(self.model.device)
         with torch.no_grad(), LayerCapture(self.model, self._capture_layers) as cap:
             out = self.model.generate(
