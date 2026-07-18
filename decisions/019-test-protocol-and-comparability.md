@@ -86,6 +86,40 @@ decisions/016). The hook-based capture path (decisions/017 addendum) was
 built precisely to make 32B memory-safe on that box. The 14B collections
 stay on g6e.xlarge unchanged.
 
+## Addendum (2026-07-18, same day): thinking mode + scaffold facts verified
+
+**Thinking mode**: the paper NEVER specifies generation settings for its
+Qwen3-32B RLVR runs (Appendix G covers only LoRA/SkyRL, the 120/30 split,
+same SWE-Agent framework, and the reward scheme). However, the vendored
+hil-bench repo's own self-hosted Qwen example configs
+(configs/swe/ask_config_qwen3_30b_a3b_instruct_2507.yaml) use the
+**Instruct (non-thinking) Qwen3 variant, temperature 1.0, via litellm
+proxy**. DECISION: run Qwen3-32B in **non-thinking mode**, record the mode +
+sampling params in the collection manifest, and state the paper's silence in
+the eval section rather than claiming to match an unstated setting.
+
+**Scaffold**: SWE-Agent is fully open source (Princeton, NeurIPS 2024) and is
+vendored INSIDE our hil-bench clone (third_party/hil-bench/SWE-agent). We do
+not use it for the detector arm for a structural reason, not availability:
+SWE-Agent drives the model through an API client (litellm/proxy — see its
+configs), so the model is a remote black box to the scaffold; activation
+capture requires the model in-process with layer hooks. Our loop follows the
+**mini-SWE-agent convention** (the SWE-Agent team's own published minimal
+agent, also vendored) — a citable, simplified version of the same scaffold.
+
+**Reviewer-acceptance plan for the scaffold difference** (three tiers):
+1. Core claims (detector vs B0/B1/B2/B3 at matched N) share ONE scaffold —
+   scaffold-independent, fully valid.
+2. Paper Table 1 rows are cited context (different model AND scaffold,
+   labeled as such).
+3. BRIDGE ROWS kill the objection empirically: the arms that need no
+   activations (no-ask, full-info, naive ask_human) are ALSO run in the
+   paper's own harness with our backbone self-hosted (vLLM; the harness
+   supports self_hosted/litellm hosting). If harness-baseline ≈ our-loop
+   baseline, the scaffold delta is measured, not argued. Deep SWE-Agent
+   integration (custom in-process model backend) stays a fallback only if
+   demanded — weeks of engineering for what bridge rows already quantify.
+
 ## 5. Sequence (unchanged otherwise)
 
 Train collection (runbook 2c, launching) → laptop gates → if gate 5 passes:
