@@ -62,8 +62,15 @@ Runs 8 seeded agent trajectories per task inside each task's docker container
 same command + `--model-id Qwen/Qwen2.5-Coder-32B-Instruct` on a g5.12xlarge.
 
 ## 2c. SCALE collection — 60 train tasks at Qwen3-32B (decisions/018+019) —
-##     CURRENT step. Instance: **g5.12xlarge** (4x A10G, spot ~$2-2.5/hr).
-##     NOT the g6e.xlarge — 32B bf16 (~65 GB) exceeds the L40S's 48 GB.
+##     CURRENT step. Instance: **g7e.2xlarge** (1x RTX PRO 6000 Blackwell,
+##     96 GB VRAM, ~$3.36/hr on-demand us-east-1; verified 2026-07-19).
+##     Single-GPU fit for 32B bf16 (~65 GB + KV), ~3x faster than the sharded
+##     4xA10G alternative -> est. $60-90 total. Fallback if no capacity:
+##     g5.12xlarge (4x A10G, spot). NOT g6e.xlarge (48 GB < 65 GB).
+##     At boot on g7e: (1) use a CURRENT DLAMI (Blackwell needs cu128+;
+##     torch cu130 as on the 14B box is fine); (2) `df -h` to find the local
+##     NVMe mount — it may not be /opt/dlami/nvme on this family; point
+##     --scratch-dir at it.
 
 ```bash
 git pull && python -m pytest -q          # expect 118 green
