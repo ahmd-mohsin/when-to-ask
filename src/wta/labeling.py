@@ -94,6 +94,21 @@ def token_char_positions(text: str, tokenizer) -> list[int]:
     return [a for a, _ in enc["offset_mapping"]]
 
 
+def resolve_tokenizer(a0_dir: str | Path, name: str = "auto") -> str:
+    """Token->char maps must be built with the COLLECTION model's tokenizer
+    (token_idx in the logs is in its units). 'auto' reads model_id from the
+    collection manifest; an explicit name is passed through unchanged."""
+    if name != "auto":
+        return name
+    manifest = Path(a0_dir) / "collection_manifest.json"
+    if manifest.exists():
+        model_id = (json.loads(manifest.read_text(encoding="utf-8"))
+                    .get("args", {}).get("model_id"))
+        if model_id:
+            return model_id
+    return "Qwen/Qwen2.5-Coder-7B-Instruct"
+
+
 # ---------------------------------------------------------------------------
 # the builder
 # ---------------------------------------------------------------------------

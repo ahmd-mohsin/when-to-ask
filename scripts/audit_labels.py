@@ -27,12 +27,16 @@ def main() -> int:
     ap.add_argument("--n", type=int, default=30, help="sampled reads per outcome kind")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="models/label_audit.md")
+    ap.add_argument("--tokenizer", default="auto",
+                    help="'auto' = collection manifest's model_id")
     args = ap.parse_args()
 
-    from wta.labeling import build_labels, coverage_table
+    from wta.labeling import build_labels, coverage_table, resolve_tokenizer
 
     debug_path = Path(args.out).with_suffix(".debug.jsonl")
-    ds = build_labels(args.a0, args.classes, debug_path=debug_path)
+    ds = build_labels(args.a0, args.classes,
+                      tokenizer_name=resolve_tokenizer(args.a0, args.tokenizer),
+                      debug_path=debug_path)
 
     reads, commits = [], []
     for line in debug_path.read_text(encoding="utf-8").splitlines():
