@@ -69,6 +69,49 @@ reproduce an INSUFFICIENT-DATA / underpowered-negative we can already predict.
      scoped to exactly the re-collected tasks, so decision-coverage is high
      when the new runs land.
 
+## Correction (2026-07-22, same session): trajectory-length CENSORING
+
+A follow-up check materially qualifies the "single-run-minority = model
+converged" reading above. The hard `max_steps=15` cap is binding for the
+vast majority of runs and CENSORS the blockers that live late in a
+trajectory:
+
+- **387/480 runs (81%) ran to the step cap** (steps histogram piles up at
+  exactly 15); only ~93 finished early.
+- Commit rate on a given blocker is **26% when the run FINISHED vs 16% when
+  TRUNCATED** — finishing lifts it ~1.6x, so the cap demonstrably suppresses
+  commitments.
+- **Half the forked blockers have ZERO finished runs** (swe_12, 14, 23, 30,
+  39, 47 — every run truncated). Their commitments are being censored: we
+  never observed what those trajectories would decide if allowed to continue.
+- BUT the cap censors LATE decisions, not early ones: swe_36/controller (an
+  import-path choice made early) commits 8/8 regardless of finish status —
+  which is exactly why it is the one clean fork. And even finished runs commit
+  to only 26% of blockers, because each trajectory resolves 1-2 of a task's
+  3-5 ambiguities — so raising the cap helps but does not make every blocker
+  observable in every run.
+
+Implication: part of what the ceiling analysis attributed to "the model
+didn't diverge" is actually "the run was cut off before reaching that
+decision." The bottleneck is **diversity AND trajectory-length censoring**,
+not labels. This REORDERS the re-collection levers (cheapest first):
+
+1. **Raise `max_steps` (15 -> ~30-40) and `max_new_tokens` (1024 -> ~1536-2048;
+   one fork was cut mid-bash-block).** Uncensors late blockers. More compute
+   per run, but does NOT multiply run count — the cheap lever.
+2. THEN more seeds (~24) on the fork-showing tasks, for diversity on the
+   decisions that are now observable.
+3. Wider temperature ceiling / cadence-16 as before.
+
+This modestly RAISES confidence in re-collection (some "non-engagement" was
+censoring a higher cap will lift) and LOWERS its cost (step-cap first).
+Unchanged: value forks (5/18) were activation-invisible at 7B/14B and will
+likely stay negative regardless of power — re-collection buys power, not truth.
+Open question worth a cheap check before the full spend: for the censored
+forks, do the runs that DID commit make their commitment near step 15 (strong
+censoring evidence) or early (weaker)? — measurable from commit positions vs
+action/segment indices in the existing logs.
+
 ## Why the collection is still not wasted
 
 98/480 TASK_DONE, 9,401 reads, clean multi-layer activations, verified
