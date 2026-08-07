@@ -33,6 +33,64 @@ _FILE_TOKEN = re.compile(
     r"[\w./~-]+\.(?:py|go|ts|tsx|js|jsx|json|yaml|yml|md|txt|cfg|toml|sh|c|h|"
     r"cpp|rs|java|scss|css|cue)\b")
 
+# --- composite decision-identity observables (spec A0; method doc's labeling
+# note: "Do not label a decision by the file alone -- that conflates two
+# decisions that touch the same file. Use a composite label: file + code
+# region/span + stated sub-goal + error signature.") Recorded at COLLECTION
+# time because none of it can be reconstructed afterwards (decisions/021 §4).
+
+# line spans: sed ranges ('12s/', '10,20d', -n '5,15p') and patch hunk headers
+_SED_SPAN = re.compile(r"['\"]?(\d+)(?:\s*,\s*(\d+))?\s*[a-z]")
+_HUNK = re.compile(r"@@\s*-(\d+)(?:,(\d+))?")
+_ERR_LINE = re.compile(
+    r"^.*?((?:[A-Z]\w*Error|[A-Z]\w*Exception|Traceback|FAILED|fatal|"
+    r"command not found|No such file|undefined|cannot find)\b.*)$",
+    re.MULTILINE)
+
+
+def extract_region(command: str) -> list[str]:
+    """Line spans the action touches, as 'start-end' strings. Distinguishes two
+    edits to the SAME file at different places -- the conflation the method doc
+    warns about. Empty when the command carries no line information."""
+    spans: list[str] = []
+    for m in _HUNK.finditer(command):
+        start = int(m.group(1))
+        spans.append(f"{start}-{start + int(m.group(2) or 1) - 1}")
+    if not spans and ("sed" in command or "awk" in command):
+        for m in _SED_SPAN.finditer(command):
+            a, b = int(m.group(1)), int(m.group(2) or m.group(1))
+            spans.append(f"{a}-{b}")
+    return sorted(set(spans))[:8]
+
+
+def extract_subgoal(text: str, limit: int = 400) -> str:
+    """The turn's stated sub-goal: the THOUGHT prose before the bash block.
+    This is where a model verbalizes WHICH open choice it is resolving, so it
+    is the highest-value composite field for decision identity."""
+    head = text.split("```bash")[0] if "```bash" in text else text
+    return _WS_RUN.sub(" ", head).strip()[:limit]
+
+
+def error_signature(exit_code: int, output: str) -> str:
+    """Normalized failure fingerprint of the observation an action produced:
+    'exit <code>' plus the most specific error line. Part of the composite key
+    because the same file+region under two different failures is usually two
+    different decisions.
+
+    "Most specific" matters: a Python failure starts with a bare 'Traceback'
+    line and ends with the typed exception, so first-match would fingerprint
+    every crash identically. Prefer a typed 'Name: message' line."""
+    sig = f"exit {exit_code}"
+    hits = [_WS_RUN.sub(" ", m.group(1)).strip()
+            for m in _ERR_LINE.finditer(output or "")]
+    if not hits:
+        return sig
+    typed = [h for h in hits if ":" in h and not h.lower().startswith("traceback")]
+    return sig + " | " + (typed[-1] if typed else hits[0])[:160]
+
+
+_WS_RUN = re.compile(r"\s+")
+
 
 @dataclass
 class AgentLoopConfig:
@@ -102,15 +160,21 @@ def run_agent(session, env, instruction: str, *, run_id: str, task_id: str,
                              "THOUGHT and exactly one ```bash block."})
             continue
         result.commands.append(cmd)
-        log.actions.append(ActionEvent(
+        event = ActionEvent(
             token_idx=last_tok, segment_idx=step, action_text=cmd,
-            observables={"files": extract_file_observables(cmd), "step": step}))
+            observables={"files": extract_file_observables(cmd), "step": step,
+                         "region": extract_region(cmd),
+                         "subgoal": extract_subgoal(text)})
+        log.actions.append(event)
 
         if cfg.submit_marker in cmd:
             result.finished = True
             result.stop_reason = "submit_marker"
             break
         code, out = env.execute(cmd)
+        # the signature is only knowable after execution -- fill it in on the
+        # event we already logged (observables is mutable by design)
+        event.observables["error_signature"] = error_signature(code, out)
         obs = truncate_obs(out, cfg.obs_head, cfg.obs_tail)
         messages.append({"role": "user", "content":
                          f"[exit {code}]\n{obs}\n\nNext step?"})

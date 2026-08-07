@@ -110,11 +110,23 @@ def main() -> int:
                          "construction: it must never name a class.")
     ap.add_argument("--scratch-dir", default=None)
     ap.add_argument("--out", default="data/a0_v2")
+    # Data-parallel across GPUs: Qwen3-32B bf16 (~65GB) fits on ONE 96GB card,
+    # so N cards = N independent workers, each owning a disjoint slice of tasks
+    # (near-linear scaling; no tensor sharding). Launch one process per GPU with
+    # CUDA_VISIBLE_DEVICES=<i> and --shard <i> --num-shards <N>, all writing to
+    # the SAME --out (per-task subdirs never collide) -- see AWS_RUNBOOK 2d.
+    ap.add_argument("--shard", type=int, default=0)
+    ap.add_argument("--num-shards", type=int, default=1)
     args = ap.parse_args()
 
     out_root = Path(args.out)
     out_root.mkdir(parents=True, exist_ok=True)
-    events = out_root / "events.jsonl"
+    # Parallel shards share --out (per-task subdirs never collide) but must NOT
+    # share these two append/rewrite files -- suffix them per shard and merge
+    # at analysis time.
+    suffix = "" if args.num_shards == 1 else f".s{args.shard}"
+    events = out_root / f"events{suffix}.jsonl"
+    manifest_path = out_root / f"collection_manifest{suffix}.json"
 
     layer_specs = [float(x) if "." in x else int(x) for x in args.layers.split(",")] \
         if args.layers and args.layers.lower() != "none" else None
@@ -139,17 +151,28 @@ def main() -> int:
 
     tasks_dir = Path(args.tasks_dir)
     class_tasks = artifact_task_ids(args.classes) if args.classes else None
-    done = 0
+    # Resolve the eligible task list ONCE, then slice this shard's stride out
+    # of it. --n-tasks is the GLOBAL count (truncate before sharding), so the
+    # same command with different --shard covers the same 60 tasks between
+    # workers rather than 60 each.
+    eligible = []
     for task_dir in sorted(p for p in tasks_dir.iterdir() if p.is_dir()):
-        if done >= args.n_tasks:
-            break
         if class_tasks is not None and task_dir.name not in class_tasks:
             continue
+        if not (task_dir / "baseline" / "instruction.md").exists():
+            continue
+        if not (task_dir / "shared" / "image_ref.txt").exists():
+            continue
+        eligible.append(task_dir)
+        if len(eligible) >= args.n_tasks:
+            break
+    my_tasks = eligible[args.shard::args.num_shards]
+    print(f"shard {args.shard}/{args.num_shards}: {len(my_tasks)} of "
+          f"{len(eligible)} eligible tasks")
+
+    for task_dir in my_tasks:
         instr_f = task_dir / "baseline" / "instruction.md"
         ref_f = task_dir / "shared" / "image_ref.txt"
-        if not instr_f.exists() or not ref_f.exists():
-            continue
-        done += 1
         task_id = task_dir.name
         image = ref_f.read_text(encoding="utf-8").strip()
         out_dir = out_root / task_id
@@ -217,15 +240,14 @@ def main() -> int:
             print(f"{run_id}: {res.n_steps} steps ({res.stop_reason}), "
                   f"{len(res.log.reads)} reads {trig}, "
                   f"{len(res.log.actions)} actions, {dt:.0f}s")
-        (out_root / "collection_manifest.json").write_text(
-            json.dumps(manifest, indent=1), encoding="utf-8")
+        manifest_path.write_text(json.dumps(manifest, indent=1), encoding="utf-8")
 
     n_ok = sum(1 for t in manifest["tasks"].values()
                for r in t["runs"].values() if r.get("status") == "ok")
     n_fin = sum(1 for t in manifest["tasks"].values()
                 for r in t["runs"].values() if r.get("finished"))
-    print(f"\n{done} tasks; {n_ok} runs ok, {n_fin} reached TASK_DONE. "
-          f"Manifest: {out_root/'collection_manifest.json'}")
+    print(f"\nshard {args.shard}/{args.num_shards}: {len(my_tasks)} tasks; "
+          f"{n_ok} runs ok, {n_fin} reached TASK_DONE. Manifest: {manifest_path}")
     log_event(events, event="v2_collection_done")
     return 0
 

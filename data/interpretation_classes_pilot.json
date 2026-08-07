@@ -1,0 +1,679 @@
+{
+ "_provenance": {
+  "artifact": "interpretation classes per blocker (decisions/005) — FROZEN once used for training",
+  "derived_by": "Claude Fable 5 (laptop-side), 2026-07-05, by hand from each blocker's description + resolution + example_questions in third_party/hil-bench/harbor_swe/<task>/shared/ask-human-data/blocker_registry.json @ 352d14c",
+  "audit": "all 13 blockers hand-derived and reviewed (full audit; the 3-task sample is smaller than the 20-blocker random audit decisions/005 prescribes for the full set)",
+  "semantics": "class 0 is always the registry's canonical resolution; other classes are the competing interpretations implied by the description and example questions. 'signatures' are case-insensitive substrings a committed trace exhibits; 'anchors' identify the DECISION (topic), not the resolution.",
+  "scope": "All 20 collected tasks (swe_0..swe_26). swe_0/1/10 hand-derived 2026-07-05; swe_11-26 derived by Opus workflow 2026-07-08 (per-task drafter grounded in registry+traces), 3 LLM-verified (swe_14/15/17), all 17 passed a deterministic anchor-leak repair (77 anchors that uniquely predicted one class were dropped; every blocker retains >=3 anchors) + owner hand-audit + empirical labeler validation.",
+  "scope_extension_2026_07_18": "40 new tasks (swe_3-9, swe_27-59) derived 2026-07-18 by Claude Fable 5 from each blocker's description + resolution + example_questions in the registries (REGISTRY-ONLY: no collected traces exist for these tasks yet; signatures to be empirically reviewed against the first collection, per the swe_11-26 precedent). Audited by scripts/audit_class_artifact.py: 0 errors per batch (schema, canonical-at-0, no anchor==signature, no cross-class signature duplication); single-class anchor/signature substring overlaps eliminated; known limitation: matcher is case-insensitive so case-only class distinctions (e.g. swe_49 ClickHouse casing) are not derivable. Original 20-task entries byte-identical (FROZEN, gates already ran on them).",
+  "leak_repair_2026_07_18": "8 anchors that were verbatim-identical to a class signature dropped from 5 frozen blockers (swe_1/showall; swe_10/as-is,verbatim; swe_26/allowed_tags; swe_13/inventory,host_group_vars,vars_files; swe_14/relative path), found by scripts/audit_class_artifact.py. Robustness proven before repair: raw-h diagnostic on wta-a0-v2-14b identical with/without these anchors (models/v2_value_diag_leakfix.log) — none of the 5 blockers ever produced a measured fork. Every blocker retains >=3 anchors. Enforced from now on by harness/contract/test_class_artifact.py (zero artifact-leak errors).",
+  "pilot_subset": "decisions/021 R1 diversity pilot: the 6 tasks that showed structural forks in the 32B run. Entries are VERBATIM copies from interpretation_classes.json — no edits, so pilot labels stay comparable to the 32B baseline."
+ },
+ "swe_12": {
+  "missing_spotlight_eligibility_cutoff": {
+   "anchors": [
+    "spotlight",
+    "enough cached items",
+    "cached children",
+    "eligib",
+    "storeditemscount",
+    "min eligible",
+    "cutoff"
+   ],
+   "classes": [
+    {
+     "name": "min_eligible_8_strict_greater_than",
+     "canonical": true,
+     "signatures": [
+      "search_discovery_min_eligible_items = 8",
+      "min_eligible_items = 8",
+      "> 8",
+      "storeditemscount > 8",
+      "count is 9 or more",
+      "false when the cached root children count is exactly 8",
+      "8;"
+     ]
+    },
+    {
+     "name": "different_cutoff_value",
+     "signatures": [
+      "> 0",
+      "storeditemscount > 0",
+      "itemcount > 0",
+      "> 10",
+      "storeditemscount > 10",
+      "> 100",
+      "storeditemscount > 100",
+      "> 5",
+      "// example threshold"
+     ]
+    },
+    {
+     "name": "inclusive_boundary_count_8_eligible",
+     "signatures": [
+      ">= 8",
+      "storeditemscount >= 8",
+      "at least 8",
+      "8 or more items",
+      "count === 8 is eligible",
+      "inclusive boundary"
+     ]
+    }
+   ]
+  },
+  "ambiguous_feature_toggle_token": {
+   "anchors": [
+    "featurecode",
+    "feature flag",
+    "gating the spotlight",
+    "rollout",
+    "enum token",
+    "naming convention",
+    "feature toggle"
+   ],
+   "classes": [
+    {
+     "name": "drivesearchfeaturediscovery",
+     "canonical": true,
+     "signatures": [
+      "drivesearchfeaturediscovery = 'drivesearchfeaturediscovery'",
+      "drivesearchfeaturediscovery",
+      "featurecode.drivesearchfeaturediscovery"
+     ]
+    },
+    {
+     "name": "drivesearchspotlight_family",
+     "signatures": [
+      "featurecode.drivesearchspotlight",
+      "drivesearchspotlight = 'drivesearchspotlight'",
+      "drivesearchspotlight",
+      "drive_search_spotlight",
+      "featurecode.drive_search_spotlight",
+      "spotlightdrivesearch"
+     ]
+    },
+    {
+     "name": "other_discovery_or_search_token",
+     "signatures": [
+      "drivesearchdiscovery",
+      "searchdiscoveryspotlight",
+      "featurecode.searchdiscoveryspotlight",
+      "search_discovery_spotlight",
+      "drivediscovery"
+     ]
+    }
+   ]
+  },
+  "contradictory_spotlight_ownership_boundary": {
+   "anchors": [
+    "searchfield",
+    "usespotlight",
+    "shared provider",
+    "hook ownership",
+    "centralized spotlight state",
+    "which source takes precedence",
+    "boundary"
+   ],
+   "classes": [
+    {
+     "name": "provider_owns_feature_hooks",
+     "canonical": true,
+     "signatures": [
+      "usesearchspotlight",
+      "sole owner",
+      "searchspotlight.isopen",
+      "spotlight.isopen",
+      "searchfield must use only usespotlight",
+      "return { isopen, ondisplayed, close: onclose }",
+      "only consume usespotlight"
+     ]
+    },
+    {
+     "name": "searchfield_calls_feature_hooks_directly",
+     "signatures": [
+      "usespotlightshow(featurecode",
+      "usespotlightonfeature(featurecode",
+      "usespotlightshow(featurecode.drivesearchspotlight)",
+      "usespotlightonfeature(featurecode.drive_search_spotlight)",
+      "usespotlightshow, usespotlightonfeature } from '../usespotlight'",
+      "searchfield calls the spotlight hooks directly"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_4": {
+  "ambiguous_seed_input_framing": {
+   "anchors": [
+    "seed string",
+    "input string",
+    "framing",
+    "byte sequence",
+    "combination of the seed"
+   ],
+   "classes": [
+    {
+     "name": "unit_separator_0x1f",
+     "canonical": true,
+     "signatures": [
+      "0x1f",
+      "\\x1f",
+      "unit separator"
+     ]
+    },
+    {
+     "name": "plain_concatenation",
+     "signatures": [
+      "[]byte(seed+str)",
+      "[]byte(seed + str)",
+      "seed+str)",
+      "direct concatenation"
+     ]
+    },
+    {
+     "name": "nul_or_colon_separator",
+     "signatures": [
+      "\\x00",
+      "byte(0)",
+      "seed + \":\"",
+      "seed+\":\""
+     ]
+    },
+    {
+     "name": "input_before_seed",
+     "signatures": [
+      "str + seed",
+      "str+seed",
+      "input followed by the seed"
+     ]
+    }
+   ]
+  },
+  "missing_hasher_digest_and_auto_seed_rules": {
+   "anchors": [
+    "hasher",
+    "digest",
+    "auto-seed",
+    "deterministic",
+    "random integer"
+   ],
+   "classes": [
+    {
+     "name": "maphash_seed_field_random_int64",
+     "canonical": true,
+     "signatures": [
+      "maphash.makeseed",
+      "maphash.bytes(",
+      "random.int64(math.maxint64"
+     ]
+    },
+    {
+     "name": "fresh_hash_per_call",
+     "signatures": [
+      "maphash.hash{}",
+      "var h maphash.hash",
+      "h.sum64()"
+     ]
+    },
+    {
+     "name": "stdlib_rand_direct",
+     "signatures": [
+      "rand.int63",
+      "math/rand",
+      "crypto/rand"
+     ]
+    }
+   ]
+  },
+  "contradictory_auto_seed_serialization_and_digest_scope": {
+   "anchors": [
+    "persisted",
+    "serialization",
+    "interchange",
+    "collide",
+    "incorporated into the digest"
+   ],
+   "classes": [
+    {
+     "name": "decimal_persist_seed_only_digest",
+     "canonical": true,
+     "signatures": [
+      "strconv.formatint",
+      "itoa(",
+      "base-10",
+      "decimal digit string"
+     ]
+    },
+    {
+     "name": "hex_serialization",
+     "signatures": [
+      "formatint(n, 16",
+      "%x\"",
+      "hex encoding",
+      "lowercase hexadecimal"
+     ]
+    },
+    {
+     "name": "id_mixed_into_digest",
+     "signatures": [
+      "id + seed",
+      "id+seed",
+      "identifier into the hash",
+      "hash the id"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_30": {
+  "ambiguous_non_collection_spec_ownership": {
+   "anchors": [
+    "non-collection",
+    "path-hook finder",
+    "spec-based probing",
+    "ownership",
+    "later importers"
+   ],
+   "classes": [
+    {
+     "name": "raise_attribute_error_decline",
+     "canonical": true,
+     "signatures": [
+      "raise attributeerror"
+     ]
+    },
+    {
+     "name": "delegate_wrapped_find_spec",
+     "signatures": [
+      "finder.find_spec(",
+      "delegate to the wrapped",
+      "surface the delegated spec"
+     ]
+    },
+    {
+     "name": "synthesize_module_spec",
+     "signatures": [
+      "spec_from_loader",
+      "modulespec("
+     ]
+    }
+   ]
+  },
+  "contradictory_path_argument_type": {
+   "anchors": [
+    "delegated call",
+    "path argument",
+    "stable snapshot",
+    "handoff",
+    "mutable container"
+   ],
+   "classes": [
+    {
+     "name": "tuple_snapshot",
+     "canonical": true,
+     "signatures": [
+      "(self._pathctx,)",
+      "path=(self._pathctx,)"
+     ]
+    },
+    {
+     "name": "single_element_list",
+     "signatures": [
+      "[self._pathctx]",
+      "path=[self._pathctx]"
+     ]
+    },
+    {
+     "name": "positional_path_argument",
+     "signatures": [
+      "find_module(fullname, self._pathctx",
+      "positional second argument"
+     ]
+    }
+   ]
+  },
+  "missing_filefinder_identification_rule": {
+   "anchors": [
+    "runtime identifier",
+    "special handling",
+    "cannot be imported",
+    "recognize the finder"
+   ],
+   "classes": [
+    {
+     "name": "frozen_importlib_string_match",
+     "canonical": true,
+     "signatures": [
+      "_frozen_importlib_external.filefinder"
+     ]
+    },
+    {
+     "name": "isinstance_import_check",
+     "signatures": [
+      "isinstance(finder, filefinder",
+      "from importlib.machinery import filefinder"
+     ]
+    },
+    {
+     "name": "class_name_only_match",
+     "signatures": [
+      "== 'filefinder'",
+      "== \"filefinder\"",
+      "endswith('filefinder')"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_36": {
+  "runtime_replacement_import_path": {
+   "anchors": [
+    "runtime files",
+    "collection abcs",
+    "approved runtime-safe",
+    "migrate"
+   ],
+   "classes": [
+    {
+     "name": "six_moves_collections_abc",
+     "canonical": true,
+     "signatures": [
+      "six.moves.collections_abc"
+     ]
+    },
+    {
+     "name": "stdlib_collections_abc_runtime",
+     "signatures": [
+      "from collections.abc import"
+     ]
+    },
+    {
+     "name": "keep_legacy_shim_runtime",
+     "signatures": [
+      "common._collections_compat import"
+     ]
+    }
+   ]
+  },
+  "controller_replacement_import_path": {
+   "anchors": [
+    "controller-side",
+    "shell plugins",
+    "replacement target",
+    "legacy shim"
+   ],
+   "classes": [
+    {
+     "name": "stdlib_collections_abc",
+     "canonical": true,
+     "signatures": [
+      "from collections.abc import"
+     ]
+    },
+    {
+     "name": "six_moves_path_controller",
+     "signatures": [
+      "six.moves.collections_abc"
+     ]
+    },
+    {
+     "name": "keep_shim_controller",
+     "signatures": [
+      "common._collections_compat"
+     ]
+    }
+   ]
+  },
+  "shim_transition_signal_mode": {
+   "anchors": [
+    "transitional",
+    "shim",
+    "signal",
+    "migration guidance"
+   ],
+   "classes": [
+    {
+     "name": "documentation_only",
+     "canonical": true,
+     "signatures": [
+      "docstring",
+      "documentation-only",
+      "do not emit runtime warnings",
+      "single unconditional import"
+     ]
+    },
+    {
+     "name": "runtime_deprecation_warning",
+     "signatures": [
+      "warnings.warn",
+      "deprecationwarning",
+      "deprecate("
+     ]
+    }
+   ]
+  },
+  "packaging_shim_inclusion_condition": {
+   "anchors": [
+    "dependency discovery",
+    "runtime artifacts",
+    "third-party callers",
+    "inclusion rule"
+   ],
+   "classes": [
+    {
+     "name": "two_surface_precedence",
+     "canonical": true,
+     "signatures": [
+      "only when there is an explicit",
+      "keep bundling",
+      "two-surface"
+     ]
+    },
+    {
+     "name": "drop_everywhere",
+     "signatures": [
+      "drop the shim from both",
+      "exclude from the bundle",
+      "remove from packaging"
+     ]
+    },
+    {
+     "name": "include_everywhere",
+     "signatures": [
+      "always include",
+      "in both surfaces",
+      "unconditionally include"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_47": {
+  "missing_selection_state_wire_labels": {
+   "anchors": [
+    "serialized",
+    "selection state",
+    "persistence",
+    "restoration"
+   ],
+   "classes": [
+    {
+     "name": "clear_mixed_complete",
+     "canonical": true,
+     "signatures": [
+      "'clear'",
+      "'mixed'",
+      "'complete'"
+     ]
+    },
+    {
+     "name": "none_some_all_literals",
+     "signatures": [
+      "'none'",
+      "'some'",
+      "'all'"
+     ]
+    },
+    {
+     "name": "empty_partial_full_literals",
+     "signatures": [
+      "'empty'",
+      "'partial'",
+      "'full'"
+     ]
+    }
+   ]
+  },
+  "ambiguous_checkbox_toggle_behavior": {
+   "anchors": [
+    "toggle-all",
+    "partial selection",
+    "clicking"
+   ],
+   "classes": [
+    {
+     "name": "any_selected_clears",
+     "canonical": true,
+     "signatures": [
+      "ids.length > 0 ?",
+      "length > 0 ? []"
+     ]
+    },
+    {
+     "name": "full_only_clears",
+     "signatures": [
+      "=== itemids.length",
+      "length === item"
+     ]
+    }
+   ]
+  },
+  "contradictory_enum_definition_location": {
+   "anchors": [
+    "selection-state type",
+    "module",
+    "co-location",
+    "consumers import"
+   ],
+   "classes": [
+    {
+     "name": "hooks_useselectioncontrols",
+     "canonical": true,
+     "signatures": [
+      "useselectioncontrols"
+     ]
+    },
+    {
+     "name": "state_useselection",
+     "signatures": [
+      "state/useselection",
+      "useselection.tsx"
+     ]
+    },
+    {
+     "name": "shared_types_file",
+     "signatures": [
+      "types.ts",
+      "shared types file"
+     ]
+    }
+   ]
+  }
+ },
+ "swe_50": {
+  "unspecified_mime_detection_precedence_and_fallback_chain": {
+   "anchors": [
+    "mime detection",
+    "evaluation order",
+    "authoritative source",
+    "file metadata"
+   ],
+   "classes": [
+    {
+     "name": "type_then_extension_then_default",
+     "canonical": true,
+     "signatures": [
+      "input.type ||",
+      "input.type ?",
+      "'application/octet-stream'"
+     ]
+    },
+    {
+     "name": "extension_first",
+     "signatures": [
+      "extension first",
+      "lookup before the type",
+      "name.split('.').pop"
+     ]
+    },
+    {
+     "name": "content_sniffing",
+     "signatures": [
+      "file bytes",
+      "sniff",
+      "magic number",
+      "filereader"
+     ]
+    }
+   ]
+  },
+  "missing_safari_version_threshold_and_validation": {
+   "anchors": [
+    "safari version",
+    "native format decoding",
+    "gate functions"
+   ],
+   "classes": [
+    {
+     "name": "version_17_class_check",
+     "canonical": true,
+     "signatures": [
+      "isgreaterthanorequal('17'",
+      "'17'"
+     ]
+    },
+    {
+     "name": "other_version_number",
+     "signatures": [
+      "'16'",
+      "'18'"
+     ]
+    },
+    {
+     "name": "manual_major_parse",
+     "signatures": [
+      "parseint(",
+      "split('.')[0]",
+      "major version"
+     ]
+    }
+   ]
+  },
+  "conflicting_jxl_ios_support_directive": {
+   "anchors": [
+    "ios safari",
+    "support scope",
+    "conditional support"
+   ],
+   "classes": [
+    {
+     "name": "ios_supported_same_as_heic",
+     "canonical": true,
+     "signatures": [
+      "same platform",
+      "alongside heic",
+      "equally apply"
+     ]
+    },
+    {
+     "name": "desktop_only_jxl",
+     "signatures": [
+      "desktop-only",
+      "return false on ios",
+      "!ismobile &&"
+     ]
+    }
+   ]
+  }
+ }
+}

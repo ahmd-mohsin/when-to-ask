@@ -133,6 +133,75 @@ audit trail lands in models/ (labels_debug.jsonl, a2_history.jsonl). Read the
 audit file; if labels look wrong, the fix is the class artifact / lexicons,
 never the downstream.
 
+## 2d. THE REAL RUN — local 4-8x RTX PRO 6000 Blackwell 96GB (decisions/021)
+
+Qwen3-32B bf16 (~65GB) fits on **one** 96GB card, so each GPU is an
+independent worker over a disjoint task slice (`--shard i --num-shards N`).
+No tensor sharding, near-linear scaling; all shards write the same `--out`
+(per-task subdirs never collide; events/manifest are suffixed per shard).
+
+### R0 — config verification (5 minutes, do this FIRST)
+
+The single most important check in this whole plan (decisions/021 §1):
+generation used to inherit the model's shipped `generation_config`, and Qwen3
+ships `top_k=20`, which caps interpretation diversity no matter the
+temperature. The collector now prints and records the effective config:
+
+```bash
+python -c "import sys; sys.path.insert(0,'src'); from wta.hf_reader import HFStreamReader; r=HFStreamReader('Qwen/Qwen3-32B'); print(r.effective_generation_config())"
+```
+
+Record what `shipped` says. If `top_k` is 20 (or `top_p` < 1), that confirms
+the clamp was real and the 32B fork scarcity has a mechanical explanation.
+
+### R1 — diversity pilot — GO/NO-GO GATE (~4-8 GPU-hours)
+
+6 known fork-bearing tasks x 12 seeds. **Pre-registered success criterion,
+fixed before the run:** >= 3 of the 6 tasks show >= 2 interpretation classes
+each committed by >= 2 distinct runs, AND median reads/run >= 25.
+
+```bash
+for i in 0 1 2 3; do CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes_pilot.json --n-tasks 6 --n-runs 12 --shard $i --num-shards 4 --out data/a0_pilot_32b --scratch-dir /mnt/nvme/wta-scratch & done; wait
+```
+
+(`interpretation_classes_pilot.json` = the 6-task subset swe_36, swe_47,
+swe_50, swe_4, swe_12, swe_30.) Then on the laptop:
+
+```bash
+python scripts/generate_labels.py --a0 data/a0_pilot_32b --out models/pilot_32b
+```
+
+- **Criterion met** -> the clamp explanation holds; run R2.
+- **Diversity missed** -> forks are genuinely rare for this backbone. Do NOT
+  scale a null: pivot to a larger/different backbone, the structural-fork
+  slice, or the negative result.
+- **Reads missed only** -> drop `--cadence` to 4 and re-pilot (cheap).
+
+### R2 — main collection (60 tasks x 24 seeds, ~1440 runs)
+
+```bash
+for i in 0 1 2 3; do CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes.json --n-tasks 60 --n-runs 24 --shard $i --num-shards 4 --out data/a0_v3_32b --scratch-dir /mnt/nvme/wta-scratch & done; wait
+```
+
+For 8 GPUs, change both `--num-shards 4` -> `8` and the loop to `0..7`.
+Expect ~6-10 min/run at cap 40, so ~150-240 GPU-hours: **~2 days wall on 4
+cards, ~1 day on 8.** Interrupt-safe — re-running the same command resumes
+(existing `<run>.json` files are skipped).
+
+### R3 — OOD + sealed test (after R2, or on spare cards)
+
+Needs class artifacts derived first (`scripts/audit_class_artifact.py` must
+exit 0 errors): ~20 `harbor_sql` tasks x 12 seeds gives gate 6 its first real
+held-out family, and the sealed `swe_60+` pool x 12 seeds becomes the eval
+split. Point `--tasks-dir third_party/hil-bench/harbor_sql` for the OOD half.
+
+### Merging shards before analysis
+
+```bash
+cat data/a0_v3_32b/events.s*.jsonl > data/a0_v3_32b/events.jsonl
+python -c "import json,glob;m=[json.load(open(f)) for f in sorted(glob.glob('data/a0_v3_32b/collection_manifest.s*.json'))];out=m[0];[out['tasks'].update(x['tasks']) for x in m[1:]];json.dump(out,open('data/a0_v3_32b/collection_manifest.json','w'),indent=1)"
+```
+
 ## 4. A4 gates — STOP POINT
 
 ```bash
