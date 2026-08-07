@@ -45,7 +45,9 @@ class HFStreamReader:
                  cadence: int = 32, cues: tuple[str, ...] = DEFAULT_CUES,
                  value_pattern: str | None = None, value_cooldown: int = 8,
                  load_in_4bit: bool = False,
-                 enable_thinking: bool | None = None):
+                 enable_thinking: bool | None = None,
+                 top_p: float | None = 1.0, top_k: int | None = 0,
+                 min_p: float | None = 0.0):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -59,6 +61,15 @@ class HFStreamReader:
         self.enable_thinking = enable_thinking
         self.value_pattern = value_pattern
         self.value_cooldown = value_cooldown
+        # decisions/021 §1: NEVER inherit the model's shipped generation_config
+        # for these. Qwen3 ships top_k=20, which truncates the candidate set to
+        # 20 tokens and makes temperature nearly inert as a DIVERSITY lever --
+        # the likely cause of the single-run-minority forks in the 32B run.
+        # Defaults here disable both truncations; pass None to inherit
+        # explicitly (recorded either way in effective_generation_config()).
+        self.top_p = top_p
+        self.top_k = top_k
+        self.min_p = min_p
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
         kwargs: dict = {"torch_dtype": getattr(torch, dtype)}
         if device == "cuda":
@@ -78,6 +89,29 @@ class HFStreamReader:
         # what the hook capture actually grabs (single-layer mode still hooks
         # exactly one layer; the saved h stays 1-D for schema compatibility)
         self._capture_layers = self.layer_indices or [self.mid_layer]
+
+    def _sampling_kwargs(self, temperature: float) -> dict:
+        """Sampling params passed EXPLICITLY to generate(). Anything left None
+        falls back to the model's generation_config (recorded, never silent)."""
+        kw: dict = {"do_sample": temperature > 0,
+                    "temperature": max(temperature, 1e-5)}
+        for name, val in (("top_p", self.top_p), ("top_k", self.top_k),
+                          ("min_p", self.min_p)):
+            if val is not None:
+                kw[name] = val
+        return kw
+
+    def effective_generation_config(self) -> dict:
+        """What the model would default to, plus what we override — for the
+        collection manifest (decisions/021 R0: the config must be recorded,
+        not assumed)."""
+        gc = getattr(self.model, "generation_config", None)
+        shipped = {k: getattr(gc, k, None) for k in
+                   ("do_sample", "temperature", "top_p", "top_k", "min_p",
+                    "repetition_penalty")} if gc is not None else {}
+        return {"shipped": shipped,
+                "overrides": {"top_p": self.top_p, "top_k": self.top_k,
+                              "min_p": self.min_p}}
 
     def _template_kwargs(self) -> dict:
         return ({} if self.enable_thinking is None
@@ -108,8 +142,7 @@ class HFStreamReader:
         inputs = self.tokenizer(text_in, return_tensors="pt").to(self.model.device)
         with torch.no_grad(), LayerCapture(self.model, self._capture_layers) as cap:
             out = self.model.generate(
-                **inputs, do_sample=temperature > 0,
-                temperature=max(temperature, 1e-5),
+                **inputs, **self._sampling_kwargs(temperature),
                 max_new_tokens=max_new_tokens,
                 return_dict_in_generate=True,
             )

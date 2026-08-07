@@ -26,7 +26,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from collect_a0 import TEMPS, env_info, log_event  # noqa: E402
+from collect_a0 import env_info, log_event  # noqa: E402
 from extract_task_context import image_available, try_load_archive  # noqa: E402
 
 from wta.agent_env import DockerTaskEnv  # noqa: E402
@@ -34,6 +34,19 @@ from wta.agent_loop import AgentLoopConfig, run_agent  # noqa: E402
 from wta.hf_reader import HFStreamReader  # noqa: E402
 from wta.logging_schema import save_run_log  # noqa: E402
 from wta.reads import DEFAULT_VALUE_PATTERN  # noqa: E402
+
+
+# The method doc's A0 says to force runs to actually disagree ("vary seed and
+# temperature, and optionally a light persona nudge"); v1.5 had a nudge and the
+# v2 collector dropped it (decisions/021 §1). INTERPRETATION-NEUTRAL by
+# construction: it asks the model to commit to *a* reading of any under-spec,
+# and must never name or hint at a specific interpretation class -- naming one
+# would contaminate the very labels this data trains.
+DELIBERATION_NUDGE = (
+    "Where the task leaves a choice open, state the alternatives you see in "
+    "your THOUGHT, pick one, and proceed with it. Do not ask for "
+    "clarification; commit to your reading and implement it."
+)
 
 
 def artifact_task_ids(classes_path) -> set[str]:
@@ -55,8 +68,15 @@ def main() -> int:
     ap.add_argument("--n-tasks", type=int, default=20)
     ap.add_argument("--n-runs", type=int, default=8)
     ap.add_argument("--mid-layer", type=float, default=0.5)
-    ap.add_argument("--layers", default="0.4,0.5,0.6,0.7")
-    ap.add_argument("--cadence", type=int, default=32)
+    # decisions/021 §6: hook capture makes extra layers ~free (KB/step) and
+    # select-at-load means the sweep costs zero extra GPU runs. Span 0.2-0.85;
+    # the old 0.4-0.7 band was never swept on real agent data.
+    ap.add_argument("--layers", default="0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.85")
+    # decisions/021 §3: the read selector is rebuilt per TURN, so cadence K
+    # means a turn shorter than K tokens yields ZERO reads. At K=32 that gave
+    # median 8 reads/run and 26% zero-read runs. Spec A0's {16,32,64} sweep
+    # was never run; 8 is the agent-loop default until it is.
+    ap.add_argument("--cadence", type=int, default=8)
     ap.add_argument("--no-value-reads", action="store_true",
                     help="disable value-triggered reads (ON by default in v2, "
                          "decisions/016)")
@@ -66,9 +86,28 @@ def main() -> int:
                          "silent, the hil-bench repo's own Qwen configs use "
                          "the non-thinking Instruct variant). Recorded in the "
                          "manifest. No-op for Qwen2.5 templates.")
-    ap.add_argument("--max-steps", type=int, default=15)
-    ap.add_argument("--max-new-tokens", type=int, default=1024)
+    # decisions/021 §2: at 15 steps, 81% of the 32B runs were CENSORED at the
+    # cap and half the forked blockers had zero finished runs -- late decisions
+    # were never observed. 1024 tokens also truncated a run mid-bash-block.
+    ap.add_argument("--max-steps", type=int, default=40)
+    ap.add_argument("--max-new-tokens", type=int, default=2048)
     ap.add_argument("--exec-timeout", type=int, default=120)
+    # decisions/021 §1: sampling diversity. generate() previously passed only
+    # temperature, inheriting the model's generation_config (Qwen3 ships
+    # top_k=20), which caps interpretation diversity no matter the temperature.
+    ap.add_argument("--top-p", type=float, default=1.0)
+    ap.add_argument("--top-k", type=int, default=0, help="0 disables top-k")
+    ap.add_argument("--min-p", type=float, default=0.0)
+    ap.add_argument("--temps", default="0.7,0.9,1.1,1.3",
+                    help="temperature ladder, cycled over seeds INDEPENDENTLY "
+                         "of the seed value (decisions/021 §1: the old TEMPS "
+                         "were tied to seed%%3, confounding the two levers)")
+    ap.add_argument("--no-nudge", action="store_true",
+                    help="ablate the deliberation nudge. The method doc's A0 "
+                         "prescribes a nudge to make runs actually disagree; "
+                         "v1.5 had one and the v2 collector dropped it "
+                         "(decisions/021 §1). Interpretation-NEUTRAL by "
+                         "construction: it must never name a class.")
     ap.add_argument("--scratch-dir", default=None)
     ap.add_argument("--out", default="data/a0_v2")
     args = ap.parse_args()
@@ -83,12 +122,19 @@ def main() -> int:
         args.model_id, mid_layer=args.mid_layer, layers=layer_specs,
         cadence=args.cadence,
         value_pattern=None if args.no_value_reads else DEFAULT_VALUE_PATTERN,
-        enable_thinking=args.enable_thinking)
+        enable_thinking=args.enable_thinking,
+        top_p=args.top_p, top_k=args.top_k, min_p=args.min_p)
+    temps = tuple(float(t) for t in args.temps.split(","))
     manifest = {"args": vars(args), "env": env_info(),
                 "reader": {"n_layers": reader.n_layers, "hidden_dim": reader.hidden_dim,
                            "mid_layer": reader.mid_layer,
                            "layer_indices": reader.layer_indices},
+                # decisions/021 R0: record what the model would have defaulted
+                # to alongside what we override -- never assume the config.
+                "generation": reader.effective_generation_config(),
+                "temps": list(temps),
                 "tasks": {}}
+    print(f"generation config: {reader.effective_generation_config()}")
     log_event(events, event="v2_collection_start", args=vars(args))
 
     tasks_dir = Path(args.tasks_dir)
@@ -124,6 +170,8 @@ def main() -> int:
         instruction = instr_f.read_text(encoding="utf-8", errors="replace")
         instruction += ("\n\nYou are working inside the repository this task "
                         "refers to. Explore it with shell commands as needed.")
+        if not args.no_nudge:
+            instruction += "\n\n" + DELIBERATION_NUDGE
 
         for seed in range(args.n_runs):
             run_id = f"{task_id}-s{seed}"
@@ -132,7 +180,7 @@ def main() -> int:
                 continue
             cfg = AgentLoopConfig(max_steps=args.max_steps,
                                   max_new_tokens_per_turn=args.max_new_tokens,
-                                  temperature=TEMPS[seed % len(TEMPS)])
+                                  temperature=temps[seed % len(temps)])
             log_event(events, event="run_start", run=run_id, temp=cfg.temperature)
             t0 = time.time()
             try:
