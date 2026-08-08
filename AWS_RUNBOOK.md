@@ -212,9 +212,80 @@ Prints the seven gate numbers unfiltered. **This is the science gate: the
 owner reviews before ANY Part B result is trusted (decisions/011). Red gates
 are findings, not bugs — nothing gets tuned to pass.**
 
-## 5. Part B eval (only after sign-off)
+## 5. Phase-4 eval — R5 (ONLY after step-4 sign-off; decisions/022)
 
-Online trigger + Ask-F1 + matched-N baselines on HiL-Bench per `specs/eval.md`.
+Everything below is built and CPU-validated (contract tests +
+`scripts/run_eval_smoke.py`). Ordered GPU procedure on the local Blackwell
+box; specs: `specs/eval.md` + `specs/eval-bridge.md`. The sealed pool runs
+ONCE (decisions/018 §4) — smoke every stage on a TRAIN task (swe_0) first.
+
+```bash
+# 5.0 preflight (repo + suite green on the box)
+git pull && python -m pytest -q && python scripts/run_eval_smoke.py
+pip install vllm   # first time only; uncomment vllm in requirements-gpu.txt
+
+# 5.1 judge (frozen config, one GPU) — leave running for the whole eval
+CUDA_VISIBLE_DEVICES=0 vllm serve casperhansen/llama-3.3-70b-instruct-awq \
+    --port 8808 &
+curl -s http://127.0.0.1:8808/v1/chat/completions -H 'Content-Type: application/json' \
+  -d '{"model":"casperhansen/llama-3.3-70b-instruct-awq","messages":[{"role":"user","content":"say ok"}]}'
+
+# 5.2 JUDGE VALIDATION (brief §5a) — STOP on failure, paste report to owner
+JUDGE_BASE_URL=http://127.0.0.1:8808 python scripts/validate_judge.py
+
+# 5.3 backbone for bridge rows (second GPU; the DETECTOR arm never uses this)
+CUDA_VISIBLE_DEVICES=1 vllm serve Qwen/Qwen3-32B --port 8809 &
+export AGENT_SWE_BASE_URL=http://127.0.0.1:8809/v1
+# verify the litellm route: the -m value below, the key in
+# configs/hilbench/config_mappings.yaml, and vLLM's served model name must agree.
+
+# 5.4 materialize flat tasks (train smoke first, then sealed)
+python scripts/materialize_hilbench_tasks.py --tasks swe_0 \
+    --out data/hilbench_flat_smoke --extract-scripts --scratch-dir /mnt/nvme/wta-scratch
+python scripts/materialize_hilbench_tasks.py --tasks swe_60..swe_99 \
+    --out data/hilbench_flat_sealed --extract-scripts --scratch-dir /mnt/nvme/wta-scratch
+
+# 5.5 BRIDGE ROWS in hil-bench's own harness (smoke on swe_0, then sealed)
+cd third_party/hil-bench
+python -m hil_bench.cli swe ../../data/hilbench_flat_smoke --all-modes \
+    -m openai/Qwen/Qwen3-32B --passes 1 --num-workers 2 \
+    --config-mapping ../../configs/hilbench/config_mappings.yaml \
+    --judge-config ../../configs/hilbench/judge_config.yaml \
+    --output-dir ../../results/bridge_smoke
+# paste the smoke output back for review, THEN the sealed run:
+python -m hil_bench.cli swe ../../data/hilbench_flat_sealed --all-modes \
+    -m openai/Qwen/Qwen3-32B --passes 3 --num-workers 4 \
+    --config-mapping ../../configs/hilbench/config_mappings.yaml \
+    --judge-config ../../configs/hilbench/judge_config.yaml \
+    --output-dir ../../results/bridge
+cd ../..
+
+# 5.6 OUR-LOOP ARMS (in-process HFStreamReader on the remaining GPUs,
+# data-parallel shards as in 2d; detector thresholds ONLY from --artifacts).
+# PRE-REQ: configs/eval.yaml n_runs set from the post-R1 decisions/ entry.
+for i in 2 3; do CUDA_VISIBLE_DEVICES=$i JUDGE_BASE_URL=http://127.0.0.1:8808 \
+  python scripts/run_eval.py --artifacts models/v3_32b_gates \
+    --arms no_ask,full_info,model_initiated,detector,output_divergence,verbalized \
+    --tasks swe_60..swe_99 --out data/eval --scratch-dir /mnt/nvme/wta-scratch \
+    --shard $((i-2)) --num-shards 2 & done; wait
+# B4 random runs LAST, budget = detector's measured asks/task (decisions/022 §2i):
+#   read it from data/eval/*/detector/*/ask_log.json, then
+#   python scripts/run_eval.py --arms random --b4-budget <asks_per_task> ...
+
+# 5.7 scoring + headline table (invokes their evaluator under docker)
+python scripts/score_eval.py --our data/eval --bridge results/bridge \
+    --flat-tasks data/hilbench_flat_sealed --resolve \
+    --resolved-cache results/resolved_cache.json --out results/eval
+# pre-req: data/fork_type_annotations.json committed + owner-signed BEFORE
+# unsealing (decisions/022 §2g), else the fork slice reports unsplit.
+
+# 5.8 scaffold-robustness (decisions/021 §8 item 4)
+python scripts/scaffold_robustness.py --traj results/bridge --our data/eval \
+    --out results/scaffold_robustness.json
+
+# 5.9 tarball results + manifests back to the laptop
+tar czf wta-eval-results.tar.gz results/ data/eval/*/eval_manifest*.json
+```
 
 ## Cost notes (modest budget, decisions/004)
 

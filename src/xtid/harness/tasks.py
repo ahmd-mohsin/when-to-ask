@@ -217,7 +217,7 @@ def load_hil_bench_tasks(domain: str = "swe", limit: int | None = None, root: Pa
         if reg is None:
             continue
         blockers = _read_blocker_registry(reg)
-        statement = _read_statement(task_dir)
+        statement, statement_stub = _read_statement(task_dir)
         instance_id = _read_instance_id(task_dir)
         tasks.append(
             Task(
@@ -226,7 +226,8 @@ def load_hil_bench_tasks(domain: str = "swe", limit: int | None = None, root: Pa
                 statement=statement,
                 source="hil_bench",
                 blockers=blockers,
-                meta={"task_dir": str(task_dir), "registry": str(reg)},
+                meta={"task_dir": str(task_dir), "registry": str(reg),
+                      "statement_stub": statement_stub},
             )
         )
         if limit and len(tasks) >= limit:
@@ -246,23 +247,29 @@ def _find_registry(task_dir: Path) -> Path | None:
 
 
 def _read_instance_id(task_dir: Path) -> str:
-    meta = task_dir / "metadata.json"
-    if meta.exists():
-        try:
-            iid = json.loads(meta.read_text()).get("instance_id")
-            if isinstance(iid, str) and iid.strip():
-                return iid.strip()
-        except Exception:
-            pass
+    # harbor layout nests metadata under shared/ (decisions/022 fix)
+    for meta in (task_dir / "metadata.json", task_dir / "shared" / "metadata.json"):
+        if meta.exists():
+            try:
+                iid = json.loads(meta.read_text()).get("instance_id")
+                if isinstance(iid, str) and iid.strip():
+                    return iid.strip()
+            except Exception:
+                pass
     return task_dir.name
 
 
-def _read_statement(task_dir: Path) -> str:
-    for cand in ("problem_statement.md", "task.md", "prompt.txt", "problem.txt"):
+def _read_statement(task_dir: Path) -> tuple[str, bool]:
+    """Statement text plus a stub flag; eval refuses stub statements
+    (decisions/022 — the harbor layout keeps it at shared/problem_statement.txt,
+    which the original candidate list missed, silently yielding stubs)."""
+    for cand in ("problem_statement.txt", "problem_statement.md", "task.md",
+                 "prompt.txt", "problem.txt",
+                 "shared/problem_statement.txt"):
         p = task_dir / cand
         if p.exists():
-            return p.read_text()[:8000]
-    return f"HiL-Bench task {task_dir.name}"
+            return p.read_text(encoding="utf-8", errors="replace")[:8000], False
+    return f"HiL-Bench task {task_dir.name}", True
 
 
 def load_tasks(cfg: dict) -> list[Task]:

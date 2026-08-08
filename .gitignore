@@ -26,6 +26,8 @@ data/*
 !data/interpretation_classes.json
 !data/interpretation_classes_pilot.json
 !data/interpretation_classes_new/
+!data/judge_validation_pairs.json
+!data/fork_type_annotations.json
 logs/
 models/
 *.pt

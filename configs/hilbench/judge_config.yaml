@@ -1,0 +1,9 @@
+# Frozen judge config (spec eval-bridge, decisions/022): byte-equivalent to
+# the vendored third_party/hil-bench/judge_config.yaml @352d14c -- same model,
+# same self_hosted hosting, same 127.0.0.1:8808 endpoint (our local vLLM,
+# AWS_RUNBOOK step 5). Shared by the harness (--judge-config) and our loop
+# (ApiJudge via JUDGE_BASE_URL=http://127.0.0.1:8808).
+model: casperhansen/llama-3.3-70b-instruct-awq
+hosting:
+  type: self_hosted
+  self_hosted_base_url: http://127.0.0.1:8808

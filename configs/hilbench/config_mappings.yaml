@@ -1,0 +1,16 @@
+# Bridge rows: (domain, mode, model) -> agent config (spec eval-bridge,
+# decisions/022). Passed to the harness via --config-mapping so nothing in
+# third_party/ is touched. Config paths resolve relative to the harness CWD
+# (the runbook invocation runs from third_party/hil-bench), hence the ../../.
+#
+# Model key "openai/Qwen/Qwen3-32B" = litellm's OpenAI-compatible route to
+# the vLLM endpoint in AGENT_SWE_BASE_URL. Verify the exact route string at
+# GPU time (AWS_RUNBOOK step 5) -- the -m value, this key, and vLLM's served
+# model name must agree.
+swe:
+  baseline:
+    openai/Qwen/Qwen3-32B: ../../configs/hilbench/swe_default_qwen3_32b.yaml
+  ask_human:
+    openai/Qwen/Qwen3-32B: ../../configs/hilbench/swe_ask_qwen3_32b.yaml
+  full_info:
+    openai/Qwen/Qwen3-32B: ../../configs/hilbench/swe_default_qwen3_32b.yaml
