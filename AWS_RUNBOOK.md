@@ -165,16 +165,30 @@ directly and pulls docker images itself via the HF bucket
 **Three more preflight facts, each found the hard way on 2026-08-08:**
 
 1. **`hf buckets cp` needs huggingface-hub 1.x.** That is the call that
-   fetches every task image. The `buckets` subcommand does not exist in
-   0.36.2 (what transformers 4.57 pins) — it fails with
-   `invalid choice: 'buckets'`. Keep the CLI in its OWN venv so it cannot
-   perturb the verified torch/transformers stack, and put it FIRST on PATH;
-   the collector only shells out to `hf`. The bucket serves anonymously —
-   **no auth, no token needed.**
+   fetches every task image. **This failure is silent and expensive:** if
+   `hf` is missing or too old, `try_load_archive` returns None, the task is
+   logged `task_skipped`, and the run continues on whatever images happen to
+   be cached in the local docker store. Observed 2026-08-08: a 60-task R2
+   launched with no `hf` on PATH would have collected **4 tasks** and skipped
+   56, with the only evidence four `task_skipped` lines across four JSONL
+   files. The bucket serves anonymously — **no auth, no token needed.**
+
+   Always check before launching, on any box:
+   ```bash
+   hf buckets --help >/dev/null 2>&1 && echo "hf OK" || echo "hf MISSING"
+   ```
+   On the current verified stack (transformers 5.14.1) huggingface-hub 1.27.0
+   comes with it, so `/opt/dlami/nvme/wta-venv/bin/hf` already works — just
+   put the venv first on PATH. **No separate CLI venv is needed.** Only on the
+   OLD transformers 4.57 stack (which pins hub 0.36.2, where the subcommand
+   fails with `invalid choice: 'buckets'`) must you isolate the CLI so it
+   cannot perturb torch:
    ```bash
    uv venv /opt/dlami/nvme/hfcli-venv && uv pip install \
        --python /opt/dlami/nvme/hfcli-venv/bin/python huggingface-hub
    ```
+   (`uv` is NOT preinstalled on the DLAMI — `pip install uv`, or fall back to
+   `python -m venv` + `pip install huggingface-hub`.)
 2. **Move image storage onto the NVMe BEFORE pulling anything — BOTH
    halves.** The ~29GB root disk cannot hold the 6 pilot images (~27GB of
    archives). Setting docker's `"data-root": "/opt/dlami/nvme/docker"` in
@@ -190,12 +204,39 @@ directly and pulls docker images itself via the HF bucket
    systemctl start containerd && systemctl start docker
    ```
    Verify with `du -x -sh /var/lib/containerd` (should vanish) and
-   `docker images` (pulled images survive the move).
+   `docker images` (pulled images survive the move). **Check the append
+   landed at top level** — `root` must not fall inside a TOML table. On the
+   stock DLAMI file every `[section]` is commented out so appending is safe;
+   on a customised one, insert `root` above the first live `[table]` instead:
+   ```bash
+   grep -vE '^\s*#|^\s*$' /etc/containerd/config.toml   # expect: disabled_plugins, root
+   ```
+   Confirm new blobs actually land on the NVMe (this is what `data-root`
+   alone silently fails to do):
+   ```bash
+   docker pull alpine:latest   # then: root should grow ~0, nvme/containerd ~13MB
+   ```
 3. **Export `TMPDIR` onto the NVMe too.** Image archives are up to 9.2GB
    each and staging them on root was observed to spike it to 95% full.
 
+4. **Never hardcode the card count — detect it.** This runbook has been run
+   on 2-card and 4-card boxes; the commands below derive `--num-shards` from
+   what is actually present, and every box should do the same rather than
+   copy-pasting a number. Sharding is over TASKS
+   (`eligible[shard::num_shards]`) and seeds within a task are serial, so the
+   useful shard count is capped by the task count of the stage:
+   ```bash
+   NGPU=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)
+   echo "this box has $NGPU cards"
+   ```
+   Launch one process per card with `--num-shards $SHARDS --shard $i` and
+   `CUDA_VISIBLE_DEVICES=$i`, where `SHARDS = min(NGPU, n_tasks)`. Extra cards
+   beyond `n_tasks` sit idle. A stage's wall-clock floor is one task's full
+   seed sweep, no matter how many cards you add.
+
 Run collections under **tmux**, not a foreground shell — these are multi-hour
-jobs and a dropped connection kills an unprotected run.
+jobs and a dropped connection kills an unprotected run. `scripts/launch_r2.sh`
+does all of the above (env, detection, per-shard logs) for R2.
 
 ### R0 — config verification (5 minutes, do this FIRST)
 
@@ -211,26 +252,31 @@ python -c "import sys; sys.path.insert(0,'src'); from wta.hf_reader import HFStr
 Record what `shipped` says. If `top_k` is 20 (or `top_p` < 1), that confirms
 the clamp was real and the 32B fork scarcity has a mechanical explanation.
 
-### R1 — diversity pilot — GO/NO-GO GATE (~1-1.5h wall on 2 cards)
+### R1 — diversity pilot — GO/NO-GO GATE (~1-1.5h wall on 2 cards; floor is one task's 12 runs)
 
 6 known fork-bearing tasks x 12 seeds. **Pre-registered success criterion,
 fixed before the run:** >= 3 of the 6 tasks show >= 2 interpretation classes
 each committed by >= 2 distinct runs, AND median reads/run >= 25.
 
 Note `python` below must be the NVMe venv's interpreter (the system python
-has no torch), and the hf-CLI venv must precede it on PATH — see preflight.
+has no torch), and whichever venv provides `hf` must precede it on PATH — see
+preflight 1. Shard count is detected, not hardcoded — see preflight 4.
 
 ```bash
-export PATH=/opt/dlami/nvme/hfcli-venv/bin:$PATH
+export PATH=/opt/dlami/nvme/wta-venv/bin:$PATH      # must provide `hf`
 export HF_HOME=/opt/dlami/nvme/hf TMPDIR=/opt/dlami/nvme/tmp
 PY=/opt/dlami/nvme/wta-venv/bin/python
-for i in 0 1; do CUDA_VISIBLE_DEVICES=$i "$PY" scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes_pilot.json --n-tasks 6 --n-runs 12 --shard $i --num-shards 2 --out data/a0_pilot_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
+NGPU=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)
+SHARDS=$(( NGPU < 6 ? NGPU : 6 ))    # R1 has only 6 tasks; extra cards idle
+echo "R1 on $SHARDS of $NGPU cards"
+for i in $(seq 0 $((SHARDS-1))); do CUDA_VISIBLE_DEVICES=$i "$PY" scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes_pilot.json --n-tasks 6 --n-runs 12 --shard $i --num-shards $SHARDS --out data/a0_pilot_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
 ```
 
 Sharding is over TASKS (`eligible[shard::num_shards]`), and seeds within a
 task are serial — so R1 cannot use more than 6 cards, and its wall-clock
-floor is one task's 12 runs no matter how many cards you add. On the 2-card
-box: shard 0 gets swe_12/swe_36/swe_47, shard 1 gets swe_30/swe_4/swe_50.
+floor is one task's 12 runs no matter how many cards you add. The split is
+`eligible[i::SHARDS]` over the sorted eligible list; on a 2-card box that is
+shard 0 = swe_12/swe_36/swe_47, shard 1 = swe_30/swe_4/swe_50.
 
 **Measured on this box (first 6 runs, 2026-08-08): ~55-141s per run** —
 i.e. ~1.7 min, not the 6-10 min the R2 estimate below assumes. 15-40 steps
@@ -243,6 +289,12 @@ swe_50, swe_4, swe_12, swe_30.) Then on the laptop:
 python scripts/generate_labels.py --a0 data/a0_pilot_32b --out models/pilot_32b
 ```
 
+**Status 2026-08-08: R1 was run on a DIFFERENT box and CLEARED the gate.**
+Its `data/a0_pilot_32b/` artifacts therefore do not exist on this machine —
+absence here is not evidence the gate was skipped. R2 on this box is
+correctly gated. Re-run R1 locally only if you need the pilot artifacts
+themselves.
+
 - **Criterion met** -> the clamp explanation holds; run R2.
 - **Diversity missed** -> forks are genuinely rare for this backbone. Do NOT
   scale a null: pivot to a larger/different backbone, the structural-fork
@@ -251,19 +303,33 @@ python scripts/generate_labels.py --a0 data/a0_pilot_32b --out models/pilot_32b
 
 ### R2 — main collection (60 tasks x 24 seeds, ~1440 runs)
 
+Use the launcher, which does env + card detection + per-shard logging:
+
 ```bash
-export PATH=/opt/dlami/nvme/hfcli-venv/bin:$PATH
-export HF_HOME=/opt/dlami/nvme/hf TMPDIR=/opt/dlami/nvme/tmp
-PY=/opt/dlami/nvme/wta-venv/bin/python
-for i in 0 1; do CUDA_VISIBLE_DEVICES=$i "$PY" scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes.json --n-tasks 60 --n-runs 24 --shard $i --num-shards 2 --out data/a0_v3_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
+tmux new-session -d -s r2 'bash scripts/launch_r2.sh'
+tmux attach -t r2      # logs also at /opt/dlami/nvme/logs/r2/shard*.log
 ```
 
-For more GPUs, scale `--num-shards` and the loop together (R2 has 60 tasks,
-so unlike R1 it shards cleanly across 8). The old ~6-10 min/run figure was a
+Equivalent by hand:
+
+```bash
+export PATH=/opt/dlami/nvme/wta-venv/bin:$PATH      # must provide `hf`
+export HF_HOME=/opt/dlami/nvme/hf TMPDIR=/opt/dlami/nvme/tmp
+PY=/opt/dlami/nvme/wta-venv/bin/python
+SHARDS=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)   # 60 tasks: any card count shards cleanly
+echo "R2 on $SHARDS cards"
+for i in $(seq 0 $((SHARDS-1))); do CUDA_VISIBLE_DEVICES=$i "$PY" scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes.json --n-tasks 60 --n-runs 24 --shard $i --num-shards $SHARDS --out data/a0_v3_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
+```
+
+R2 has 60 tasks, so unlike R1 it shards cleanly across any card count you
+have — detect it, do not copy a number. The old ~6-10 min/run figure was a
 guess carried over from the sharded-4xA10G plan; R1 measured **~1.7 min/run**
 on a single Blackwell card, so re-derive the budget from R1's own manifest
-timings before quoting a number. Interrupt-safe — re-running the same command
-resumes (existing `<run>.json` files are skipped).
+timings before quoting a number. Measured on the 4-card Blackwell box
+(2026-08-08), first runs of R2: 17-190s per run. Budget ~80 min on top for
+the one-time image fetches (~84s per uncached image, ~7GB archive each).
+Interrupt-safe — re-running the same command resumes (existing `<run>.json`
+files are skipped), including across a change in `--num-shards`.
 
 Disk: each run writes ~12MB (npz dominates, 8 layers x reads), so R2's ~1440
 runs need **~18GB** — keep `--out` on the NVMe, not the root disk.
