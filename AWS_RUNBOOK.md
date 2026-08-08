@@ -278,9 +278,15 @@ floor is one task's 12 runs no matter how many cards you add. The split is
 `eligible[i::SHARDS]` over the sorted eligible list; on a 2-card box that is
 shard 0 = swe_12/swe_36/swe_47, shard 1 = swe_30/swe_4/swe_50.
 
-**Measured on this box (first 6 runs, 2026-08-08): ~55-141s per run** —
-i.e. ~1.7 min, not the 6-10 min the R2 estimate below assumes. 15-40 steps
-and 51-236 reads per run.
+**R1 COMPLETED 2026-08-08 — PASS. Full result in decisions/023.** 72/72 runs,
+6.4 GPU-hours: forks on **4/6 tasks** (bar >=3), **median 216 reads/run**
+(bar >=25).
+
+Final per-run timings — **median 136s but mean 319s, max 4922s**. The tail is
+real, not noise: the slow runs cluster on seeds where `seed % 4 == 3`, i.e.
+temperature 1.3 (`--temps 0.7,0.9,1.1,1.3`), which generate max tokens every
+turn. **Budget off the mean.** (An earlier note here quoted ~1.7 min/run from
+the first 6 runs — that was the median of an unrepresentative sample.)
 
 (`interpretation_classes_pilot.json` = the 6-task subset swe_36, swe_47,
 swe_50, swe_4, swe_12, swe_30.) Then on the laptop:
@@ -323,16 +329,19 @@ for i in $(seq 0 $((SHARDS-1))); do CUDA_VISIBLE_DEVICES=$i "$PY" scripts/collec
 
 R2 has 60 tasks, so unlike R1 it shards cleanly across any card count you
 have — detect it, do not copy a number. The old ~6-10 min/run figure was a
-guess carried over from the sharded-4xA10G plan; R1 measured **~1.7 min/run**
-on a single Blackwell card, so re-derive the budget from R1's own manifest
-timings before quoting a number. Measured on the 4-card Blackwell box
+guess carried over from the sharded-4xA10G plan. **Completed R1 measured
+median 136s but MEAN 319s per run** (max 4922s) on a single Blackwell card —
+budget off the mean, since the temperature-1.3 seeds have a long tail. At the
+mean, R2's 1440 runs are ~128 GPU-hours. Measured on the 4-card Blackwell box
 (2026-08-08), first runs of R2: 17-190s per run. Budget ~80 min on top for
 the one-time image fetches (~84s per uncached image, ~7GB archive each).
 Interrupt-safe — re-running the same command resumes (existing `<run>.json`
 files are skipped), including across a change in `--num-shards`.
 
-Disk: each run writes ~12MB (npz dominates, 8 layers x reads), so R2's ~1440
-runs need **~18GB** — keep `--out` on the NVMe, not the root disk.
+Disk: **measured ~31MB/run** over completed R1 (2.2GB / 72 runs; npz
+dominates, 8 layers x reads), so R2's ~1440 runs need **~44GB** — keep
+`--out` on the NVMe, not the root disk. (An earlier ~12MB/~18GB note here was
+extrapolated from partial data and is 2.5x low.)
 
 ### R3 — OOD + sealed test (after R2, or on spare cards)
 

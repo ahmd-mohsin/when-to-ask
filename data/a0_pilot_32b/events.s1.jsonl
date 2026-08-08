@@ -1,0 +1,80 @@
+{"event": "v2_collection_start", "args": {"tasks_dir": "third_party/hil-bench/harbor_swe", "classes": "data/interpretation_classes_pilot.json", "model_id": "Qwen/Qwen3-32B", "n_tasks": 6, "n_runs": 12, "mid_layer": 0.5, "layers": "0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.85", "cadence": 8, "no_value_reads": false, "enable_thinking": false, "max_steps": 40, "max_new_tokens": 2048, "exec_timeout": 120, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "temps": "0.7,0.9,1.1,1.3", "no_nudge": false, "scratch_dir": "/opt/dlami/nvme/wta-scratch", "out": "data/a0_pilot_32b", "shard": 1, "num_shards": 2}, "ts": "2026-08-08T07:27:15"}
+{"event": "run_start", "run": "swe_30-s0", "temp": 0.7, "ts": "2026-08-08T07:27:32"}
+{"event": "run_done", "run": "swe_30-s0", "steps": 15, "finished": true, "reads": 51, "secs": 55.5, "ts": "2026-08-08T07:28:28"}
+{"event": "run_start", "run": "swe_30-s1", "temp": 0.9, "ts": "2026-08-08T07:28:28"}
+{"event": "run_done", "run": "swe_30-s1", "steps": 40, "finished": false, "reads": 193, "secs": 139.4, "ts": "2026-08-08T07:30:49"}
+{"event": "run_start", "run": "swe_30-s2", "temp": 1.1, "ts": "2026-08-08T07:30:49"}
+{"event": "run_done", "run": "swe_30-s2", "steps": 15, "finished": true, "reads": 163, "secs": 86.6, "ts": "2026-08-08T07:32:16"}
+{"event": "run_start", "run": "swe_30-s3", "temp": 1.3, "ts": "2026-08-08T07:32:16"}
+{"event": "v2_collection_start", "args": {"tasks_dir": "third_party/hil-bench/harbor_swe", "classes": "data/interpretation_classes_pilot.json", "model_id": "Qwen/Qwen3-32B", "n_tasks": 6, "n_runs": 12, "mid_layer": 0.5, "layers": "0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.85", "cadence": 8, "no_value_reads": false, "enable_thinking": false, "max_steps": 40, "max_new_tokens": 2048, "exec_timeout": 120, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "temps": "0.7,0.9,1.1,1.3", "no_nudge": false, "scratch_dir": "/opt/dlami/nvme/wta-scratch", "out": "data/a0_pilot_32b", "shard": 1, "num_shards": 2}, "ts": "2026-08-08T07:36:49"}
+{"event": "run_start", "run": "swe_30-s3", "temp": 1.3, "ts": "2026-08-08T07:36:49"}
+{"event": "v2_collection_start", "args": {"tasks_dir": "third_party/hil-bench/harbor_swe", "classes": "data/interpretation_classes_pilot.json", "model_id": "Qwen/Qwen3-32B", "n_tasks": 6, "n_runs": 12, "mid_layer": 0.5, "layers": "0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.85", "cadence": 8, "no_value_reads": false, "enable_thinking": false, "max_steps": 40, "max_new_tokens": 2048, "exec_timeout": 120, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "temps": "0.7,0.9,1.1,1.3", "no_nudge": false, "scratch_dir": "/opt/dlami/nvme/wta-scratch", "out": "data/a0_pilot_32b", "shard": 1, "num_shards": 2}, "ts": "2026-08-08T07:42:14"}
+{"event": "run_start", "run": "swe_30-s3", "temp": 1.3, "ts": "2026-08-08T07:42:14"}
+{"event": "v2_collection_start", "args": {"tasks_dir": "third_party/hil-bench/harbor_swe", "classes": "data/interpretation_classes_pilot.json", "model_id": "Qwen/Qwen3-32B", "n_tasks": 6, "n_runs": 12, "mid_layer": 0.5, "layers": "0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.85", "cadence": 8, "no_value_reads": false, "enable_thinking": false, "max_steps": 40, "max_new_tokens": 2048, "exec_timeout": 120, "top_p": 1.0, "top_k": 0, "min_p": 0.0, "temps": "0.7,0.9,1.1,1.3", "no_nudge": false, "scratch_dir": "/opt/dlami/nvme/wta-scratch", "out": "data/a0_pilot_32b", "shard": 1, "num_shards": 2}, "ts": "2026-08-08T07:46:47"}
+{"event": "run_start", "run": "swe_30-s3", "temp": 1.3, "ts": "2026-08-08T07:46:47"}
+{"event": "run_done", "run": "swe_30-s3", "steps": 40, "finished": false, "reads": 7856, "secs": 4921.7, "ts": "2026-08-08T09:09:41"}
+{"event": "run_start", "run": "swe_30-s4", "temp": 0.7, "ts": "2026-08-08T09:09:41"}
+{"event": "run_done", "run": "swe_30-s4", "steps": 8, "finished": true, "reads": 82, "secs": 42.3, "ts": "2026-08-08T09:10:24"}
+{"event": "run_start", "run": "swe_30-s5", "temp": 0.9, "ts": "2026-08-08T09:10:24"}
+{"event": "run_done", "run": "swe_30-s5", "steps": 8, "finished": true, "reads": 94, "secs": 47.4, "ts": "2026-08-08T09:11:12"}
+{"event": "run_start", "run": "swe_30-s6", "temp": 1.1, "ts": "2026-08-08T09:11:12"}
+{"event": "run_done", "run": "swe_30-s6", "steps": 12, "finished": true, "reads": 97, "secs": 52.9, "ts": "2026-08-08T09:12:06"}
+{"event": "run_start", "run": "swe_30-s7", "temp": 1.3, "ts": "2026-08-08T09:12:06"}
+{"event": "run_done", "run": "swe_30-s7", "steps": 14, "finished": true, "reads": 219, "secs": 106.6, "ts": "2026-08-08T09:13:54"}
+{"event": "run_start", "run": "swe_30-s8", "temp": 0.7, "ts": "2026-08-08T09:13:54"}
+{"event": "run_done", "run": "swe_30-s8", "steps": 40, "finished": false, "reads": 83, "secs": 63.1, "ts": "2026-08-08T09:14:57"}
+{"event": "run_start", "run": "swe_30-s9", "temp": 0.9, "ts": "2026-08-08T09:14:57"}
+{"event": "run_done", "run": "swe_30-s9", "steps": 18, "finished": true, "reads": 119, "secs": 65.9, "ts": "2026-08-08T09:16:04"}
+{"event": "run_start", "run": "swe_30-s10", "temp": 1.1, "ts": "2026-08-08T09:16:04"}
+{"event": "run_done", "run": "swe_30-s10", "steps": 37, "finished": true, "reads": 405, "secs": 224.8, "ts": "2026-08-08T09:19:51"}
+{"event": "run_start", "run": "swe_30-s11", "temp": 1.3, "ts": "2026-08-08T09:19:51"}
+{"event": "run_done", "run": "swe_30-s11", "steps": 16, "finished": true, "reads": 272, "secs": 136.7, "ts": "2026-08-08T09:22:10"}
+{"event": "run_start", "run": "swe_4-s0", "temp": 0.7, "ts": "2026-08-08T09:22:43"}
+{"event": "run_done", "run": "swe_4-s0", "steps": 40, "finished": false, "reads": 96, "secs": 118.6, "ts": "2026-08-08T09:24:42"}
+{"event": "run_start", "run": "swe_4-s1", "temp": 0.9, "ts": "2026-08-08T09:24:42"}
+{"event": "run_done", "run": "swe_4-s1", "steps": 12, "finished": true, "reads": 153, "secs": 67.5, "ts": "2026-08-08T09:25:51"}
+{"event": "run_start", "run": "swe_4-s2", "temp": 1.1, "ts": "2026-08-08T09:25:51"}
+{"event": "run_done", "run": "swe_4-s2", "steps": 4, "finished": true, "reads": 108, "secs": 49.0, "ts": "2026-08-08T09:26:40"}
+{"event": "run_start", "run": "swe_4-s3", "temp": 1.3, "ts": "2026-08-08T09:26:40"}
+{"event": "run_done", "run": "swe_4-s3", "steps": 40, "finished": false, "reads": 6258, "secs": 3680.1, "ts": "2026-08-08T10:28:42"}
+{"event": "run_start", "run": "swe_4-s4", "temp": 0.7, "ts": "2026-08-08T10:28:42"}
+{"event": "run_done", "run": "swe_4-s4", "steps": 10, "finished": true, "reads": 34, "secs": 19.3, "ts": "2026-08-08T10:29:01"}
+{"event": "run_start", "run": "swe_4-s5", "temp": 0.9, "ts": "2026-08-08T10:29:01"}
+{"event": "run_done", "run": "swe_4-s5", "steps": 10, "finished": true, "reads": 121, "secs": 59.9, "ts": "2026-08-08T10:30:02"}
+{"event": "run_start", "run": "swe_4-s6", "temp": 1.1, "ts": "2026-08-08T10:30:02"}
+{"event": "run_done", "run": "swe_4-s6", "steps": 5, "finished": true, "reads": 6, "secs": 5.2, "ts": "2026-08-08T10:30:07"}
+{"event": "run_start", "run": "swe_4-s7", "temp": 1.3, "ts": "2026-08-08T10:30:07"}
+{"event": "run_done", "run": "swe_4-s7", "steps": 6, "finished": true, "reads": 44, "secs": 22.9, "ts": "2026-08-08T10:30:30"}
+{"event": "run_start", "run": "swe_4-s8", "temp": 0.7, "ts": "2026-08-08T10:30:30"}
+{"event": "run_done", "run": "swe_4-s8", "steps": 40, "finished": false, "reads": 34, "secs": 67.6, "ts": "2026-08-08T10:31:38"}
+{"event": "run_start", "run": "swe_4-s9", "temp": 0.9, "ts": "2026-08-08T10:31:38"}
+{"event": "run_done", "run": "swe_4-s9", "steps": 6, "finished": true, "reads": 7, "secs": 6.6, "ts": "2026-08-08T10:31:45"}
+{"event": "run_start", "run": "swe_4-s10", "temp": 1.1, "ts": "2026-08-08T10:31:45"}
+{"event": "run_done", "run": "swe_4-s10", "steps": 9, "finished": true, "reads": 215, "secs": 90.9, "ts": "2026-08-08T10:33:17"}
+{"event": "run_start", "run": "swe_4-s11", "temp": 1.3, "ts": "2026-08-08T10:33:17"}
+{"event": "run_done", "run": "swe_4-s11", "steps": 38, "finished": true, "reads": 1733, "secs": 910.2, "ts": "2026-08-08T10:48:39"}
+{"event": "run_start", "run": "swe_50-s0", "temp": 0.7, "ts": "2026-08-08T10:50:49"}
+{"event": "run_done", "run": "swe_50-s0", "steps": 16, "finished": true, "reads": 436, "secs": 237.9, "ts": "2026-08-08T10:54:49"}
+{"event": "run_start", "run": "swe_50-s1", "temp": 0.9, "ts": "2026-08-08T10:54:49"}
+{"event": "run_done", "run": "swe_50-s1", "steps": 40, "finished": false, "reads": 230, "secs": 153.7, "ts": "2026-08-08T10:57:24"}
+{"event": "run_start", "run": "swe_50-s2", "temp": 1.1, "ts": "2026-08-08T10:57:24"}
+{"event": "run_done", "run": "swe_50-s2", "steps": 18, "finished": true, "reads": 300, "secs": 154.9, "ts": "2026-08-08T11:00:01"}
+{"event": "run_start", "run": "swe_50-s3", "temp": 1.3, "ts": "2026-08-08T11:00:01"}
+{"event": "run_done", "run": "swe_50-s3", "steps": 33, "finished": true, "reads": 895, "secs": 460.0, "ts": "2026-08-08T11:07:47"}
+{"event": "run_start", "run": "swe_50-s4", "temp": 0.7, "ts": "2026-08-08T11:07:47"}
+{"event": "run_done", "run": "swe_50-s4", "steps": 14, "finished": true, "reads": 27, "secs": 27.2, "ts": "2026-08-08T11:08:15"}
+{"event": "run_start", "run": "swe_50-s5", "temp": 0.9, "ts": "2026-08-08T11:08:15"}
+{"event": "run_done", "run": "swe_50-s5", "steps": 16, "finished": true, "reads": 292, "secs": 136.3, "ts": "2026-08-08T11:10:33"}
+{"event": "run_start", "run": "swe_50-s6", "temp": 1.1, "ts": "2026-08-08T11:10:33"}
+{"event": "run_done", "run": "swe_50-s6", "steps": 10, "finished": true, "reads": 296, "secs": 137.0, "ts": "2026-08-08T11:12:52"}
+{"event": "run_start", "run": "swe_50-s7", "temp": 1.3, "ts": "2026-08-08T11:12:52"}
+{"event": "run_done", "run": "swe_50-s7", "steps": 38, "finished": true, "reads": 406, "secs": 242.4, "ts": "2026-08-08T11:16:57"}
+{"event": "run_start", "run": "swe_50-s8", "temp": 0.7, "ts": "2026-08-08T11:16:57"}
+{"event": "run_done", "run": "swe_50-s8", "steps": 36, "finished": true, "reads": 141, "secs": 95.1, "ts": "2026-08-08T11:18:33"}
+{"event": "run_start", "run": "swe_50-s9", "temp": 0.9, "ts": "2026-08-08T11:18:33"}
+{"event": "run_done", "run": "swe_50-s9", "steps": 16, "finished": true, "reads": 259, "secs": 155.3, "ts": "2026-08-08T11:21:10"}
+{"event": "run_start", "run": "swe_50-s10", "temp": 1.1, "ts": "2026-08-08T11:21:10"}
+{"event": "run_done", "run": "swe_50-s10", "steps": 40, "finished": false, "reads": 131, "secs": 153.3, "ts": "2026-08-08T11:23:44"}
+{"event": "run_start", "run": "swe_50-s11", "temp": 1.3, "ts": "2026-08-08T11:23:44"}
+{"event": "run_done", "run": "swe_50-s11", "steps": 33, "finished": true, "reads": 160, "secs": 105.0, "ts": "2026-08-08T11:25:30"}
+{"event": "v2_collection_done", "ts": "2026-08-08T11:25:30"}
