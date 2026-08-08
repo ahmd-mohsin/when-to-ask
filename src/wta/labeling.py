@@ -97,15 +97,32 @@ def token_char_positions(text: str, tokenizer) -> list[int]:
 def resolve_tokenizer(a0_dir: str | Path, name: str = "auto") -> str:
     """Token->char maps must be built with the COLLECTION model's tokenizer
     (token_idx in the logs is in its units). 'auto' reads model_id from the
-    collection manifest; an explicit name is passed through unchanged."""
+    collection manifest; an explicit name is passed through unchanged.
+
+    Data-parallel collections (collect_v2 --num-shards N) suffix the manifest
+    PER SHARD -- `collection_manifest.s0.json` -- so the unsuffixed name only
+    exists for single-shard runs. Without the glob, 'auto' found nothing on
+    every sharded collection and silently fell back to the 7B default, which
+    is precisely the Qwen3-labelled-with-Qwen2.5 drift this function exists to
+    prevent (observed on the R1 pilot, 2026-08-08)."""
     if name != "auto":
         return name
-    manifest = Path(a0_dir) / "collection_manifest.json"
-    if manifest.exists():
+    d = Path(a0_dir)
+    found: dict[str, str] = {}
+    for manifest in [d / "collection_manifest.json",
+                     *sorted(d.glob("collection_manifest.*.json"))]:
+        if not manifest.exists():
+            continue
         model_id = (json.loads(manifest.read_text(encoding="utf-8"))
                     .get("args", {}).get("model_id"))
         if model_id:
-            return model_id
+            found.setdefault(model_id, manifest.name)
+    if len(found) > 1:
+        raise ValueError(
+            "collection manifests disagree on model_id -- one tokenizer "
+            f"cannot label a mixed collection: {found}")
+    if found:
+        return next(iter(found))
     return "Qwen/Qwen2.5-Coder-7B-Instruct"
 
 
