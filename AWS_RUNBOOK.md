@@ -160,8 +160,42 @@ bash scripts/clone_third_party.sh   # pins hil-bench @352d14c; verify with: git 
 `data/task_context/` is NOT needed for collect_v2 (that was the v1.5
 collect_a0 grounding path): v2 reads each task's `baseline/instruction.md`
 directly and pulls docker images itself via the HF bucket
-(`extract_task_context.try_load_archive`). Docker + `hf` CLI auth are the
-only other preflight needs.
+(`extract_task_context.try_load_archive`).
+
+**Three more preflight facts, each found the hard way on 2026-08-08:**
+
+1. **`hf buckets cp` needs huggingface-hub 1.x.** That is the call that
+   fetches every task image. The `buckets` subcommand does not exist in
+   0.36.2 (what transformers 4.57 pins) — it fails with
+   `invalid choice: 'buckets'`. Keep the CLI in its OWN venv so it cannot
+   perturb the verified torch/transformers stack, and put it FIRST on PATH;
+   the collector only shells out to `hf`. The bucket serves anonymously —
+   **no auth, no token needed.**
+   ```bash
+   uv venv /opt/dlami/nvme/hfcli-venv && uv pip install \
+       --python /opt/dlami/nvme/hfcli-venv/bin/python huggingface-hub
+   ```
+2. **Move image storage onto the NVMe BEFORE pulling anything — BOTH
+   halves.** The ~29GB root disk cannot hold the 6 pilot images (~27GB of
+   archives). Setting docker's `"data-root": "/opt/dlami/nvme/docker"` in
+   `/etc/docker/daemon.json` (keep the existing `nvidia` runtime block) is
+   **not sufficient on docker 29**: it uses the containerd image store —
+   `docker info` reports `Storage Driver: overlayfs`, not `overlay2` — so
+   image blobs go to `/var/lib/containerd`, which `data-root` does not
+   control. Root still hit 99% mid-run. Also set containerd's root:
+   ```bash
+   systemctl stop docker docker.socket containerd
+   rsync -a --remove-source-files /var/lib/containerd/ /opt/dlami/nvme/containerd/
+   printf '\nroot = "/opt/dlami/nvme/containerd"\n' >> /etc/containerd/config.toml
+   systemctl start containerd && systemctl start docker
+   ```
+   Verify with `du -x -sh /var/lib/containerd` (should vanish) and
+   `docker images` (pulled images survive the move).
+3. **Export `TMPDIR` onto the NVMe too.** Image archives are up to 9.2GB
+   each and staging them on root was observed to spike it to 95% full.
+
+Run collections under **tmux**, not a foreground shell — these are multi-hour
+jobs and a dropped connection kills an unprotected run.
 
 ### R0 — config verification (5 minutes, do this FIRST)
 
@@ -177,15 +211,30 @@ python -c "import sys; sys.path.insert(0,'src'); from wta.hf_reader import HFStr
 Record what `shipped` says. If `top_k` is 20 (or `top_p` < 1), that confirms
 the clamp was real and the 32B fork scarcity has a mechanical explanation.
 
-### R1 — diversity pilot — GO/NO-GO GATE (~4-8 GPU-hours)
+### R1 — diversity pilot — GO/NO-GO GATE (~1-1.5h wall on 2 cards)
 
 6 known fork-bearing tasks x 12 seeds. **Pre-registered success criterion,
 fixed before the run:** >= 3 of the 6 tasks show >= 2 interpretation classes
 each committed by >= 2 distinct runs, AND median reads/run >= 25.
 
+Note `python` below must be the NVMe venv's interpreter (the system python
+has no torch), and the hf-CLI venv must precede it on PATH — see preflight.
+
 ```bash
-for i in 0 1; do HF_HOME=/opt/dlami/nvme/hf CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes_pilot.json --n-tasks 6 --n-runs 12 --shard $i --num-shards 2 --out data/a0_pilot_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
+export PATH=/opt/dlami/nvme/hfcli-venv/bin:$PATH
+export HF_HOME=/opt/dlami/nvme/hf TMPDIR=/opt/dlami/nvme/tmp
+PY=/opt/dlami/nvme/wta-venv/bin/python
+for i in 0 1; do CUDA_VISIBLE_DEVICES=$i "$PY" scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes_pilot.json --n-tasks 6 --n-runs 12 --shard $i --num-shards 2 --out data/a0_pilot_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
 ```
+
+Sharding is over TASKS (`eligible[shard::num_shards]`), and seeds within a
+task are serial — so R1 cannot use more than 6 cards, and its wall-clock
+floor is one task's 12 runs no matter how many cards you add. On the 2-card
+box: shard 0 gets swe_12/swe_36/swe_47, shard 1 gets swe_30/swe_4/swe_50.
+
+**Measured on this box (first 6 runs, 2026-08-08): ~55-141s per run** —
+i.e. ~1.7 min, not the 6-10 min the R2 estimate below assumes. 15-40 steps
+and 51-236 reads per run.
 
 (`interpretation_classes_pilot.json` = the 6-task subset swe_36, swe_47,
 swe_50, swe_4, swe_12, swe_30.) Then on the laptop:
@@ -203,13 +252,21 @@ python scripts/generate_labels.py --a0 data/a0_pilot_32b --out models/pilot_32b
 ### R2 — main collection (60 tasks x 24 seeds, ~1440 runs)
 
 ```bash
-for i in 0 1; do HF_HOME=/opt/dlami/nvme/hf CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes.json --n-tasks 60 --n-runs 24 --shard $i --num-shards 2 --out data/a0_v3_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
+export PATH=/opt/dlami/nvme/hfcli-venv/bin:$PATH
+export HF_HOME=/opt/dlami/nvme/hf TMPDIR=/opt/dlami/nvme/tmp
+PY=/opt/dlami/nvme/wta-venv/bin/python
+for i in 0 1; do CUDA_VISIBLE_DEVICES=$i "$PY" scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes.json --n-tasks 60 --n-runs 24 --shard $i --num-shards 2 --out data/a0_v3_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
 ```
 
-For more GPUs, scale `--num-shards` and the loop together. Expect ~6-10
-min/run at cap 40, so ~150-240 GPU-hours: **~4 days wall on the 2 cards
-(~2 days on 4, ~1 on 8).** Interrupt-safe — re-running the same command
+For more GPUs, scale `--num-shards` and the loop together (R2 has 60 tasks,
+so unlike R1 it shards cleanly across 8). The old ~6-10 min/run figure was a
+guess carried over from the sharded-4xA10G plan; R1 measured **~1.7 min/run**
+on a single Blackwell card, so re-derive the budget from R1's own manifest
+timings before quoting a number. Interrupt-safe — re-running the same command
 resumes (existing `<run>.json` files are skipped).
+
+Disk: each run writes ~12MB (npz dominates, 8 layers x reads), so R2's ~1440
+runs need **~18GB** — keep `--out` on the NVMe, not the root disk.
 
 ### R3 — OOD + sealed test (after R2, or on spare cards)
 
