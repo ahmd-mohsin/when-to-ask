@@ -268,16 +268,19 @@ python scripts/materialize_hilbench_tasks.py --tasks swe_0 \
 python scripts/materialize_hilbench_tasks.py --tasks swe_60..swe_99 \
     --out data/hilbench_flat_sealed --extract-scripts --scratch-dir /opt/dlami/nvme/wta-scratch
 
-# 5.5 BRIDGE ROWS in hil-bench's own harness (smoke on swe_0, then sealed)
+# 5.5 BRIDGE ROWS in hil-bench's own harness (smoke on swe_0, then sealed).
+# --max-steps 100 pins the SAME step budget as our-loop arms
+# (configs/eval.yaml max_steps: 100) so the scaffold delta is not a
+# step-budget delta; their SWE-Agent default is 200, disclosed.
 cd third_party/hil-bench
 python -m hil_bench.cli swe ../../data/hilbench_flat_smoke --all-modes \
-    -m openai/Qwen/Qwen3-32B --passes 1 --num-workers 2 \
+    -m openai/Qwen/Qwen3-32B --passes 1 --num-workers 2 --max-steps 100 \
     --config-mapping ../../configs/hilbench/config_mappings.yaml \
     --judge-config ../../configs/hilbench/judge_config.yaml \
     --output-dir ../../results/bridge_smoke
 # paste the smoke output back for review, THEN the sealed run:
 python -m hil_bench.cli swe ../../data/hilbench_flat_sealed --all-modes \
-    -m openai/Qwen/Qwen3-32B --passes 3 --num-workers 4 \
+    -m openai/Qwen/Qwen3-32B --passes 3 --num-workers 4 --max-steps 100 \
     --config-mapping ../../configs/hilbench/config_mappings.yaml \
     --judge-config ../../configs/hilbench/judge_config.yaml \
     --output-dir ../../results/bridge

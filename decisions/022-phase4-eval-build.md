@@ -90,6 +90,22 @@ sealed pool is unsealed.
   computed from the detector arm's logs of the SAME run set — B4 is therefore
   scored last; this uses only ask COUNTS, never gate numbers or outcomes).
 
+## 2b. Addendum (2026-08-08, owner question): eval step budget = 100, matched
+
+The owner flagged that cap-40 our-loop arms could not beat published scores if
+runs never finish. Verified step budgets elsewhere: **HiL-Bench's own harness
+defaults SWE-Agent to `max_steps=200`** (vendored agents.py:167 — the Table-1
+protocol); **mini-swe-agent** SWE-bench config caps at **250** steps / $3
+(cost binds first); **SWE-agent** (NeurIPS 2024) caps by cost (~$2–4,
+auto-submit); **OpenHands** standard SWE-bench Verified config is
+**`--max-iterations 100`**, and published ablations show 50→100 already
+saturates (identical resolve rates). DECISION: the EVAL step budget is
+**100 on both scaffolds** — `configs/eval.yaml max_steps: 100` and
+`--max-steps 100` on the bridge invocation — so the scaffold delta cannot be
+a step-budget delta; below-their-200 is disclosed. COLLECTION caps are
+unchanged (R1 stays at the pre-registered 40; R1's stop_reason distribution
+decides whether R2 raises it — a nuisance-parameter fix, not gate tuning).
+
 ## 3. Metric plumbing decisions
 
 - **pass@3** semantics are the verbatim port of `run_hil_bench.py

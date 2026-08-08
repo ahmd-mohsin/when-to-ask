@@ -8,7 +8,13 @@
 n_runs: null
 
 passes: 3                 # pass@3 (decisions/019)
-max_steps: 40
+# Step budget (decisions/022 addendum 2026-08-08): 100, matched on BOTH
+# scaffolds (the bridge invocation passes --max-steps 100). 40 was the
+# COLLECTION cap and would floor pass@3 vs the harness's SWE-Agent default
+# (200) — the scaffold delta must not be a step-budget delta. 100 follows
+# OpenHands' standard SWE-bench cap, where 50->100 already saturates
+# (identical resolve rates); mini-swe-agent caps at 250 but binds on cost.
+max_steps: 100
 max_new_tokens: 2048
 exec_timeout: 120
 
