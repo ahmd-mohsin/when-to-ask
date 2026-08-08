@@ -10,9 +10,27 @@ clone() {
   local name="$1" url="$2" commit="$3" dest="third_party/$1"
   if [ -d "$dest/.git" ]; then echo "[skip] $name already cloned"; return; fi
   echo "[clone] $name <- $url"
-  git clone "$url" "$dest"
-  if [ -n "$commit" ]; then git -C "$dest" checkout "$commit" 2>/dev/null \
+  # Every third_party/<name>/ already exists holding a TRACKED PROVENANCE.md
+  # (.gitignore keeps the note but ignores the checkout), and `git clone`
+  # refuses a non-empty target -- with `set -e` that aborted the whole script
+  # on a fresh box. So clone to a sibling temp dir (same filesystem => the
+  # moves are renames) and fill in around whatever is already there.
+  local tmp="third_party/.clone-tmp-$name"
+  rm -rf "$tmp"
+  git clone "$url" "$tmp"
+  if [ -n "$commit" ]; then git -C "$tmp" checkout "$commit" 2>/dev/null \
     || echo "  (warning: could not pin $name to $commit; using default branch)"; fi
+  mkdir -p "$dest"
+  ( shopt -s dotglob
+    for p in "$tmp"/*; do
+      b="$(basename "$p")"
+      if [ -e "$dest/$b" ]; then
+        echo "  (keeping existing $dest/$b)"
+      else
+        mv "$p" "$dest/"
+      fi
+    done )
+  rm -rf "$tmp"
 }
 
 clone hil-bench      https://github.com/hilbenchauthors/hil-bench.git 352d14c
