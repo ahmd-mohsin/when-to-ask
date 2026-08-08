@@ -6,6 +6,11 @@
 # NVMe. Shard count is detected from the box, never hardcoded - R2's 60 tasks
 # shard cleanly across any card count.
 #
+# max_steps=50 (not the 40 default): at 40, 37% of runs hit the cap and were
+# truncated, which would hide the later-trajectory drift this dataset exists to
+# measure. Trajectories collected under a DIFFERENT cap are not comparable --
+# if you change it, start a fresh --out dir rather than resuming into an old one.
+#
 # Interrupt-safe: existing <run>.json files are skipped, so re-running resumes,
 # including across a change in card count.
 set -u
@@ -34,6 +39,7 @@ for i in $(seq 0 $((SHARDS - 1))); do
     --model-id Qwen/Qwen3-32B \
     --classes data/interpretation_classes.json \
     --n-tasks 60 --n-runs 24 \
+    --max-steps 50 \
     --shard "$i" --num-shards "$SHARDS" \
     --out data/a0_v3_32b \
     --scratch-dir /opt/dlami/nvme/wta-scratch \
