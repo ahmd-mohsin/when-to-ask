@@ -49,3 +49,15 @@ def test_overrides_are_recorded_for_the_manifest(reader):
     reader.model = None  # no generation_config available
     cfg = HFStreamReader.effective_generation_config(reader)
     assert cfg["overrides"] == {"top_p": 1.0, "top_k": 0, "min_p": 0.0}
+
+
+def test_dtype_kwarg_name_tracks_transformers_major():
+    """transformers v5 renamed from_pretrained's torch_dtype= to dtype=
+    (hit on the Blackwell box 2026-08-08; version pin no longer needed)."""
+    from wta.hf_reader import _dtype_kwarg_name
+
+    assert _dtype_kwarg_name("4.44.2") == "torch_dtype"
+    assert _dtype_kwarg_name("4.57.0") == "torch_dtype"
+    assert _dtype_kwarg_name("5.0.0") == "dtype"
+    assert _dtype_kwarg_name("5.1.0.dev0") == "dtype"
+    assert _dtype_kwarg_name("weird") == "torch_dtype"   # fail-safe: old name

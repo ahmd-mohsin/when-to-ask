@@ -133,12 +133,35 @@ audit trail lands in models/ (labels_debug.jsonl, a2_history.jsonl). Read the
 audit file; if labels look wrong, the fix is the class artifact / lexicons,
 never the downstream.
 
-## 2d. THE REAL RUN — local 4-8x RTX PRO 6000 Blackwell 96GB (decisions/021)
+## 2d. THE REAL RUN — local RTX PRO 6000 Blackwell box (decisions/021)
 
-Qwen3-32B bf16 (~65GB) fits on **one** 96GB card, so each GPU is an
-independent worker over a disjoint task slice (`--shard i --num-shards N`).
-No tensor sharding, near-linear scaling; all shards write the same `--out`
-(per-task subdirs never collide; events/manifest are suffixed per shard).
+**Box reality (verified on the box, 2026-08-08): 2 cards, 102GB each; NVMe
+at `/opt/dlami/nvme` (NOT /mnt/nvme); root disk has ~13GB free, so the venv
+(`/opt/dlami/nvme/wta-venv`, torch cu130) and `HF_HOME` live on the NVMe.
+transformers v4 or v5 both work as of commit after b94357d (the
+torch_dtype->dtype rename is handled in hf_reader).** All shard loops below
+are written for 2 GPUs — scale the loop and `--num-shards` to your card
+count if more arrive.
+
+Qwen3-32B bf16 (~65GB) fits on **one** card (verified: 65.5GB allocated,
+single-device map), so each GPU is an independent worker over a disjoint
+task slice (`--shard i --num-shards N`). No tensor sharding, near-linear
+scaling; all shards write the same `--out` (per-task subdirs never collide;
+events/manifest are suffixed per shard).
+
+**R1 preflight — the clone (the tasks are NOT in git, by licence design):**
+`third_party/hil-bench` is reference-use-only (decisions/003) and is never
+committed, so a fresh box has only PROVENANCE.md. Restore it with:
+
+```bash
+bash scripts/clone_third_party.sh   # pins hil-bench @352d14c; verify with: git -C third_party/hil-bench rev-parse --short HEAD
+```
+
+`data/task_context/` is NOT needed for collect_v2 (that was the v1.5
+collect_a0 grounding path): v2 reads each task's `baseline/instruction.md`
+directly and pulls docker images itself via the HF bucket
+(`extract_task_context.try_load_archive`). Docker + `hf` CLI auth are the
+only other preflight needs.
 
 ### R0 — config verification (5 minutes, do this FIRST)
 
@@ -161,7 +184,7 @@ fixed before the run:** >= 3 of the 6 tasks show >= 2 interpretation classes
 each committed by >= 2 distinct runs, AND median reads/run >= 25.
 
 ```bash
-for i in 0 1 2 3; do CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes_pilot.json --n-tasks 6 --n-runs 12 --shard $i --num-shards 4 --out data/a0_pilot_32b --scratch-dir /mnt/nvme/wta-scratch & done; wait
+for i in 0 1; do HF_HOME=/opt/dlami/nvme/hf CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes_pilot.json --n-tasks 6 --n-runs 12 --shard $i --num-shards 2 --out data/a0_pilot_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
 ```
 
 (`interpretation_classes_pilot.json` = the 6-task subset swe_36, swe_47,
@@ -180,13 +203,13 @@ python scripts/generate_labels.py --a0 data/a0_pilot_32b --out models/pilot_32b
 ### R2 — main collection (60 tasks x 24 seeds, ~1440 runs)
 
 ```bash
-for i in 0 1 2 3; do CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes.json --n-tasks 60 --n-runs 24 --shard $i --num-shards 4 --out data/a0_v3_32b --scratch-dir /mnt/nvme/wta-scratch & done; wait
+for i in 0 1; do HF_HOME=/opt/dlami/nvme/hf CUDA_VISIBLE_DEVICES=$i python scripts/collect_v2.py --model-id Qwen/Qwen3-32B --classes data/interpretation_classes.json --n-tasks 60 --n-runs 24 --shard $i --num-shards 2 --out data/a0_v3_32b --scratch-dir /opt/dlami/nvme/wta-scratch & done; wait
 ```
 
-For 8 GPUs, change both `--num-shards 4` -> `8` and the loop to `0..7`.
-Expect ~6-10 min/run at cap 40, so ~150-240 GPU-hours: **~2 days wall on 4
-cards, ~1 day on 8.** Interrupt-safe — re-running the same command resumes
-(existing `<run>.json` files are skipped).
+For more GPUs, scale `--num-shards` and the loop together. Expect ~6-10
+min/run at cap 40, so ~150-240 GPU-hours: **~4 days wall on the 2 cards
+(~2 days on 4, ~1 on 8).** Interrupt-safe — re-running the same command
+resumes (existing `<run>.json` files are skipped).
 
 ### R3 — OOD + sealed test (after R2, or on spare cards)
 
@@ -241,9 +264,9 @@ export AGENT_SWE_BASE_URL=http://127.0.0.1:8809/v1
 
 # 5.4 materialize flat tasks (train smoke first, then sealed)
 python scripts/materialize_hilbench_tasks.py --tasks swe_0 \
-    --out data/hilbench_flat_smoke --extract-scripts --scratch-dir /mnt/nvme/wta-scratch
+    --out data/hilbench_flat_smoke --extract-scripts --scratch-dir /opt/dlami/nvme/wta-scratch
 python scripts/materialize_hilbench_tasks.py --tasks swe_60..swe_99 \
-    --out data/hilbench_flat_sealed --extract-scripts --scratch-dir /mnt/nvme/wta-scratch
+    --out data/hilbench_flat_sealed --extract-scripts --scratch-dir /opt/dlami/nvme/wta-scratch
 
 # 5.5 BRIDGE ROWS in hil-bench's own harness (smoke on swe_0, then sealed)
 cd third_party/hil-bench
@@ -260,14 +283,16 @@ python -m hil_bench.cli swe ../../data/hilbench_flat_sealed --all-modes \
     --output-dir ../../results/bridge
 cd ../..
 
-# 5.6 OUR-LOOP ARMS (in-process HFStreamReader on the remaining GPUs,
-# data-parallel shards as in 2d; detector thresholds ONLY from --artifacts).
-# PRE-REQ: configs/eval.yaml n_runs set from the post-R1 decisions/ entry.
-for i in 2 3; do CUDA_VISIBLE_DEVICES=$i JUDGE_BASE_URL=http://127.0.0.1:8808 \
+# 5.6 OUR-LOOP ARMS (in-process HFStreamReader; detector thresholds ONLY
+# from --artifacts). On the 2-card box this phase runs AFTER the bridge rows
+# finish: stop the :8809 backbone vLLM first, keep the :8808 judge up, and
+# run our loop on the freed card (single shard). With more cards, shard as
+# in 2d. PRE-REQ: configs/eval.yaml n_runs set from the post-R1 decisions/ entry.
+kill %2   # the :8809 vllm from 5.3; judge on :8808 stays
+CUDA_VISIBLE_DEVICES=1 HF_HOME=/opt/dlami/nvme/hf JUDGE_BASE_URL=http://127.0.0.1:8808 \
   python scripts/run_eval.py --artifacts models/v3_32b_gates \
     --arms no_ask,full_info,model_initiated,detector,output_divergence,verbalized \
-    --tasks swe_60..swe_99 --out data/eval --scratch-dir /mnt/nvme/wta-scratch \
-    --shard $((i-2)) --num-shards 2 & done; wait
+    --tasks swe_60..swe_99 --out data/eval --scratch-dir /opt/dlami/nvme/wta-scratch
 # B4 random runs LAST, budget = detector's measured asks/task (decisions/022 §2i):
 #   read it from data/eval/*/detector/*/ask_log.json, then
 #   python scripts/run_eval.py --arms random --b4-budget <asks_per_task> ...

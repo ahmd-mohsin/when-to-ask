@@ -35,6 +35,17 @@ def resolve_layers(n_layers: int, specs: list[float | int]) -> list[int]:
     return idxs
 
 
+def _dtype_kwarg_name(transformers_version: str) -> str:
+    """transformers v5 renamed from_pretrained's ``torch_dtype=`` to
+    ``dtype=`` (found on the Blackwell box, 2026-08-08: v5 rejects the old
+    kwarg). Pure -- unit-tested without transformers."""
+    try:
+        major = int(transformers_version.split(".")[0])
+    except (ValueError, AttributeError):
+        return "torch_dtype"
+    return "dtype" if major >= 5 else "torch_dtype"
+
+
 class HFStreamReader:
     """Generate with a frozen HF causal LM, reading mid-layer residuals at
     cadence/cue positions during the reasoning span."""
@@ -71,7 +82,9 @@ class HFStreamReader:
         self.top_k = top_k
         self.min_p = min_p
         self.tokenizer = AutoTokenizer.from_pretrained(model_id)
-        kwargs: dict = {"torch_dtype": getattr(torch, dtype)}
+        import transformers
+        kwargs: dict = {
+            _dtype_kwarg_name(transformers.__version__): getattr(torch, dtype)}
         if device == "cuda":
             kwargs["device_map"] = "auto"
         if load_in_4bit:
