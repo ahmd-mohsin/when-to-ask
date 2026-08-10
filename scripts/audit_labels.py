@@ -39,7 +39,11 @@ def main() -> int:
                       debug_path=debug_path)
 
     reads, commits = [], []
-    for line in debug_path.read_text(encoding="utf-8").splitlines():
+    # NOT read_text().splitlines(): str.splitlines() also breaks on U+2028/U+2029,
+    # which occur inside trace snippets -- that shears JSON rows in half and raises
+    # "Unterminated string" (observed: 16 such chars in a 348k-row debug file).
+    # Iterating the file splits on \n only.
+    for line in debug_path.open(encoding="utf-8"):
         row = json.loads(line)
         (commits if row["kind"] == "commitment" else reads).append(row)
 
