@@ -28,6 +28,7 @@ data/*
 !data/interpretation_classes_new/
 !data/judge_validation_pairs.json
 !data/fork_type_annotations.json
+!data/fork_type_annotations.review.json
 # R1 pilot audit trail (decisions/023): the per-run steps/reads/timings behind
 # a go/no-go gate, 48K total. The 2.2GB activations are NOT kept. Two-level
 # negation as above: re-include the dir, re-ignore its contents, then pick.

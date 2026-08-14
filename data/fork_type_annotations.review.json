@@ -1,0 +1,3004 @@
+{
+ "_provenance": {
+  "date": "2026-08-14",
+  "decisions": "decisions/024-fork-type-annotations.md",
+  "method": "mechanical draft (scripts/derive_fork_types.py, byte-identical regeneration verified) -> 12 blind semantic classifiers over all 214 blockers -> 2 independent adjudicators per batch on the 59 contested entries (unanimous on all 59; 0 escalations) -> final review of 17 entries by hand incl. all consensus flips sampled. Owner delegated review and finalization 2026-08-14.",
+  "policy": "VALUE = classes differ only in which literal value/token is chosen (number, string constant, token set), same code shape and behavior. STRUCTURAL = any axis of disagreement is behavioural/code-shape (API choice, remove-vs-keep, clamp-vs-reject, strategy, ordering, scope). MIXED -> STRUCTURAL: conservative against the structural-visibility headline claim. Digits in signatures do not make a value fork; string-literal-only forks ARE value forks."
+ },
+ "abort_rule": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes are different error-handling behaviors: return partial results plus error, return nil with error, or continue evaluating past the failure \u2014 different control flow and return shape.",
+  "task": "swe_43"
+ },
+ "amb_should_run_cleanup_db_filter": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is where the requiresDatabase check lives \u2014 a three-condition guard in shouldRunCleanup vs delegating that responsibility to the run method \u2014 a difference in check scope/ownership, not a literal value.",
+  "task": "swe_55"
+ },
+ "ambiguous_async_timeout_interaction": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on the combination strategy for two timeout mechanisms \u2014 task_timeout precedence vs min(both) vs async wins \u2014 a behavioral resolution rule, not a literal value.",
+  "task": "swe_32"
+ },
+ "ambiguous_block_context_initialization": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on where the loader/variable_manager come from (role instance vs play) and on the mechanism (attribute assignment vs constructor kwargs) \u2014 ownership and code-shape differences.",
+  "task": "swe_8"
+ },
+ "ambiguous_chars_option_type_handling": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Type-guard leaving lists unchanged vs always comma-splitting vs joining lists to a string first are different processing pipelines for the input \u2014 a behavior/shape axis.",
+  "task": "swe_35"
+ },
+ "ambiguous_checkbox_toggle_behavior": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "The classes encode different toggle-all conditions \u2014 clear when any item is selected (ids.length > 0) vs clear only when the selection is complete (=== itemids.length) \u2014 a behavioral predicate difference, not a choice of constant. The digits in the signatures are quoted code, which is exactly the policy's named trap: toggle behavior is structural even when signatures contain digits; the heuristic's 'value/review' verdict was pure digit statistics.",
+  "task": "swe_47"
+ },
+ "ambiguous_checker_initialization_condition": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes gate checker initialization on different conditions entirely \u2014 audit.enabled, sink presence, a specific event being configured, or no gate at all. That is a difference in gating logic/scope, not a literal value.",
+  "task": "swe_15"
+ },
+ "ambiguous_contact_display_mode": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on which component/module renders each contact \u2014 reuse RecipientDropdownItem, keep the existing table layout, or build a new custom item component. That is an API/ownership and code-shape choice, not a literal value.",
+  "task": "swe_27"
+ },
+ "ambiguous_container_mutation_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Return-a-new-container vs mutate-in-place is a behavioral/code-shape difference (allocation vs in-place assignment, input identity preserved or not); no literal value is at stake.",
+  "task": "swe_19"
+ },
+ "ambiguous_delegated_context_body_density": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is content scope/markup structure \u2014 a single ownership-statement paragraph versus adding secondary instructional paragraphs \u2014 i.e., presence or absence of extra body elements, not a choice among literal strings within the same shape.",
+  "task": "swe_31"
+ },
+ "ambiguous_diagnostic_overflow_truncation_strategy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Tail-preserving, head-preserving, and middle-ellipsis are different truncation strategies \u2014 which portion of content is dropped and how it is marked \u2014 a processing-behavior difference, not a constant.",
+  "task": "swe_28"
+ },
+ "ambiguous_entity_reference_isolation": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Shallow spread copy vs direct reference sharing vs deep clone are different copying behaviors with different aliasing semantics \u2014 a code-shape/behavior axis.",
+  "task": "swe_33"
+ },
+ "ambiguous_eviction_strategy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "FIFO vs LRU vs delegating to the library's built-in eviction vs closest-to-expire/LFU are different eviction strategies and ownership (own code vs library) \u2014 explicitly a strategy fork.",
+  "task": "swe_20"
+ },
+ "ambiguous_exception_preservation_mechanism": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Exception chaining via 'raise ... from e' vs stashing an orig_exc attribute vs embedding text in the message are three different preservation mechanisms \u2014 different API and code shape.",
+  "task": "swe_34"
+ },
+ "ambiguous_expired_entry_refresh_failure_behavior": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Serve-stale vs fail-closed-with-error vs reactivate-the-entry are three different behaviors on refresh failure, changing both return semantics and cache state mutation.",
+  "task": "swe_38"
+ },
+ "ambiguous_feature_toggle_token": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Every class defines a feature enum token and gates on FeatureCode.X in exactly the same way; the sole disagreement is the literal spelling of the token (drivesearchfeaturediscovery vs drivesearchspotlight variants vs other spellings). This is the 'which sentinel constant / label string' value case \u2014 toggle naming, not toggle behavior \u2014 and no class describes any difference in gating behavior, so the known toggle-behavior trap does not apply. The mechanical structural verdict was non-semantic.",
+  "task": "swe_12"
+ },
+ "ambiguous_gain_processing_stage": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "Best case for value: first-vs-last could be framed as choosing an index literal (values[0] vs values[len(values)-1]) inside an otherwise identical selection. Best case for structural: the third class does not select at all \u2014 it treats a multi-valued tag as invalid (reject, return 0.0, discard the tag), an accept-vs-reject behavioral axis; and even first-vs-last is a selection-order difference rather than a constant (the last-element access is a different expression shape, not a substituted literal). Decision: structural. The reject class alone introduces a behavioral axis (some inputs yield a parsed gain in two classes and a hard 0.0/invalid outcome in the third), and the policy's mixed rule says any behavioral axis makes the fork structural; behavioral responses to a special condition (reject vs pick) are exactly the clamp-vs-reject pattern named as structural.",
+  "task": "swe_21"
+ },
+ "ambiguous_ics_extension_detection": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Parsing the URL and checking pathname.endsWith vs calling endsWith on the raw string differ in processing (URL parse stage) and in the scope of the check relative to query/fragment, not in the '.ics' literal itself.",
+  "task": "swe_59"
+ },
+ "ambiguous_iterating_states_base_class": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Although each class is realized by a single token in the class definition, IntEnum vs Enum vs IntFlag are different APIs with different semantics (direct int comparability, flag composition), so the disagreement is about behavior/ownership, not a literal value.",
+  "task": "swe_54"
+ },
+ "ambiguous_limit_count_source": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on the scope of the quota check \u2014 counting all aliases including trashed vs only active/filtered ones \u2014 a different check scope/data source, not a numeric limit.",
+  "task": "swe_9"
+ },
+ "ambiguous_mbz_tiebreak": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes are different tie-break algorithms: >= (last to reach max wins) vs > (first to reach wins) vs first value encountered in iteration order \u2014 comparison semantics and selection behavior differ.",
+  "task": "swe_45"
+ },
+ "ambiguous_migration_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on which modules/files the migration touches (env.py only, env+manager, or all three including junit.py) \u2014 a difference in change scope and ownership, not a literal value.",
+  "task": "swe_44"
+ },
+ "ambiguous_minutes_ago_rounding_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Ceil-with-zero-floor vs truncate/floor vs round-to-nearest are different computation strategies (different functions and an extra non-positive branch in the canonical class), not a choice among literal values.",
+  "task": "swe_2"
+ },
+ "ambiguous_non_collection_spec_ownership": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Raise AttributeError to decline, delegate to the wrapped finder's find_spec, or synthesize a ModuleSpec \u2014 three different ownership/fallback behaviors for non-collection imports.",
+  "task": "swe_30"
+ },
+ "ambiguous_packages": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes return different contracts \u2014 a space-joined string plus streams, the command list itself, or stdout only \u2014 differing in return type and API shape, not in a constant.",
+  "task": "swe_24"
+ },
+ "ambiguous_photo_filter_field": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes inspect different fields with different predicate shapes (activerevision.photo presence vs MIME-type prefix check vs a link type flag), so the filtering behavior and data source differ, not merely a token.",
+  "task": "swe_1"
+ },
+ "ambiguous_redirect_metadata_ownership_boundary": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on where redirect metadata lives \u2014 kept private inside the verifier vs exposed as modal props \u2014 an ownership/interface-boundary difference.",
+  "task": "swe_6"
+ },
+ "ambiguous_resume_success_predicate_for_auth_updates": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in the scope of the guard predicate \u2014 truthiness of the whole resumed session vs presence of keyPassword vs presence of user \u2014 a different check, not a different constant.",
+  "task": "swe_23"
+ },
+ "ambiguous_retry_backoff_strategy": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: signatures are digit-heavy (1,1,2,3,5,8; 2**attempt; (i+1)*2; sleep(1/2/5)), so mechanically the delay 'values' differ \u2014 this is why the heuristic returned review. Best case for structural: fibonacci_backoff (a,b = b,a+b accumulation), exponential_backoff (2**attempt), linear_backoff ((attempt+1)*delay), and fixed_or_jittered_delay (constant sleep, random.uniform jitter) are four different delay-computation algorithms with entirely different code shapes, not one formula with a swapped constant. Decisive: the policy explicitly names 'different strategy (e.g. exponential vs fixed backoff)' as the canonical structural example; the numbers here are artifacts of each algorithm, not a chosen literal.",
+  "task": "swe_22"
+ },
+ "ambiguous_route_line_acceptance_and_field_extraction_contract": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes implement different parsing strategies \u2014 filter on a leading 'local' token and extract the field after 'src' vs take a positional second token vs filter on 'scope host' \u2014 different acceptance predicates and extraction logic.",
+  "task": "swe_10"
+ },
+ "ambiguous_seed_input_framing": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "The value argument: unit_separator_0x1f vs nul_or_colon_separator is a pure token choice (0x1f vs 0x00 vs ':') inside the same join shape. But two other classes break the shared shape: plain_concatenation drops the separator entirely ([]byte(seed+str) \u2014 no delimiter axis at all), and input_before_seed reverses operand order (str+seed). Whether a separator exists and which operand comes first are key-composition differences \u2014 a behavioral/code-shape axis the policy names explicitly \u2014 so the mixed fork resolves to structural.",
+  "task": "swe_4"
+ },
+ "ambiguous_selective_caching_criteria": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes choose entirely different caching predicates/strategies \u2014 gate on show_content flag, cache everything unconditionally, mtime-based freshness, or encryption-based selection. This is a difference in decision logic and code shape, not a literal value.",
+  "task": "swe_13"
+ },
+ "ambiguous_sender_switch_preservation_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes are different strategies: surgically strip the referral while preserving the current body vs regenerating the whole signature from sender data \u2014 different behavior and code shape.",
+  "task": "swe_46"
+ },
+ "ambiguous_slash_delimited_numeric_dates": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "Best value case: the fork could be framed as picking a format literal ('d/m/yyyy' vs 'm/d/yyyy') with 12 as a constant. Best structural case: segment_gt12_rules is a conditional disambiguation heuristic that inspects segment magnitude and branches, while always_day_first and always_month_first apply unconditional fixed assumptions \u2014 different control flow and parsing strategy, and the digit 12 sits inside one strategy rather than being the axis between classes. Since at least one axis of disagreement is behavioral (conditional heuristic vs no heuristic), the mixed\u2192structural rule applies; the mechanical 'review' flag came from digit noise, not semantics.",
+  "task": "swe_56"
+ },
+ "ambiguous_timeout_cleanup_sequence": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "kill() (SIGKILL) vs terminate() (SIGTERM) vs os.killpg differ in cleanup strategy and scope (single process vs process group, forceful vs graceful) \u2014 behavioral, despite signal names looking token-like.",
+  "task": "swe_3"
+ },
+ "ambiguous_which_timestamp_fields_nullable": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in which struct fields change to pointer/optional types \u2014 the scope of a type-shape change across fields \u2014 with no single literal value being varied.",
+  "task": "swe_51"
+ },
+ "ambiguous_write_after_scan_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ in scope of behavior: record only the scan success counter without touching the datastore vs additionally querying DB model counts and updating gauges \u2014 different calls and data-access pattern.",
+  "task": "swe_42"
+ },
+ "analytics_field_json_representation_when_disabled": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Omitting the key entirely (omitempty) vs emitting null vs emitting {} changes the payload structure and the serialization code shape, so the axis is more than a choice of literal sentinel value.",
+  "task": "swe_49"
+ },
+ "analytics_storage_backend_string_value": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "All classes implement the identical String() method and differ only in the returned literal token (\"clickhouse\" vs \"click_house\"/\"click-house\" vs \"ch\") \u2014 a literal string choice with the same code shape and behavior pattern. The mechanical structural call came solely from the absence of digits; nothing in the classes introduces a behavioral or code-shape axis.",
+  "task": "swe_49"
+ },
+ "batch_stamp": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ in timestamping strategy \u2014 one shared start-time stamp, a fresh time.Now() per entry, or the batch completion time \u2014 a difference in when/where the clock is read, not a literal.",
+  "task": "swe_43"
+ },
+ "cancellation_context_parameter": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on the API shape of the new parameter itself \u2014 a boolean flag vs an options object vs a mode string \u2014 which changes the function signature and call-site code shape, not merely a literal value.",
+  "task": "swe_37"
+ },
+ "certificate_validation_precedence": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on the precedence/fallback chain among inputs (ignore-then-path-then-true vs path-over-ignore) and even on the output type (always-boolean coercion vs passing a CA path). That is control-flow and behavior, not a literal.",
+  "task": "swe_29"
+ },
+ "compilation_album_normalization": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in the scope of a check \u2014 normalize every album vs branch on the compilation flag to exclude some \u2014 which is a conditional/control-flow difference, not a literal value.",
+  "task": "swe_39"
+ },
+ "conflicting_compatibility_vs_new_format_support": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: the always-prefer classes could be encoded as an ordered literal list of tag-name strings ((\"replaygain_track_gain\", \"r128_track_gain\") vs reversed), making the fork look like a choice of literal string ordering; the mechanical heuristic leaned value on the digits in 'r128'/'128'. Best case for structural: the classes disagree on the fallback/precedence chain between the two gain sources \u2014 explicitly a structural category \u2014 and the canonical class is a per-field split (album prefers ReplayGain while track prefers R128), which cannot be expressed by reordering one literal list; it requires different precedence logic per field, i.e. different conditional structure and externally different fallback behavior. Decision: structural. At least one axis (global-uniform preference vs field-specific split) is a code-shape/fallback-chain difference, so mixed resolves to structural; the digits in the format names are the known trap and carry no semantic weight.",
+  "task": "swe_21"
+ },
+ "conflicting_context_freshness_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes choose different context-handling strategies: propagate the caller's context (preserving cancellation) versus constructing a fresh isolated context internally. That is a behavioral/lifecycle difference, not a value choice.",
+  "task": "swe_17"
+ },
+ "conflicting_folder_emit_mode_list_rules": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Best case for structural: changing which mode tokens satisfy the gate changes which runtime configurations emit the folder list, which can be read as 'different scope of a check', and one class adds a third disjunct. Best case for value: every class is the same equality-disjunction predicate (mode == A || mode == B ...) guarding the same emission behavior; the classes disagree solely on which literal mode tokens ({scalar,list} vs +auto vs {list,csv,json_string}) belong in the set. Decision: value. The policy's value definition explicitly covers a literal token/string set with the same code shape and behavior pattern, and any literal in a condition trivially changes which inputs fire the branch \u2014 that alone cannot make it structural, or 'limit 6 vs 10' would be structural too. 'Scope of a check' means composing different check mechanisms (cf. isinstance-vs-attribute in missing_unsafe_attribute_check), not different members of one uniform token-equality set. This also keeps the batch consistent: conflicting_response_width_mode_activation is the structurally identical fork and is uncontested at value \u2014 the only difference is that its tokens contain digits, which the digit heuristic saw and this one it missed.",
+  "task": "swe_2"
+ },
+ "conflicting_internal_vs_external_compose": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in modal lifecycle behavior on compose \u2014 stay open, close after delegating, or embed an inline composer inside the modal. Purely behavioral/flow divergence.",
+  "task": "swe_27"
+ },
+ "conflicting_jxl_ios_support_directive": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is the scope of platform support \u2014 whether the gate returns false on iOS (!isMobile check) or treats iOS like desktop \u2014 a behavioral/check-scope difference, not a literal value.",
+  "task": "swe_50"
+ },
+ "conflicting_modal_primitive_source_of_truth": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "ModalTwo header/content/footer sections versus the Prompt contract are different UI primitives/APIs \u2014 a component-ownership and code-shape fork.",
+  "task": "swe_31"
+ },
+ "conflicting_normalized_value_contract_vs_verbatim_route_token_contract": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is presence vs absence of processing stages (normalize via ipaddress, deduplicate, sort vs emit tokens verbatim) \u2014 a keep-vs-remove of behavior, not a literal value choice.",
+  "task": "swe_10"
+ },
+ "conflicting_path_normalization": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Storing absolute slash-normalized paths vs paths made relative to the library root uses different APIs (filepath.ToSlash vs filepath.Rel) and a different path-representation strategy \u2014 a behavioral/code-shape fork.",
+  "task": "swe_41"
+ },
+ "conflicting_path_separator": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The structural argument is that os_list_separator references os.PathListSeparator \u2014 a platform-varying named constant requiring the os import \u2014 which could be read as behavioral. But every class shares the identical join-the-path-slice code shape (join(paths, X)) and the sole disagreement is which delimiter token goes on the wire: '|' vs ',' vs ';'/os.PathListSeparator. The policy's value definition explicitly covers 'which sentinel constant', and swapping a named constant for a literal is a one-token substitution with no change in behavior pattern around it. With no behavioral axis present, this is a pure literal-token fork: value.",
+  "task": "swe_41"
+ },
+ "conflicting_referral_query_handling_rules": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The disagreement is the scope of the sanitization behavior \u2014 whitelist-filter to one key vs no filtering at all vs stripping the entire query string \u2014 not merely which key token is kept; keep-all and strip-all are different code shapes, not different literals.",
+  "task": "swe_46"
+ },
+ "conflicting_response_width_mode_activation": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes are the same equality-disjunction predicate for isInt32MigrationEnabled; they differ only in which literal mode tokens (strict32/compat32, +hybrid32, strict32 alone) are in the set \u2014 a literal token-set choice, though gate membership makes it a judgment call.",
+  "task": "swe_2"
+ },
+ "conflicting_single_record_compatibility_vs_immutable_audit_history": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes choose different data ownership/formats: a sidecar NDJSON history file, an embedded history array in the record, or overwriting with latest state only. Different file layout and persistence behavior.",
+  "task": "swe_28"
+ },
+ "conflicting_subscription_data": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is which data source the snapshot returns during cancellation (base subscription vs the scheduled/upcoming configuration) \u2014 a behavioral choice of ownership/fallback, not a literal value.",
+  "task": "swe_37"
+ },
+ "contra_cleanup_defaults_for_enabled_non_db_methods": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ on which configs the defaulting pass touches (skip non-database methods vs populate for every enabled method) \u2014 the scope of a defaulting behavior, not which constant is used as the default.",
+  "task": "swe_55"
+ },
+ "contradiction_non_positive_lifetime_write_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "This is a behavioral response to a special value: reject with error vs store-as-infinite vs clamp-to-default TTL \u2014 exactly the reject-vs-clamp-vs-disable pattern the policy marks structural despite the digits.",
+  "task": "swe_38"
+ },
+ "contradictory_auth_method_format": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "hard",
+   "kind": "value"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The value argument is strong \u2014 the policy pre-registers 'which label strings go on the wire' as a value axis, and short_form_only vs enum_form_only alone would be a pure literal choice ('token' vs 'method_token' in the same slot). But the canonical both_short_and_enum class does not substitute a literal in that slot; it adds a second payload field (auth_method_enum), changing the payload's field composition \u2014 one field vs two is a schema/code-shape axis, and the anchors themselves frame the blocker around schema consistency. The value definition requires the SAME code shape around the literal, and MIXED\u2192STRUCTURAL permits a value label only when the sole disagreement is which token to use. Since one axis of disagreement is shape, the tie-break resolves this structural.",
+  "task": "swe_15"
+ },
+ "contradictory_auto_seed_serialization_and_digest_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Beyond the decimal-vs-hex encoding choice, one class changes what is incorporated into the digest (mixing the id into the hash vs seed-only) \u2014 a scope-of-hash behavioral axis, so mixed resolves to structural.",
+  "task": "swe_4"
+ },
+ "contradictory_cache_versus_freshness": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on the scope and mapping of cache modes across call sites \u2014 per-site none/all/selective assignments, uniform selective everywhere, or making no call-site changes at all. The change-vs-leave-alone axis and per-site policy mapping are behavioral/code-shape disagreements, even though mode names are string tokens.",
+  "task": "swe_13"
+ },
+ "contradictory_default_ttl_cap": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "DefaultTTL as an absolute ceiling that clamps per-entry TTLs vs a fallback default that per-entry TTLs override are different behaviors (clamp vs precedence), not different constants.",
+  "task": "swe_20"
+ },
+ "contradictory_default_vault_creation_timing": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on when/whether to provision the default vault \u2014 eagerly during init vs deferring to the on-demand alias-options flow \u2014 a processing-stage/strategy difference.",
+  "task": "swe_9"
+ },
+ "contradictory_delete_gate_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The disagreement is the scope of the deletion gate check \u2014 require both regular and trashed items empty vs regular items only \u2014 a behavioral condition difference.",
+  "task": "swe_1"
+ },
+ "contradictory_detection": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Module-availability check before PATH search vs PATH search first is a difference in detection ordering \u2014 a processing-order fork.",
+  "task": "swe_24"
+ },
+ "contradictory_duplicate_versus_unique_values": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "One class adds duplicate-value filtering logic (values_seen set) while the other returns os.environ unchanged \u2014 presence vs absence of a processing step.",
+  "task": "swe_44"
+ },
+ "contradictory_enum_definition_location": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The fork is module ownership \u2014 which file/module defines the enum that consumers import \u2014 a code-organization/ownership difference.",
+  "task": "swe_47"
+ },
+ "contradictory_genre_dedup_equality": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ in the dedup equality/key strategy: sort by id descending keeping first occurrence vs full structural equality vs stripping to id-only \u2014 different comparison keys and processing.",
+  "task": "swe_45"
+ },
+ "contradictory_immutability_depth": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Object.freeze vs plain unfrozen object vs Proxy/Readonly typing are different protection mechanisms with different runtime behavior, not different literals.",
+  "task": "swe_33"
+ },
+ "contradictory_input_normalization_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Trimming in the onChange handler vs storing the raw value is presence vs absence of a normalization step \u2014 a behavioral/pipeline difference with no literal value at stake.",
+  "task": "swe_59"
+ },
+ "contradictory_kinit_timeout_value": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Both classes are the same default-assignment pattern; the only disagreement is the literal 73 vs 30 seconds.",
+  "task": "swe_22"
+ },
+ "contradictory_localid_source_for_resume_call": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Reading localid from persisted storage vs calling auth.getlocalid() (with a fallback chain) is a difference in data source/API ownership, not in a literal value.",
+  "task": "swe_23"
+ },
+ "contradictory_metrics_detail_when_to_record_counts": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The disagreement is the scope of the gating check \u2014 whether counts are recorded at the timestamps_only detail level or only at full \u2014 so behavior differs by mode; the strings act as condition scope, not as a literal value emitted on the wire.",
+  "task": "swe_42"
+ },
+ "contradictory_no_vault_memoization_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Preserve previously cached aliases across drawer reopens vs resetting/clearing the cache \u2014 a keep-vs-clear behavioral policy, not a literal value.",
+  "task": "swe_9"
+ },
+ "contradictory_parse_parameters_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Instance method using self.get_option versus a module-level function is a difference in code ownership/shape and calling pattern, not a literal value.",
+  "task": "swe_35"
+ },
+ "contradictory_password_input_format": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The structural case ('no terminator' as remove-vs-keep of an append step) fails because nothing behavioral is added or removed: every class performs the same single communicate(input=...) call delivering the password once via stdin, and the sole disagreement is which literal terminator bytes go on the wire \u2014 none, b'\\n', or b'\\r\\n'. This is exactly the frozen definition's 'which literal token/string goes on the wire' value case; the empty terminator is the empty-literal member of the same token set (b_password + b'' == b_password), not a different processing stage, strategy, or API. The mechanical structural verdict was digit-statistics only (byte-string literals contain no digits) and carries no semantic weight.",
+  "task": "swe_3"
+ },
+ "contradictory_path_argument_type": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in the container type (immutable tuple vs mutable list \u2014 the anchors call out snapshot stability/mutability) and in call shape (keyword vs positional). That is code-shape and behavior, not a literal number or token, though tuple-vs-list superficially resembles a value pick.",
+  "task": "swe_30"
+ },
+ "contradictory_pool_adjustment_when_idle_exceeds_open": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on the direction of the reconciliation behavior \u2014 raising open up to idle vs capping idle down to open \u2014 two different adjustment strategies, not a constant.",
+  "task": "swe_52"
+ },
+ "contradictory_pre_verification_status_partition": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on control flow: throw on terminal statuses before verification vs forwarding all outcomes to the verify step \u2014 different behavior, not a constant.",
+  "task": "swe_6"
+ },
+ "contradictory_refresh_approach": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Model-level aggregation via toAlbumArtist/repository puts vs keeping the existing SQL refresh path \u2014 entirely different computation path and code ownership.",
+  "task": "swe_45"
+ },
+ "contradictory_remove_vs_deprecate_unsafeproxy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Keep the class vs remove it entirely vs convert it to a deprecated function is a remove-vs-keep / API-shape fork, the canonical structural case.",
+  "task": "swe_19"
+ },
+ "contradictory_representer_raise_vs_no_raise": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Returning bool(data) versus raising a RepresenterError is a raise-vs-no-raise behavioral fork in the representer.",
+  "task": "swe_34"
+ },
+ "contradictory_role_reference_assignment": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ in the mechanism of role association \u2014 explicit post-hoc assignment on task and block vs relying on block inheritance vs passing role via constructor \u2014 different code shapes and behavior.",
+  "task": "swe_8"
+ },
+ "contradictory_share_visit_option_parameter_name": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Choosing updateVisitOnLoad vs trackVisitOnLoad alone would be a token choice, but the canonical class exposes both names, which requires alias/dual-option handling \u2014 an API-surface difference you cannot reach by editing one literal, so a behavioral axis exists.",
+  "task": "swe_51"
+ },
+ "contradictory_share_visit_update_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "fast_only vs balanced_only is a literal swap, but fast_or_balanced widens the condition with a disjunct \u2014 a different scope of the check \u2014 so at least one axis of disagreement is code-shape, making the fork structural under the mixed rule.",
+  "task": "swe_51"
+ },
+ "contradictory_spotlight_ownership_boundary": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on hook ownership and module boundary \u2014 whether the shared provider is the sole owner of the spotlight feature hooks or SearchField calls them directly \u2014 an architecture/ownership difference.",
+  "task": "swe_12"
+ },
+ "contradictory_timeout_granularity_restriction": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: the numbers 10 and 59 appear in names and signatures, so one could read this as choosing range constants. Best case for structural: the three classes disagree on the SCOPE and EXISTENCE of a validation rule \u2014 multiple-of-10 enforced only inside 10-59, enforced uniformly on all values, or no granularity check at all ('no multiple-of', 'any positive integer is accepted'). 'Different scope of a check' is an explicitly structural axis in the policy, and no_granularity_rule is a remove-vs-keep axis; both are behavioral. The digits in range(10, 60) are constants inside an otherwise-differing rule shape, and per policy digits inside signatures do not make a fork a value fork; with any behavioral axis present the mixed-to-structural rule applies. Structural \u2014 the mechanical 'value/review' verdict was driven purely by digit counts.",
+  "task": "swe_32"
+ },
+ "contradictory_uid_authority_after_resume": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Although the surrounding call shape is identical, the classes disagree on which runtime data source (persisted session vs resumed payload) has authority over auth state \u2014 a dataflow/precedence difference, and no literal value or token is being chosen.",
+  "task": "swe_23"
+ },
+ "contradictory_unset_vs_vcard_fallback": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "One class leaves the field unset (return undefined) while the others produce a date, and epoch vs current-time is fixed-constant vs dynamic clock read \u2014 at least one axis is behavioral, so mixed resolves to structural.",
+  "task": "swe_56"
+ },
+ "contradictory_warning_priority_order": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on which warning condition is evaluated/emitted first (length vs extension) \u2014 a processing-order difference, not a literal value.",
+  "task": "swe_59"
+ },
+ "controller_replacement_import_path": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Importing from stdlib collections.abc vs six.moves vs keeping the legacy shim changes the module/dependency ownership and includes a keep-vs-replace axis \u2014 explicitly a structural category in the policy.",
+  "task": "swe_36"
+ },
+ "cross_platform_consistency_vs_fallback_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on the scope of a behavior \u2014 whether the fallback path executes only on Linux or on every platform. That is a difference in where code runs, not in any literal value.",
+  "task": "swe_0"
+ },
+ "data_path_format_validation": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is presence vs absence of an absolute-path check (validate-and-reject vs accept anything) \u2014 a scope-of-check / remove-vs-keep behavioral difference.",
+  "task": "swe_14"
+ },
+ "default_data_path": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The between-class axis is purely which literal default path string is assigned (/var/opt/flipt/meta vs /var/opt/flipt/data vs /tmp/flipt vs /etc/flipt/meta), with the same assignment shape around it. The structural argument rests on the tmp class's `os.TempDir()` variant (a call, not a literal) and on persistence semantics of /tmp \u2014 but os.TempDir() is within-class realization detail of the single 'tmp-style location' interpretation, not an axis separating classes, and persistence implications are consequences of the value, not code-shape differences. Sole disagreement is the string, so value.",
+  "task": "swe_14"
+ },
+ "default_manifest_pack_mode": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: all four classes accept/emit a plain-string selector token through the identical compatibility-mode mechanism, differing only in which literal token spellings are used (\"oci-1.0\"/\"oci-1.1\" vs \"1.0\"/\"1.1\" vs \"v1.0\"/\"v1.1\" vs \"docker\"/\"oci\"/\"legacy\"/\"modern\"). Best case for structural: the product-style-aliases class could be read as a different naming taxonomy, and one signature shows a schema enum, hinting at a validation surface. Decision: those are still just alternative literal token sets flowing through the same selector shape \u2014 no class changes what the token does, where it is checked, or the manifest behavior it selects; the sole axis of disagreement is the spelling of a literal token set, which is the definition of a value fork. The mechanical 'review' was pure digit noise (version digits in signatures).",
+  "task": "swe_18"
+ },
+ "delegate_target_resolution_precedence_unspecified": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes are different fallback-chain orderings and compositions (get_host then address scan then synthetic vs skipping the address scan vs address scan first) \u2014 a precedence/strategy difference.",
+  "task": "swe_48"
+ },
+ "delegate_to_resolution_stage_in_execution_unspecified": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The disagreement is at which processing stage the resolution runs (before vs after post_validate vs per loop item) \u2014 an ordering/stage difference in behavior.",
+  "task": "swe_48"
+ },
+ "directory_existence_handling": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes take different behaviors at config-load time: skip any existence check, stat-and-reject when missing, or MkdirAll to create the directory. That is a reject-vs-create-vs-defer behavioral fork.",
+  "task": "swe_14"
+ },
+ "disable_cycle_selector_conflict": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Include-the-flag vs omit-the-property is a keep-vs-remove toggle-behavior fork (selector locked vs left flexible), not two literals in the same code shape.",
+  "task": "swe_7"
+ },
+ "disabled_duration": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Value case: zero_duration (0.0) and sentinel_negative (-1) fill the same duration field with different literal constants. Structural case: the elapsed_time class computes time.Since(start) \u2014 it measures rather than emits a constant, requiring a clock read and captured start time, a different code shape. Decisive: mixed \u2192 structural applies because the measure-vs-constant axis is behavioral, even though two classes differ only in a literal.",
+  "task": "swe_43"
+ },
+ "entry_id": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ in key composition/generation strategy: compound batchID:flag concatenation vs copying the batch id verbatim vs minting a new UUID per entry.",
+  "task": "swe_43"
+ },
+ "features_annotation_requirement_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Treating the annotation as required (error when missing) vs optional with a payload fallback is a reject-vs-fallback-chain behavioral difference.",
+  "task": "swe_57"
+ },
+ "fixed_address_lookup_strategy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in lookup key composition and branching \u2014 a mac-only special-case filter vs querying with the full obj_filter vs adding no special branch at all \u2014 different code shape and strategy.",
+  "task": "swe_5"
+ },
+ "flag_primary_key_composition": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "Best case for value: flag_first_namespace_second and namespace_first_signature_order are the identical Sprintf call against the same format constant with arguments swapped \u2014 arguably just which token lands in which slot, no new code. Best case for structural: the policy explicitly lists 'different key composition' as structural, argument order determines the lookup key's composition and hierarchy, and the third class (combined_single_segment: namespacekey + \"-\" + flagkey concatenated into one segment) changes key arity and replaces format-slot filling with string concatenation \u2014 a different code shape. Decisive: even if the two ordering classes alone were arguable, the concatenation class introduces an unambiguous code-shape axis, and key composition is a named structural category in the policy; mixed\u2192structural.",
+  "task": "swe_25"
+ },
+ "flags_value_normalization": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "The value argument: the '>>> 0' signature contains a literal 0 and the class name unsigned32_coercion is numeric-flavored, so the heuristic saw a possible constant choice. But the 0 in '>>> 0' is an operator idiom, not a tunable value. The actual axis is coerce-the-input (Number(flagsValue) >>> 0 into normalizedFlags) versus strictly requiring an already-valid integer with no coercion (typeof flags !== 'number' guard) \u2014 a coerce-vs-reject input-handling fork with different control flow and error behavior, which the policy classes as structural.",
+  "task": "swe_40"
+ },
+ "forced_renewal_flags_when_cancelled": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "One class hardcodes renewDisabled=true as a presentation override while the other derives it from actual billing state \u2014 a constant-assignment vs pass-through-logic difference in behavior, not a choice between two literals in the same shape.",
+  "task": "swe_37"
+ },
+ "hoststate_str_state_label_prefix_convention": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Both classes produce a '|'.join-ed label string from the same __str__ pattern; the disagreement is which literal label tokens appear on the wire \u2014 bare member names vs legacy 'iterating_'/'failed_'-prefixed labels. This is the frozen definition's own named value example ('which label strings go on the wire'), and the signatures show only string fragments, no mapping or conditional machinery that would evidence a code-shape axis. The mechanical structural verdict equated value with digits, but literal token-set choices are value forks regardless of digit content.",
+  "task": "swe_54"
+ },
+ "html_expiration_threshold": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: three of four classes are the identical Math.max(N, expiration) clamp differing only in N (5000 vs 3000 vs 10000) \u2014 same code shape, different literal \u2014 which is what drove the heuristic's value/high verdict. Best case for structural: the fourth class, no_minimum_enforced, applies no clamp at all ('do not enforce a minimum', 'use the provided expiration', 'leave expiration unchanged') \u2014 clamp-present vs clamp-absent is exactly the policy's clamp-vs-reject-vs-disable behavioral category. Decisive: no_minimum_enforced is a full class, so the fork has a genuine behavioral axis (whether a minimum is enforced) alongside the numeric one, and the mixed\u2192structural rule requires structural whenever any axis is behavioral, regardless of the digit-heavy signatures.",
+  "task": "swe_26"
+ },
+ "ignore_proxy_input_normalization": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is the normalization mechanism: a strict raw-string membership check against a custom tuple versus delegating to the framework's boolean() coercion via get_option. Different API/code shape (the differing accepted token sets are secondary; mixed resolves to structural anyway).",
+  "task": "swe_29"
+ },
+ "interval_validation_scope": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "The two classes disagree on whether interval validation is gated behind the checkForUpdates flag or runs unconditionally \u2014 exactly the 'scope of a check' pattern the policy enumerates as structural. The value argument (the only literals in play are the `< 0` vs `<= 0` comparisons) fails because those operator variants sit within the unconditional class, not on the axis between classes; the fork is about control-flow gating, and the digits in the signatures are the known trap the policy warns about.",
+  "task": "swe_14"
+ },
+ "invalid_request_precedence_in_read_only_mode": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Returning the wrapper's own error without delegating vs delegating to the underlying store and reusing its ErrNotImplemented differ in call flow and error ownership, not merely in which error string is emitted.",
+  "task": "swe_58"
+ },
+ "legacy_delegate_resolution_deprecation_version_unspecified": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Every class emits the same deprecation warning; the only fork is which removal-version literal is named ('2.20' vs '2.18'/'2.19'), matching the policy's explicit 'version to pin' value example. No class changes behavior, ordering, or code shape, so the heuristic's 'review' uncertainty (digit-heavy signatures) resolves cleanly to value on semantics.",
+  "task": "swe_48"
+ },
+ "legacy_flags_property_compatibility": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "The value argument: the canonical class resolves disagreement to the literal 0, so the fork can be framed as 'which effective value results on conflict'. But two of the three classes (canonical_wins, legacy_wins) name no literal at all \u2014 they choose which of two coexisting representations takes precedence. Zero-out-on-disagreement vs canonical-takes-precedence vs legacy-takes-precedence is a conflict-resolution/precedence strategy, i.e. a fallback-chain fork the policy marks structural; the 0 is a consequence of one strategy, not the axis of disagreement.",
+  "task": "swe_40"
+ },
+ "manifest_selection_propagation_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ in what manifest shape omission produces \u2014 no top-level artifactType with config.mediaType reuse, vs setting a top-level artifactType, vs an independent third default. That is a difference in output structure/behavior, not a literal.",
+  "task": "swe_18"
+ },
+ "max_fields_count_ambiguous": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "The two limit classes differ only in the numeric constant (100 vs 50/1000/etc.) with the same TypeError pattern, which alone would be a value fork; but the no_field_count_limit class removes the check entirely \u2014 a remove-vs-keep behavioral axis \u2014 so the mixed-to-structural rule makes the fork structural.",
+  "task": "swe_11"
+ },
+ "max_input_length_unspecified": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "Although several classes differ only in the numeric limit (10000 vs 1024/4096/etc.), wrong_exception_or_message raises ValueError instead of TypeError \u2014 a control-flow difference visible to exception handlers \u2014 and no_length_limit omits the check entirely (remove-vs-keep). These behavioral axes dominate under the mixed-to-structural rule.",
+  "task": "swe_11"
+ },
+ "max_layers_per_manifest": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Best value case: every class implements the identical upper-bound check '> N' on manifest layer count with the same reject behavior, differing only in N (256 vs 100/512/1000) \u2014 the archetypal 'limit 6 vs 10 vs 100' value fork. Best structural case: a different limit changes observable outcomes for some inputs \u2014 but that is true of any constant choice; no class disagrees on the check's shape, placement, or the response to exceeding it. Sole disagreement is the literal number, so value.",
+  "task": "swe_57"
+ },
+ "max_nesting_depth_policy_conflict": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "The depth constant varies (20 vs 10 vs 5), but wrong_exception_or_message raises ValueError or RecursionError instead of TypeError (RecursionError even implies no explicit guard, letting native recursion fail), and no_depth_limit drops the check entirely. Different exception types and remove-vs-keep are behavioral/code-shape axes, so the mixed-to-structural rule applies.",
+  "task": "swe_11"
+ },
+ "maximum_cycle_calculation": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes differ in computation strategy \u2014 a conditional monthly\u2192yearly mapping vs a constant longest-cycle vs locking to the current cycle \u2014 different logic shapes, so mixed resolves to structural despite enum constants in signatures.",
+  "task": "swe_7"
+ },
+ "missing_album_refresh_chunk_size": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All three classes are the identical chunk(ids, N) call differing only in the literal chunk size 70 vs 100 vs 50; same code shape and behavior around it.",
+  "task": "swe_41"
+ },
+ "missing_auth_id_audit_display_length": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Every class truncates the auth ID with the same slicing shape and differs only in the prefix length (7 vs 8 vs 10 vs other); the named-constant variant is still just a choice of numeric value.",
+  "task": "swe_15"
+ },
+ "missing_bytearray_handling": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes route bytearray through different code paths with different behavior (wrap as unsafe bytes vs recurse as a mutable sequence vs no handling vs decode to text) \u2014 different branch/strategy, not a chosen constant.",
+  "task": "swe_19"
+ },
+ "missing_cache_parameter_default": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Every class writes the identical signature `cache: str = X` and disagrees solely on which literal token ('all', 'selective', 'none') fills the default slot \u2014 the pre-registered sentinel/token value case. The structural argument (defaulting to 'none' vs 'all' effectively toggles caching behavior) fails because that is a downstream consequence of the chosen literal, not a difference in code shape or decision logic between the classes; no remove-vs-keep, gating, or strategy axis separates them. The mechanical heuristic mislabeled it structural only because tokens contain no digits.",
+  "task": "swe_13"
+ },
+ "missing_calendar_url_max_length": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Both classes (len_10000 vs len_other: 10240/8192/4096/2048) consist solely of numeric constants slotted into the same max_lengths_api entry with an identical too-long check around them; the only disagreement is which limit literal to write. The structural counter-argument (power-of-two vs decimal implies a different sizing rationale) is a motivation difference, not a behavior or code-shape difference, so per the frozen definition this is a value fork. The mechanical 'review' flag reflected digit statistics only; semantics are unambiguous.",
+  "task": "swe_59"
+ },
+ "missing_commerce_copy_tokens": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Best case for value: both classes emit a store label in the same user-facing slot; the signatures are nothing but literal label strings ('google play'/'apple app store'/'payments & subscriptions' vs 'play store'/'on the app store'/'itunes'), and the policy explicitly names 'which label strings go on the wire' as a value fork. Best case for structural: 'payments & subscriptions' hints at an account-navigation path, so one could claim the classes route the user differently \u2014 but nothing in the class names, signatures, or anchors describes any code-shape or flow difference, only copy tokens ('store label', 'user-facing text'). The sole axis of disagreement is which literal token set appears, with identical surrounding behavior, so this is a value fork; the mechanical heuristic guessed structural merely because the strings contain no digits.",
+  "task": "swe_31"
+ },
+ "missing_communicate_timeout_value": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Identical timeout= parameter in the same call; the classes differ only in the number of seconds (30/45/60/120).",
+  "task": "swe_3"
+ },
+ "missing_create_default_vault_precheck_maxage": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "All three classes (unix_minute*7, maxage: 0, other durations) pass a maxAge literal in the identical argument position of the same createDefaultVault pre-check call \u2014 same code shape, same cache mechanism, no added or removed logic. The structural argument that 0 is a mode switch (force-fresh, cache disabled) invokes the special-value trap, but that trap applies when classes differ in how code HANDLES a special value (reject vs clamp vs disable branches); here every class merely supplies a different constant to unchanged handling, and the differing freshness is the ordinary downstream consequence of any timeout choice. Sentinels/timeouts are explicitly listed value-fork examples, so this stays value, agreeing with the blind reviewer's lean.",
+  "task": "swe_9"
+ },
+ "missing_default_value_for_max_idle_connections": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Every class assigns MaxIdleConn a default with identical code shape; the only disagreement is the numeric constant (4 vs 5 vs 10/0).",
+  "task": "swe_52"
+ },
+ "missing_default_values_for_open_connections_and_connection_lifetime": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "The classes differ only in the numeric defaults chosen for MaxOpenConn and the lifetime duration literal (1s vs 30s/minute/hour); the surrounding pool-configuration code is the same.",
+  "task": "swe_52"
+ },
+ "missing_deprecation_call_parameters": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Value case: the canonical class and other_target_version differ only in the version literal ('2.20' vs '2.18'/'2.19') inside the same display.deprecated(...) call. Structural case is decisive: the warnings_warn class swaps the mechanism entirely \u2014 stdlib warnings.warn instead of display.deprecated is a different API/module with different runtime behavior \u2014 so at least one axis of disagreement is behavioral/code-shape, and mixed \u2192 structural governs despite the coexisting version-number axis.",
+  "task": "swe_44"
+ },
+ "missing_deprecation_target_version": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes pass a version argument to the same deprecation call; they differ only in the literal chosen \u2014 2.14 numeric vs '2.14' string vs 2.15/2.16 \u2014 and the numeric-vs-string split is still a choice of literal form, not a code-shape or behavior difference.",
+  "task": "swe_54"
+ },
+ "missing_detection_api_parameters": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "importlib.find_spec with an imp fallback vs pkg_resources lookup vs direct 'import pip' are different APIs/mechanisms for detection \u2014 an API-choice fork.",
+  "task": "swe_24"
+ },
+ "missing_empty_referral_settings_fallback_parameter": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "All three classes pass a fallback settings literal at the same call site and differ only in which sentinel shape is chosen ({referral: undefined} vs {} vs null) \u2014 the policy explicitly lists 'which sentinel constant' as a value fork. The structural reading (null vs object forcing different downstream handling) is speculative: no class signature asserts a different code shape or omits the parameter, unlike the analytics omit-key fork where a class removes the key entirely.",
+  "task": "swe_46"
+ },
+ "missing_eviction_watermark": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "Best case for value: all three classes can be squinted at as 'evict down to target T' with T \u2208 {sizeLimit/2, limit-1, limit}, i.e. a choice of numeric watermark. Best case for structural: the classes differ in mechanism and code shape, not a literal \u2014 evict_to_half_floor is a loop down to a computed watermark (sizelimit/2 with integer division), evict_single_entry is a fixed one-removal-per-insertion policy with no loop and no watermark computation at all (keys[0] once), and evict_down_to_limit loops on a count derived as currentSize - limit. Decision: structural. The value label requires the same code shape with only the literal differing; here the amount of work per insertion, the presence of a loop, and the target formula all diverge \u2014 evict-one versus evict-half are different eviction aggressiveness strategies, and 'different strategy' is explicitly structural. Mixed axes resolve to structural regardless.",
+  "task": "swe_20"
+ },
+ "missing_filefinder_identification_rule": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in the recognition mechanism and check scope: string comparison against the frozen qualified name, an import-plus-isinstance check, or a bare class-name match/endswith. Different mechanism, not merely a different literal.",
+  "task": "swe_30"
+ },
+ "missing_hasher_digest_and_auto_seed_rules": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "The value argument rests entirely on digits in the signatures (int64, maxint64, int63, sum64), suggesting a choice of random-integer width/function. Those digits are parts of API identifiers, not chosen constants \u2014 precisely the trap the policy warns about. Semantically the classes pick different modules and ownership models: maphash with a stored seed field and random.Int64, vs constructing a fresh maphash.Hash per call, vs bypassing maphash for math/rand or crypto/rand. Different API, different state ownership, different code shape \u2014 a clear structural fork.",
+  "task": "swe_4"
+ },
+ "missing_inline_diagnostic_payload_byte_cap": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes implement the same byte-cap behavior and differ only in which numeric limit is chosen (15360 vs 16384 vs 4096/8192 vs 10240).",
+  "task": "swe_28"
+ },
+ "missing_invisible_character_stripping": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The disagreement is presence vs absence of an extra invisible-character stripping stage before trim(), a processing-pipeline difference rather than a choice among literal character constants within the same shape.",
+  "task": "swe_56"
+ },
+ "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "Both classes build the same ip-route argv pattern querying the same local routing table; 'list' and 'show' are iproute2 aliases and '255' is the numeric id of the 'local' table, so the resulting behavior and code shape are identical. The sole disagreement is which literal tokens go into argv \u2014 the 'which label strings go on the wire' value case; the symbolic-vs-numeric framing creates no behavioral difference.",
+  "task": "swe_10"
+ },
+ "missing_kinit_args_max_length": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "The axis is which max-length constant (892 vs 1024 vs another named limit) around an identical reject-if-too-long check. The catch-all class contains os.sysconf/ARG_MAX signatures (a dynamic lookup rather than a literal), a minor shape tail, but the class semantics remain 'a different limit value'.",
+  "task": "swe_22"
+ },
+ "missing_lease_action_param": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Both classes set the same lease-action parameter at the same site, differing only in the literal token ('direct_assign' vs 'reserved'); the differing DHCP-server semantics belong to the token, not to any code the classes write. The structural counterargument \u2014 the 'reservation step' signature hinting at an added flow stage \u2014 was weighed and rejected: the class is named for the token style, its primary signatures are the quoted literals, and no signature asserts a distinct code path, so the sole realized disagreement is the token.",
+  "task": "swe_5"
+ },
+ "missing_loudness_normalization_definition": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: every class centers on constants (256, 4.637, -23 LUFS, 18.06) applied to the same parsed gain, so one could frame it as 'which conversion constant'. Best case for structural: the classes disagree on whether any transformation exists at all and on its shape \u2014 q7.8 fixed-point decode (divide by 256 plus a fixed offset) vs verbatim parseFloat with explicitly 'no conversion'/'no additional offset' vs subtracting an R128 reference loudness. Decisive: apply-vs-skip a conversion stage is an add-vs-omit behavioral axis, and the two conversions that do exist are different algorithms (fixed-point decode with additive offset vs reference subtraction), not one shared expression with swapped literals; the digits inside signatures do not make this a value fork. Mixed\u2192structural applies.",
+  "task": "swe_21"
+ },
+ "missing_match_client_param": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "All three classes write the same match-client parameter assignment and differ only in the literal token ('client_id' vs 'mac_address' vs 'circuit_id'). The 'different key composition' structural criterion does not apply: it targets code that composes lookup keys differently, whereas here the code shape is identical and the client-matching semantics are delegated to the server by a config literal \u2014 the policy's literal-token-set value case.",
+  "task": "swe_5"
+ },
+ "missing_max_active_entries_limit": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "The value-side argument is real but partial: max_256_error vs other_power_limit (128/512/1024) differ only in the numeric cap with the same error-at-limit shape. However, the third class evict_oldest ('evict', 'remove the oldest', 'lru') replaces erroring at the limit with LRU eviction \u2014 a different behavioral response to overflow, changing control flow and adding eviction machinery. Per the policy, if ANY axis is behavioral the fork is structural, so the mixed fork resolves to structural despite the digit-heavy signatures the heuristic keyed on.",
+  "task": "swe_38"
+ },
+ "missing_max_bearer_token_length": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Same length-limit check differing only in the chosen constant: 2000 vs 4096 vs 1024.",
+  "task": "swe_42"
+ },
+ "missing_max_compose_recipients": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Although cap_25/cap_50/cap_100 share the same slice(0, N) shape and differ only in N (the value argument), no_cap_all_recipients removes the capping slice entirely (signatures: 'all recipients', 'no limit', bare oncompose(recipients,) \u2014 a remove-vs-keep/disable-the-feature axis. Per the frozen policy, any behavioral/code-shape axis among the classes forces MIXED -> STRUCTURAL even when the dominant axis is numeric, and disabling a limit is an enumerated structural pattern. The mechanical value verdict rested solely on digit-differing class names and missed the no-cap class.",
+  "task": "swe_27"
+ },
+ "missing_maximum_timeout_ceiling": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes impose the same ceiling check with the same shape; they differ only in the literal maximum (7200 vs 3600 vs 86400).",
+  "task": "swe_32"
+ },
+ "missing_mbz_absent_sentinel": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Which sentinel string marks absence is a value axis, but the no_filtering class removes the exclusion step entirely \u2014 a behavioral difference in whether candidates are filtered \u2014 so mixed\u2192structural applies.",
+  "task": "swe_45"
+ },
+ "missing_min_password_length": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Identical len(password) comparison differing only in the threshold literal 7 vs 8 vs 12.",
+  "task": "swe_42"
+ },
+ "missing_minimum_timeout_threshold": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: the check shape 'value < N reject' looks identical across classes and min_5 vs min_10 vs effectively min_1 ('any positive') would be a pure threshold-literal choice \u2014 this is what pushed the mechanical heuristic to value (88% numeric signatures). Best case for structural: the canonical class is named min_5_zero_disabled \u2014 it encodes zero as a disable-the-feature sentinel (echoed by the anchor 'when enabled'), while any_positive_valid ('> 0 is valid', '>= 1 is') makes zero simply invalid/rejected. That is a behavioral response to a special value (disable vs reject at zero), which the policy explicitly classifies as structural, and the mixed-to-structural rule makes the whole fork structural even though the thresholds are also literals. The class-name semantics are decisive over the digit statistics: structural.",
+  "task": "swe_32"
+ },
+ "missing_modal_startup_contract": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree on launch behavior \u2014 auto-start an initial process on mount vs only starting on explicit submit \u2014 a behavioral policy, not a value choice.",
+  "task": "swe_6"
+ },
+ "missing_network_facts_dict_key_snr_scope_host_addrs": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The only axis is which literal string is used as the facts-dict key (snr_scope_host_addrs vs descriptive alternatives) with identical surrounding code and behavior. The 'key composition' structural bullet does not apply because no class composes a key from parts \u2014 each picks a single flat literal. The mechanical 'structural' verdict was a digit-statistics artifact, not semantics.",
+  "task": "swe_10"
+ },
+ "missing_overflow_sentinel_int": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Each class returns a fixed constant on the overflow path (-2147482977 vs 2147483647 vs -2147483648 vs 0/-1) with the same surrounding pattern; the axis is which literal sentinel number. Lean because the \"clamp\" wording in two classes could be read as saturating behavior rather than a constant choice.",
+  "task": "swe_2"
+ },
+ "missing_path_env_default_value": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Three classes pick different default literals ('', os.defpath, hardcoded path), which alone would be a value fork, but direct_environ_access drops the fallback entirely and raises KeyError when PATH is unset \u2014 a differing failure behavior/code shape, so mixed resolves to structural.",
+  "task": "swe_3"
+ },
+ "missing_persisted_session_staleness_ttl_ms": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Best case for value: three of four classes (12 days, 24 hours, 7 days) are pure TTL constants around an identical inline Date.now() - persistedAt threshold \u2014 the dominant axis is which duration literal, which is why the heuristic scored it value/high. Best case for structural: the fourth class, delegated_freshness_helper, contains no threshold at all \u2014 it calls an existing helper (sessionFreshnessPolicy(session)/isSessionFresh), moving policy ownership out of the call site and replacing inline arithmetic with a function call, a different code shape. Decisive: delegated_freshness_helper is a full interpretation class, not a stray signature in a catch-all, so a genuine code-shape/ownership axis exists between classes and the mixed\u2192structural rule mandates structural even though numbers dominate the other three classes.",
+  "task": "swe_23"
+ },
+ "missing_pip_module_target": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Much of the fork is which -m target token ('pip.__main__' vs 'pip' vs 'pip._internal'), which alone would be a value fork, but the pip_internal_api class also carries direct-import realizations ('from pip._internal', 'pip._internal.cli.main') \u2014 an in-process API invocation rather than a launcher token \u2014 so a behavioural axis exists and mixed\u2192structural applies.",
+  "task": "swe_24"
+ },
+ "missing_player_id_base_offset": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Best case for structural: the index_zero_based_raw class returns the session index with no addition, which could be read as omitting the offset mechanism rather than choosing a constant. Best case for value: every class computes the synthetic id by the same formula base + sessionIndex, with base \u2208 {41000, 1, 1000 or 10000, 0}; returning the raw index is exactly the degenerate base=0 instance of that same shape, and index+1 is base=1. Decision: value. No class alters ordering, id derivation strategy, or any surrounding behavior; the single axis is which literal numeric base is chosen \u2014 the canonical offset-base value fork the policy names explicitly. The mechanical 'review' flag came only from names not containing digits.",
+  "task": "swe_2"
+ },
+ "missing_prometheus_max_concurrent": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "Same middleware.Throttle(N) call differing only in the concurrency constant 6 vs 10 vs 100.",
+  "task": "swe_42"
+ },
+ "missing_provider_url_match_patterns": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "One class uses regex pattern matching, the other a substring includes/indexOf check \u2014 a different matching strategy/API, not merely a different pattern literal.",
+  "task": "swe_59"
+ },
+ "missing_referral_render_mapping_parameter": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in rendering behavior: format-specific output (HTML anchor, own line) vs emitting identical raw text in both formats \u2014 a per-format branching difference, not a literal choice.",
+  "task": "swe_46"
+ },
+ "missing_referral_sender_eligibility_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is the scope of the eligibility check \u2014 gate on isPrimary vs apply to all senders \u2014 i.e., presence/scope of a conditional, not a value.",
+  "task": "swe_46"
+ },
+ "missing_refresh_chunk_size": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes batch the refresh identically and differ only in the numeric chunk size literal (73 vs 100 vs 50/200).",
+  "task": "swe_45"
+ },
+ "missing_return_property_names": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Best case for structural: the return object's property names are the API surface consumers destructure, so 'cachedLinks/isDecrypting' vs 'items/isLoading' could be framed as 'different API'. Best case for value: the anchors fix the shape as identical in both classes \u2014 one array field plus one boolean status indicator in the same return object \u2014 and the signatures are bare identifier tokens ('cachedlinks', 'isdecrypting' vs 'items:', 'results:', 'isloading'); no class differs in processing, mechanism, fallback, ordering, or scope. This is the same category as which label strings appear: a literal token-set choice with the same code shape and behavior pattern around it. The policy's 'different API' structural marker targets differing mechanisms/modules/ownership, not identifier spelling on an otherwise-identical object; with no behavioral axis present, the sole disagreement is which tokens name the properties. Value.",
+  "task": "swe_33"
+ },
+ "missing_safari_version_threshold_and_validation": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Two classes differ only in the version literal inside the same isgreaterthanorequal('16'/'17'/'18') check \u2014 a value axis \u2014 but the manual_major_parse class replaces that API with hand-rolled parseint( + split('.')[0] major-version parsing, a different validation code shape. Under the mixed rule, any behavioural/code-shape axis makes the fork structural; the heuristic's 'review' verdict came from digit density in the signatures, which the policy says does not make a value fork.",
+  "task": "swe_50"
+ },
+ "missing_seed_canonicalization_algorithm": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "The hashing code shape is identical (algorithm selected by name string); the classes differ only in which literal algorithm token is passed ('sha256' vs 'md5'/'sha1' vs 'sha512'). Arguably a strategy choice, but nothing in the class signatures changes the surrounding behavior pattern.",
+  "task": "swe_35"
+ },
+ "missing_selection_state_wire_labels": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The sole disagreement is which literal label-string set goes on the wire ('clear/mixed/complete' vs 'none/some/all' vs 'empty/partial/full') with identical serialization/restoration code around it \u2014 the policy's value definition literally names 'which label strings go on the wire'. The mechanical structural verdict rests only on the strings containing no digits, a heuristic artifact with no semantic weight.",
+  "task": "swe_47"
+ },
+ "missing_share_default_expiration_duration": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes set a default expiration with the same AddDate/duration code shape and differ only in which duration constant is chosen (90 days vs 30 days vs one year).",
+  "task": "swe_51"
+ },
+ "missing_show_all_parameter": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "The value framing (all classes convey the same include-trashed boolean) fails because the classes disagree in API shape, not token choice: pass an existing sixth positional flag vs change the signature by adding a new parameter/options object vs make a separate dedicated trash-listing call. Different signatures and call structures are code-shape differences; the '6th'/'undefined, undefined, true' digits are incidental.",
+  "task": "swe_1"
+ },
+ "missing_sort_keys_default_value": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes supply a default emit width through the same path; only the literal number differs (1048576 vs 80 vs 4096).",
+  "task": "swe_34"
+ },
+ "missing_spotlight_eligibility_cutoff": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes perform the same threshold comparison on the cached-item count; they disagree only on where the eligibility cutoff sits (8 strict, 8 inclusive, 0/10/100). The > vs >= axis is effectively a different cutoff value (9+ vs 8+), not a different behavior pattern, though the operator wrinkle keeps this from being fully unambiguous.",
+  "task": "swe_12"
+ },
+ "missing_trashed_cache_accessor": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes choose different accessors/modules and even different data paths (a specific cache accessor vs other cache hooks vs bypassing the cache with a fresh API fetch) \u2014 API ownership and cache-vs-network behavior differ.",
+  "task": "swe_1"
+ },
+ "missing_tuple_wrapping": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Recursively wrap preserving tuple type vs leave unchanged vs convert to list vs generic-iterable handling are different behaviors and output types \u2014 a code-shape/strategy fork.",
+  "task": "swe_19"
+ },
+ "missing_unsafe_attribute_check": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in the scope/composition of the guard (isinstance OR __unsafe__ duck-typing vs isinstance only vs attribute only), which changes which objects short-circuit \u2014 a scope-of-check difference, listed as structural.",
+  "task": "swe_19"
+ },
+ "missing_when_attribute_value": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Although two classes differ only in the literal token (True vs 'true'), the third leaves the attribute unset to inherit from the parent \u2014 a set-vs-omit behavioral axis, so the mixed rule forces structural.",
+  "task": "swe_8"
+ },
+ "missing_yaml_key_name_for_database_connection_lifetime": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The only disagreement is which literal YAML key string the loader reads (pool_conn_ttl vs conn_max_lifetime/connection_max_lifetime/max_conn_lifetime); the loader behavior and code shape around the key are identical. This is a literal token/string-set choice, which the frozen definition explicitly classifies as value. The structural list's 'different key composition' refers to how keys are composed from parts, not which single literal string is picked; the mechanical structural verdict rested solely on the absence of digits, and token/string forks are value forks even with zero digits.",
+  "task": "swe_52"
+ },
+ "module_public_api_exposure": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Classes disagree not just on which names appear in __all__ but on whether __all__ exists at all (no_all_defined omits the declaration), which changes star-import behavior \u2014 a code-shape/presence axis, so mixed resolves to structural.",
+  "task": "swe_54"
+ },
+ "mp_auth_store_no_db_path": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Memory store vs SQL store vs nil store are different backing implementations/strategies for the no-database path \u2014 different modules and runtime behavior, not a literal value choice.",
+  "task": "swe_55"
+ },
+ "mp_validate_cleanup_rejects_non_db_methods": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Reject-with-error vs silently-allow is a classic accept-vs-reject behavioral split in Validate(), with no shared code shape differing only by a constant.",
+  "task": "swe_55"
+ },
+ "name_required_vs_optional": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on whether the module rejects invocations lacking a name versus accepting them (possibly with a default) \u2014 an accept-vs-reject validation behavior, not a choice among literal values of the same kind.",
+  "task": "swe_5"
+ },
+ "non_linux_distribution_detection_scope": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes use different detection APIs/strategies (platform.system equality check vs os.uname/sys.platform/os.name vs an enumerated whitelist of platforms), which differ in code shape and in the scope of the check, not in a chosen constant.",
+  "task": "swe_0"
+ },
+ "non_linux_distribution_normalization": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The axis is which transformation is applied to the name (capitalize-first vs pass through verbatim vs lowercase/canonical mapping) \u2014 presence-vs-absence of a normalization step and a mapping strategy are code-shape differences, not a single literal token choice, though the casing framing gives it a value-like flavor.",
+  "task": "swe_0"
+ },
+ "non_linux_distribution_source_precedence_on_conflict": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes pick different authoritative data sources and different fallback chains (distro.id vs platform.system vs try-distro-then-fallback vs subprocess probing) \u2014 a difference in API choice and fallback structure.",
+  "task": "swe_0"
+ },
+ "non_linux_distribution_version_source": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes fetch the version from different APIs or via custom subprocess parsing (distro.version vs platform.release/mac_ver vs parsing sw_vers output) \u2014 different code paths and data sources, not a literal value.",
+  "task": "swe_0"
+ },
+ "operational_time_bound_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes apply the same wrap-with-timeout pattern and differ mainly in the chosen duration (11s vs 5s vs 5m vs 30s/etc.). The 'configurable timeout' signature in the catch-all class hints at a slight shape variant, but the dominant axis of disagreement is the timeout value.",
+  "task": "swe_17"
+ },
+ "packaging_shim_inclusion_condition": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Conditional two-surface inclusion vs drop-everywhere vs include-everywhere is a remove-vs-keep decision with differing scope, a behavioral packaging rule rather than a literal.",
+  "task": "swe_36"
+ },
+ "playcount_rounding_strategy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Math.floor vs Math.round is a different rounding strategy producing different outputs for the same input \u2014 a behavior/strategy fork per the policy \u2014 though the surrounding code shape is identical and only the function token differs, making it a judgment call.",
+  "task": "swe_39"
+ },
+ "read_only_error_code_token": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Best value case: all classes have Code() return a single machine-readable literal token; the only disagreement is which string goes on the wire (storage_mutation_blocked vs read_only_violation/readonly_mode/store_read_only) \u2014 explicitly the 'which label strings go on the wire' value archetype in the frozen definition. Best structural case: token choice could route policy differently downstream \u2014 but that is a consequence of any literal choice, not a difference in code shape, error construction, or flow. The mechanical structural verdict is a heuristic artifact (string tokens carry no digits); semantics say value.",
+  "task": "swe_58"
+ },
+ "read_only_http_status_code": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "Best value case: identical StatusCode() mapping shape in every class; the classes differ solely in the numeric HTTP status returned (423 vs 403/405/400) \u2014 a pure numeric-literal choice. Best structural case: HTTP semantics attach different client-side behavior to different codes (405 implies an Allow header, retryability differs) \u2014 but nothing in the classes varies response construction, delegation, or control flow; only the constant differs. The 'review' flag reflects digit statistics, and here the digits genuinely are the fork: value.",
+  "task": "swe_58"
+ },
+ "renew_disabled_ignores_upcoming": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes differ in the scope of a condition: whether renew-disabled subscriptions bypass scheduled/upcoming changes or the upcoming data is always honored \u2014 a control-flow/behavior fork.",
+  "task": "swe_37"
+ },
+ "rollout_cache_prefix": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Best case for structural: reusing \"s:er\" (the rules prefix) collapses rollout/rule cache isolation \u2014 a behavioral consequence \u2014 and the catch-all class contains one signature ('storage:evaluationrollouts:%s') with a single format slot, which would change Sprintf arity. Best case for value: every class is the same const format-string declaration consumed by the same Sprintf; the class-defining axis in all four is which literal prefix token ('s:ero' vs 's:er' vs 's:evr' vs 's:eroll'/':rollouts'-suffixed) \u2014 precisely the policy's 'which label strings go on the wire' with identical code shape, and the isolation change is a downstream consequence of the token, just as a timeout constant's choice changes behavior without making it structural. Decisive: the arity-changing signature is a minor tail inside a catch-all whose semantics remain 'a different prefix token' \u2014 the same treatment the batch gives os.sysconf/ARG_MAX inside missing_kinit_args_max_length's catch-all \u2014 so the sole class-level disagreement is the literal token: value.",
+  "task": "swe_25"
+ },
+ "rollout_serialization_tags": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The naming convention (snake_case vs camelCase) alone would be a wire-token value fork, but the classes also disagree on adding tags at all versus relying on default encoding ('no changes needed') and on omitempty semantics \u2014 add-vs-omit and serialization-behavior axes, so mixed\u2192structural.",
+  "task": "swe_25"
+ },
+ "runtime_replacement_import_path": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Same axis as the controller-side fork: which module owns the ABCs (six.moves vs stdlib vs legacy shim), a module/ownership and keep-vs-migrate difference.",
+  "task": "swe_36"
+ },
+ "safe_versus_interactive_rendering": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Stripping event-handler attributes versus retaining them via ADD_ATTR is a remove-vs-keep behavioural difference in sanitization, even though the signatures contain attribute-name literals.",
+  "task": "swe_26"
+ },
+ "sanitization_tag_allowlist": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "lean",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Which tags appear in the allowlist is a token-membership axis, but the dompurify_defaults class omits the ALLOWED_TAGS option entirely (relying on library defaults) \u2014 a different configuration shape and check scope, tipping the fork mixed\u2192structural.",
+  "task": "swe_26"
+ },
+ "scrobble_limit": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes truncate the batch with the same pattern (scrobbles[:N]) and disagree only on the numeric cap \u2014 80 vs 100 vs 50 vs 30.",
+  "task": "swe_16"
+ },
+ "scrobble_ordering": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on sort key and direction \u2014 descending by timestamp, ascending by timestamp, or alphabetical by track/artist. Sort key and order are processing-behavior choices, not literal values.",
+  "task": "swe_16"
+ },
+ "share_generated_password_length": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes share the same substring(0, N) code shape and differ only in the numeric length chosen (18 vs 12 vs 16) \u2014 a pure literal-value fork.",
+  "task": "swe_40"
+ },
+ "shim_transition_signal_mode": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Documentation-only signaling versus emitting a runtime DeprecationWarning differ in runtime behavior (warn vs silent), not in a chosen literal.",
+  "task": "swe_36"
+ },
+ "songcount_zero_behavior": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "structural"
+  },
+  "rationale": "The best value argument is that the canonical class assigns the literal 0 (playcount = 0), making one branch look like a chosen constant. But the three classes are assign-zero vs skip-normalization-entirely (early return, playcount left unchanged) vs return-a-division-by-zero-error \u2014 three different behaviors on a zero denominator with different control flow, mutation, and return semantics. This is exactly the policy's special-value trap: behavioral responses to a special value are structural, not a constant choice.",
+  "task": "swe_39"
+ },
+ "state_value": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Structural case is weak: nothing in the classes changes gating, processing, or code shape \u2014 at most a speculative downstream-semantics difference for the empty string. Value case is decisive: all three classes are the identical value-field assignment (value = \"disabled\" vs \"\" vs \"off\"/\"inactive\"), differing only in which literal token goes on the wire \u2014 verbatim the frozen definition's value-fork example. The mechanical heuristic mislabeled it structural only because the literals contain no digits.",
+  "task": "swe_43"
+ },
+ "typed_nil_context_input_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes respond to a nil-like context input with different behaviors \u2014 normalize to context.Background(), return an error, or perform no handling at all. This is exactly the special-value reject-vs-normalize-vs-ignore pattern the policy pre-registers as structural.",
+  "task": "swe_17"
+ },
+ "undocumented_input_handling_conflict": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Ignore-with-debug-log vs reject-with-error vs apply-the-extras are three different behaviors toward unknown inputs \u2014 a classic accept-vs-reject-vs-apply behavioral fork.",
+  "task": "swe_29"
+ },
+ "unexpected_layer_handling_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Erroring on an unsupported layer media type vs silently skipping it and continuing is an error-vs-ignore behavioral split, not a literal value choice.",
+  "task": "swe_57"
+ },
+ "uniform_sentinel_vs_operation_specific_context": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Returning one shared sentinel error instance from every mutating method vs wrapping the error with per-operation context changes error construction and identity semantics (errors.Is comparability), a code-shape difference rather than a literal string choice.",
+  "task": "swe_58"
+ },
+ "unmodifiable_store_identifier": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Best value case: String() returns a debugging/logging identifier in every class; the sole disagreement is the literal string emitted (fenced-store vs read-only-store/readonly store/readonlystore) \u2014 a literal token set with identical code shape and behavior. Best structural case: the differing names hint at different conceptual framings of the wrapper \u2014 but a log-label wording difference with no change in API, ownership, or behavior is precisely a token choice, not code shape. The mechanical structural verdict again stems from the no-digits default; semantics say value.",
+  "task": "swe_58"
+ },
+ "unspecified_mime_detection_precedence_and_fallback_chain": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on processing order and strategy \u2014 type-then-extension-then-default vs extension-first vs byte-level content sniffing \u2014 different fallback chains and code shapes.",
+  "task": "swe_50"
+ },
+ "unsupported_manifest_value_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on which processing stage rejects the unsupported token (preserve at intake and fail at bundle creation vs schema-boundary rejection vs option-construction/config-load failure) \u2014 a different processing order/stage, explicitly structural.",
+  "task": "swe_18"
+ },
+ "update_interval_zero_handling": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "The policy pre-registers zero-handling splits as structural only when the classes respond to the special value with different behaviors (reject vs clamp vs disable). No such split exists here: all four classes take the identical action \u2014 substitute a default duration when the interval is zero \u2014 and disagree only on the duration literal (6h vs 24h vs 1h vs 12h/60s). The 60-second variant is still just a constant, not a different behavior pattern. Despite the 'zero handling' name, the sole axis is which literal duration to use, so value.",
+  "task": "swe_14"
+ },
+ "upgrade_candidate_version_limit": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "review",
+   "kind": "value"
+  },
+  "rationale": "count_25 vs other_count_limit is a pure slice-literal swap ([:25] vs [:10]/[:50]/[:100]) with identical code shape, but age_based_limit filters candidates by release recency ('version age', 'recency window', 'released within') instead of slicing a count \u2014 a different limiting strategy and code shape. Mixed axes resolve to structural: one axis is a constant, the other is a strategy difference, and the strategy axis is decisive.",
+  "task": "swe_53"
+ },
+ "upgrade_deps_depth_limit": {
+  "adjudicated": true,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "depth_1_limit vs depth_2_limit is a literal swap in the same threshold check (depth > 1 vs depth > 2), but all_levels_upgraded is not a bigger constant \u2014 its signatures ('all levels', 'unlimited depth') describe removing the depth-limiting mechanism entirely, with no _dep_depth threading or threshold. Remove-vs-keep is an explicitly listed structural axis, so the mixed rule forces structural; the mechanical value/high verdict was driven by the digit-collapsed name collision depth_1/depth_2 and missed the third class's semantics.",
+  "task": "swe_53"
+ },
+ "upgrade_source_fallback_depth": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The classes disagree on the fallback chain scope \u2014 querying only the primary galaxy server vs iterating all configured servers \u2014 a behavioral difference in lookup strategy.",
+  "task": "swe_53"
+ },
+ "upsell_priority_level": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "value"
+  },
+  "final": "value",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "value"
+  },
+  "rationale": "All classes assign the same priority field with the same code shape and differ only in the numeric literal (23 vs 1 vs 5/10 vs 100).",
+  "task": "swe_7"
+ },
+ "userid_source": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "The fork is between an explicit userID parameter in the API signature versus deriving the user from the request context \u2014 a difference in API shape and data-ownership flow.",
+  "task": "swe_16"
+ },
+ "uuid_rotation_vs_persistence_policy": {
+  "adjudicated": false,
+  "blind_review": {
+   "confidence": "clear",
+   "kind": "structural"
+  },
+  "final": "structural",
+  "mechanical": {
+   "confidence": "high",
+   "kind": "structural"
+  },
+  "rationale": "Generating a fresh UUID on every start vs reusing a persisted one are different behaviors (persistence and reuse logic vs unconditional regeneration), not different literals.",
+  "task": "swe_49"
+ }
+}
