@@ -58,6 +58,10 @@ def layer_sweep(a0, classes, layers, n_ood, held_seeds, epochs) -> list[dict]:
                      "g5_ratio": g5.get("between_within_ratio", float("nan")),
                      "g5_sil": g5.get("silhouette", float("nan")),
                      "g5_ndec": g5.get("n_decisions", 0)})
+        # One layer's dataset is ~7GB at v3 scale (683k reads x 5120 fp16);
+        # without this, the old layer stays alive while the next one builds
+        # and the peak doubles past laptop RAM.
+        del ds, split, model, t_tr, t_ev
     return rows
 
 
