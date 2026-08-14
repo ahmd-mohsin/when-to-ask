@@ -29,7 +29,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from wta.a4_gates import gate1_topic_leakage, gate5_lean_separation  # noqa: E402
-from wta.labeling import build_labels  # noqa: E402
+from wta.labeling import build_labels, resolve_tokenizer  # noqa: E402
 
 # reuse the pipeline pieces so there is ONE implementation
 from run_full_gates import (  # noqa: E402
@@ -40,7 +40,8 @@ from run_full_gates import (  # noqa: E402
 def layer_sweep(a0, classes, layers, n_ood, held_seeds, epochs) -> list[dict]:
     rows = []
     for layer in layers:
-        ds = build_labels(a0, classes, layer=layer)
+        ds = build_labels(a0, classes, layer=layer,
+                          tokenizer_name=resolve_tokenizer(a0, "auto"))
         split = prepare_split(ds, n_ood, held_seeds)
         model = fit_a2(ds, split["train"], epochs)
         t_tr = model.encode_topic(ds.h[split["train"]])
@@ -61,7 +62,8 @@ def layer_sweep(a0, classes, layers, n_ood, held_seeds, epochs) -> list[dict]:
 
 
 def eps_window_sweep(a0, classes, layer, epss, windows, n_ood, held_seeds, epochs):
-    ds = build_labels(a0, classes, layer=layer)
+    ds = build_labels(a0, classes, layer=layer,
+                      tokenizer_name=resolve_tokenizer(a0, "auto"))
     split = prepare_split(ds, n_ood, held_seeds)
     model = fit_a2(ds, split["train"], epochs)
     rows = []

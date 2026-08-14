@@ -37,7 +37,7 @@ from wta.a4_gates import (  # noqa: E402
     gate4_conflation, gate5_lean_separation, gate6_ood_transfer,
     gate7_aggregate, gate7_lead_time, kfold_group_indices,
 )
-from wta.labeling import build_labels, coverage_table  # noqa: E402
+from wta.labeling import build_labels, coverage_table, resolve_tokenizer  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -314,7 +314,8 @@ def main() -> int:
 
     print("=== labels (audit trail -> labels_debug.jsonl) ===")
     ds = build_labels(args.a0, args.classes, debug_path=out / "labels_debug.jsonl",
-                      layer=layer)
+                      layer=layer,
+                      tokenizer_name=resolve_tokenizer(args.a0, "auto"))
     print(coverage_table(ds))
     ds.save(out / "labels.npz")
     split = prepare_split(ds, args.n_ood, tuple(args.held_seeds.split(",")))
