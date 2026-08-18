@@ -29,6 +29,10 @@ data/*
 !data/judge_validation_pairs.json
 !data/fork_type_annotations.json
 !data/fork_type_annotations.review.json
+# Judge-labelling arm (decisions/025 + Amendment A): the frozen validation
+# set and the frozen judge-label artifacts are research artifacts, tracked.
+!data/label_judge_validation.json
+!data/judge_labels_*.jsonl
 # R1 pilot audit trail (decisions/023): the per-run steps/reads/timings behind
 # a go/no-go gate, 48K total. The 2.2GB activations are NOT kept. Two-level
 # negation as above: re-include the dir, re-ignore its contents, then pick.

@@ -180,11 +180,20 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                  tokenizer_name: str = "Qwen/Qwen2.5-Coder-7B-Instruct",
                  window_chars: int = 400, min_anchor_hits: int = 1,
                  min_sig_hits: int = 1,
-                 debug_path: str | Path | None = None, layer=None) -> LabeledDataset:
+                 debug_path: str | Path | None = None, layer=None,
+                 judge_labels: dict[tuple[str, str],
+                                    tuple[str, int, float]] | None = None,
+                 ) -> LabeledDataset:
     """See spec labels.md. With debug_path, every labeling decision is written
     as JSONL (per read: window snippet + per-blocker anchor scores + outcome
     reason; per (run, decision): per-class signature scores + commit position)
-    so 'a number looks wrong' is always traceable to the text that caused it."""
+    so 'a number looks wrong' is always traceable to the text that caused it.
+
+    judge_labels (spec labels.md v3 / judge_labels.md): optional FROZEN
+    (run_id, blocker) -> (class_name, commit_char, confidence) map from
+    wta.judge_labels.load_judge_labels. Consulted only where both the actions
+    and trace stages abstained; never overrides a lexicon label. The builder
+    stays deterministic given its inputs -- no model call happens here."""
     from transformers import AutoTokenizer
 
     a0_dir = Path(a0_dir)
@@ -284,16 +293,30 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                                    if (p := text_norm.find(_norm(t))) >= 0),
                                   default=-1)
                         source = "trace"
+                # v3 (spec labels.md): frozen judge labels fill in ONLY where
+                # both lexicon stages abstained -- never override.
+                judge_conf = None
+                if source is None and judge_labels:
+                    jl = judge_labels.get((run_id, blocker))
+                    if jl is not None:
+                        jname, jpos, judge_conf = jl
+                        names = [c["name"] for c in spec["classes"]]
+                        if jname in names:
+                            local, pos = names.index(jname), int(jpos)
+                            source = "judge"
                 if source is not None:
                     gcls = vocab.class_of_decision[did][local]
                     committed[did] = (gcls, pos)
                     name = spec["classes"][local]["name"]
                     cov["committed_classes"].setdefault(blocker, set()).add(name)
+                    extra = ({"judge_conf": judge_conf}
+                             if source == "judge" else {})
                     dwrite(kind="commitment", run=run_id, blocker=blocker,
                            chosen=name, commit_char=pos, label_source=source,
                            scores={c["name"]: s for c, s in
                                    zip(spec["classes"], scores)},
-                           snippet=text[max(0, pos - 60):pos + 120] if pos >= 0 else "")
+                           snippet=text[max(0, pos - 60):pos + 120] if pos >= 0 else "",
+                           **extra)
                 else:
                     reason = ("no signature hits" if scores[order[0]] < min_sig_hits
                               else "tie between top classes")

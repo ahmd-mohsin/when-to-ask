@@ -61,6 +61,12 @@ def main() -> int:
     ap.add_argument("--layer", type=int, default=None,
                     help="stored layer index (or position) to slice from "
                          "multi-layer logs; default = the collection mid_layer")
+    ap.add_argument("--judge-labels", default=None,
+                    help="frozen judge-labels JSONL (spec judge_labels.md); "
+                         "fills ONLY lexicon-abstained pairs -> the SEPARATE "
+                         "judged arm (decisions/025 4b). Use a distinct --out.")
+    ap.add_argument("--judge-min-conf", type=float, default=0.7,
+                    help="confidence threshold for accepted judge labels")
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -69,9 +75,17 @@ def main() -> int:
     print(f"a0={args.a0}  classes={args.classes}  tokenizer={tokenizer_name}  "
           f"layer={'mid' if args.layer is None else args.layer}")
 
+    judge = None
+    if args.judge_labels:
+        from wta.judge_labels import load_judge_labels
+        judge = load_judge_labels(args.judge_labels, args.judge_min_conf)
+        print(f"judge labels: {len(judge)} accepted at conf>="
+              f"{args.judge_min_conf} from {args.judge_labels}")
+
     debug_path = out / "labels_debug.jsonl"
     ds = build_labels(args.a0, args.classes, tokenizer_name=tokenizer_name,
-                      debug_path=debug_path, layer=args.layer)
+                      debug_path=debug_path, layer=args.layer,
+                      judge_labels=judge)
     ds.save(out / "labels.npz")
 
     print()

@@ -53,6 +53,16 @@ quoted code counts as mutating); v1 data has no actions and is untouched;
 prose-only commitments (agent states a choice, never edits) fall back to the
 noisy trace path and stay measurable in the audit.
 
+## v3: judge-sourced labels (2026-08-16, decisions/025 — separate arm)
+
+Where BOTH v2 stages abstain, an optional third source exists: an offline
+LLM judge (spec judge_labels.md). `build_labels(..., judge_labels=...)`
+consults a FROZEN pre-computed artifact — never a live model call — so the
+builder itself stays deterministic given its inputs; `label_source` gains the
+value `judge`. The judge never overrides an actions/trace label. Gate numbers
+computed with judge labels are a SEPARATE labelled arm (025 §4b), never
+substituted for lexicon-teacher numbers.
+
 ## Design decisions (and their honesty caveats)
 
 1. **Class ids are flattened globally** (each (blocker, class) pair is one id)
@@ -61,7 +71,9 @@ noisy trace path and stay measurable in the audit.
    separation only.
 2. **Unlabeled beats mislabeled**: any read/run without a clear anchor or
    signature margin gets −1. Coverage is REPORTED (a low number is a finding
-   about the labeler or the class set, not something to force).
+   about the labeler or the class set, not something to force). The v3 judge
+   inherits this: it must abstain rather than guess, and a judge label that
+   cannot cite verifiable evidence is rejected (spec judge_labels.md §4).
 3. Traces can commit to interpretations outside the derived class set (seen
    in the sample: custom per-OS probing on swe_0). The class sets include the
    observed non-canonical families where the registry implies them; anything

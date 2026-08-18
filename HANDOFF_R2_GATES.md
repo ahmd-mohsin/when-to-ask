@@ -39,6 +39,69 @@ Pre-registered CPU layer-3 report, verbatim:
     g7_fracpos [1.0, 1.0, 0.75, 1.0, 1.0]                 mean 0.95
     folds 5
 
+## 1b. ADDENDUM 2026-08-18: gate 5 was compared to the wrong reference
+
+The §1 table reports between/within against the gate's own note, "want ratio
+>> 1". **1.0 is not this statistic's no-signal value.** For n points per class
+it is
+
+    E[ratio | random labels] = sqrt(2 / (n - 1))
+
+because the numerator is a distance between CENTROIDS (shrinking as 1/sqrt(n))
+while the denominator is a distance between POINTS (which does not shrink).
+Verified to three decimals against the real `gate5_lean_separation` code by
+Monte Carlo, dimension-independent (d = 64/512/4096) and class-count
+independent (`scripts/gate5_noise_floor.py`):
+
+    n/class     2      3      4      5      8     12     20
+    closed  1.414  1.000  0.816  0.707  0.535  0.426  0.324
+    MC      1.418  1.002  0.819  0.706  0.535  0.427  0.324
+
+`a4_gates.py:225` admits a decision at `m.sum() >= 4` with >= 2 classes — as
+few as **2 reads per class, where pure noise scores 1.414 and clears the
+stated bar**. The reported mean pools decisions of different n, so it is not
+comparable to any single constant.
+
+**The honest null is a RUN-LEVEL permutation**, not that closed form: reads
+are not independent (dozens come from one generation), so the independent unit
+is the run. `scripts/gate5_permutation_test.py` holds activations fixed,
+shuffles which RUN committed to which class, and recomputes. On the frozen
+1385-run `models/v3_32b/labels.npz`, raw layer-sliced activations projected to
+128 dims (JL; observed and null go through the same projection):
+
+    gate5-eligible decisions            35
+    observed ratio            mean   0.392
+    RUN-level null            mean   0.396     <- the honest reference
+    read-level null           mean   0.258     <- too permissive
+    observed / run-null              0.991x
+    decisions with p_run < 0.05       0 / 35
+    median runs per decision            6
+
+Note the run-level null is HIGHER than the read-level null: shuffling within
+runs destroys the within-run clumping that inflates centroid separation, so
+read-level permutation (and the iid closed form) both understate the null and
+flatter the result. Any permutation test here must be run-level.
+
+**What this changes.** The negative gets stronger and much more defensible.
+"0.894 < 1.0, so it fails" was never the right test; "the statistic is
+indistinguishable from a run-level label permutation, on every one of 35
+decisions" is. It is also the standard device for this claim (Hewitt & Liang
+control tasks), and it is independent of every open labelling question.
+
+**What this does NOT yet establish.** The numbers above are on RAW activations
+(decisions/015's decisive diagnostic), not on A2's learned L space where §1's
+0.894 lives. Running the same run-level permutation inside `run_full_gates`
+on `l_he` is the missing step, and it is the one that would let §1's headline
+be restated in permutation terms. Until then, do not write "0.894 is at its
+noise floor" — that is not what was measured.
+
+Consistency check, SUPERSEDED same day -- see §2b: gate 2 (which decision is
+in play) looked strongly positive at 0.410 vs 0.0101 chance, suggesting "topic
+is encoded, lean is not". A lexical control run after this section was written
+shows a causal bag-of-words baseline reaching 0.704 on the same task, so gate 2
+does not establish that topic is encoded *in the activations* either. Read §1b
+and §2b together: neither gate survives a correct baseline.
+
 ## 2. The single-split run is uninformative — and why
 
 Only 1 of 7 gates produced a number on the `--held-seeds s6,s7` split:
@@ -64,6 +127,63 @@ addressing: the strongest generalisation gate depends on the weakest split.
 
 Gate 2 is strongly positive: **0.410 vs 0.0101 chance (~40x)**. T recovers WHICH
 decision is in play; nothing yet says it encodes WHICH WAY it resolved.
+
+## 2b. ADDENDUM 2026-08-18: gate 2 does not survive a lexical control
+
+Gate 2 (decision recovery from the A2 topic vector T) is the strongest number
+in this file: 0.4102 vs 0.0101 chance, ~40x. But activations are COMPUTED FROM
+the surrounding text, and different decisions live in different files with
+different identifiers -- so "40x chance" needs a baseline that is not chance.
+
+`scripts/gate2_text_control.py` fits the same task (which of 109 held-out
+decisions does this read belong to) on the same reads and the same s6,s7 split,
+from the raw trace text instead. 40,000 train / 9,002 test reads:
+
+    features                                        accuracy
+    chance                                            0.0092
+    activations, raw h -> 256d  (JL)                  0.2516
+    activations, raw h -> 1024d (JL)                  0.3604
+    gate 2 as reported (A2 topic space T)             0.4102
+    activations, raw h FULL 5120d (no projection)     0.5037
+    text, TF-IDF, causal prefix-only 800 chars        0.7040
+    text, TF-IDF, +-400 chars, 961 anchors MASKED     0.7103
+    text, TF-IDF, +-400 chars                         0.7365
+
+**A bag-of-words classifier beats the gate.** Text at 0.704-0.737 vs gate 2's
+0.4102 (1.7x) and vs the best activation probe at 0.5037 (1.4x). Whatever
+gate 2 measures, plain lexical content of the transcript carries more of it.
+
+Three objections, each tested and each closed:
+
+- *"The control is circular -- the decision label IS argmax of anchor hits in
+  that window (labeling.py:315), so TF-IDF is just relearning the labeler."*
+  Masking all 961 anchor strings removes 7.8% of characters and costs 2.6
+  points (0.7365 -> 0.7103). The signal is broad topical vocabulary, not the
+  labeler's keywords.
+- *"Text has lookahead the model never had."* The +-window includes 400 chars
+  written AFTER the read. Restricting to a strictly causal 800-char prefix --
+  only what existed when the activation was produced -- costs 3 points
+  (0.7365 -> 0.7040). It still beats every activation probe. **This is the
+  result that matters for a lead-time claim: activations do not identify the
+  live decision earlier than the already-written text does.**
+- *"The random projection crippled the activations."* Partly true and worth
+  reporting: 256d 0.2516 -> 1024d 0.3604 -> full 5120d 0.5037. At full
+  dimension the gap narrows from 2.0x to 1.4x, but does not close.
+
+Two incidental findings worth carrying: **A2's learned topic space T (0.4102)
+is WORSE than raw full-dimension activations (0.5037)**, so the disentangling
+step is losing topic information rather than isolating it; and the activation
+probe here is linear (multinomial logistic) -- a nonlinear probe was not tried
+and is the one remaining way the gap could close.
+
+**Status of the three headline gates after this session:**
+
+    gate 5  at its run-level permutation null (0/35 decisions p<0.05)  -- 1b
+    A1      held-out AUROC 0.599 (was 0.765 at 14B)  -- run_full_gates_single.log:69
+    gate 2  beaten 1.4x by a causal bag-of-words baseline              -- here
+
+The internal-state claim is not supported by any of the three. That is the
+finding; it is now controlled rather than asserted.
 
 ## 3. Diagnostics (raw activations, no A2)
 

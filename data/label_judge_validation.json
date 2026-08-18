@@ -1,0 +1,1818 @@
+{
+ "_meta": {
+  "spec": "specs/judge_labels.md \u00a76",
+  "seed": 20260816,
+  "built_from": "models/v3_32b_1415/labels_debug.jsonl",
+  "composition": {
+   "trace": 181,
+   "actions": 119
+  },
+  "pass_bar": {
+   "accuracy": 0.9,
+   "accuracy_actions": 0.9,
+   "max_abstention": 0.2
+  }
+ },
+ "items": [
+  {
+   "run": "swe_0-s3",
+   "blocker": "non_linux_distribution_detection_scope",
+   "expected": "enumerated_whitelist",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_0-s3",
+   "blocker": "non_linux_distribution_normalization",
+   "expected": "capitalize_first",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_0-s3",
+   "blocker": "non_linux_distribution_source_precedence_on_conflict",
+   "expected": "platform_system_preferred",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_0-s7",
+   "blocker": "non_linux_distribution_detection_scope",
+   "expected": "enumerated_whitelist",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_0-s9",
+   "blocker": "non_linux_distribution_source_precedence_on_conflict",
+   "expected": "platform_system_preferred",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s0",
+   "blocker": "ambiguous_photo_filter_field",
+   "expected": "link_type_flag",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s11",
+   "blocker": "missing_trashed_cache_accessor",
+   "expected": "other_cache_accessor",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s13",
+   "blocker": "missing_trashed_cache_accessor",
+   "expected": "other_cache_accessor",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s14",
+   "blocker": "ambiguous_photo_filter_field",
+   "expected": "link_type_flag",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s15",
+   "blocker": "missing_trashed_cache_accessor",
+   "expected": "other_cache_accessor",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s17",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s18",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s19",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s19",
+   "blocker": "missing_trashed_cache_accessor",
+   "expected": "other_cache_accessor",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s2",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s20",
+   "blocker": "missing_trashed_cache_accessor",
+   "expected": "other_cache_accessor",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s21",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s22",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s23",
+   "blocker": "missing_trashed_cache_accessor",
+   "expected": "other_cache_accessor",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s5",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_1-s8",
+   "blocker": "contradictory_delete_gate_scope",
+   "expected": "both_sources_empty",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_10-s1",
+   "blocker": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+   "expected": "show_or_symbolic_local",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_10-s15",
+   "blocker": "missing_network_facts_dict_key_snr_scope_host_addrs",
+   "expected": "descriptive_key_name",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_10-s16",
+   "blocker": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+   "expected": "show_or_symbolic_local",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_10-s18",
+   "blocker": "conflicting_normalized_value_contract_vs_verbatim_route_token_contract",
+   "expected": "normalize_ipaddress_dedupe_sort",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_10-s23",
+   "blocker": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+   "expected": "show_or_symbolic_local",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_10-s23",
+   "blocker": "missing_network_facts_dict_key_snr_scope_host_addrs",
+   "expected": "descriptive_key_name",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_10-s7",
+   "blocker": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+   "expected": "show_or_symbolic_local",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_11-s19",
+   "blocker": "max_fields_count_ambiguous",
+   "expected": "limit_100_typeerror",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_11-s19",
+   "blocker": "max_nesting_depth_policy_conflict",
+   "expected": "depth_20_typeerror",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_11-s23",
+   "blocker": "max_nesting_depth_policy_conflict",
+   "expected": "depth_20_typeerror",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_11-s8",
+   "blocker": "max_nesting_depth_policy_conflict",
+   "expected": "depth_20_typeerror",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_11-s9",
+   "blocker": "max_nesting_depth_policy_conflict",
+   "expected": "depth_20_typeerror",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_12-s19",
+   "blocker": "contradictory_spotlight_ownership_boundary",
+   "expected": "provider_owns_feature_hooks",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_12-s19",
+   "blocker": "missing_spotlight_eligibility_cutoff",
+   "expected": "different_cutoff_value",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_13-s14",
+   "blocker": "contradictory_cache_versus_freshness",
+   "expected": "per_call_site_none_all_selective",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_13-s23",
+   "blocker": "contradictory_cache_versus_freshness",
+   "expected": "per_call_site_none_all_selective",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_13-s3",
+   "blocker": "ambiguous_selective_caching_criteria",
+   "expected": "cache_by_vault_encryption",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_13-s3",
+   "blocker": "contradictory_cache_versus_freshness",
+   "expected": "per_call_site_none_all_selective",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_13-s4",
+   "blocker": "contradictory_cache_versus_freshness",
+   "expected": "per_call_site_none_all_selective",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_14-s23",
+   "blocker": "data_path_format_validation",
+   "expected": "require_absolute_reject_relative",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s13",
+   "blocker": "userid_source",
+   "expected": "derive_userid_from_context",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s2",
+   "blocker": "userid_source",
+   "expected": "derive_userid_from_context",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s22",
+   "blocker": "userid_source",
+   "expected": "derive_userid_from_context",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s23",
+   "blocker": "scrobble_ordering",
+   "expected": "descending_by_timestamp",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s23",
+   "blocker": "userid_source",
+   "expected": "derive_userid_from_context",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s3",
+   "blocker": "userid_source",
+   "expected": "derive_userid_from_context",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s4",
+   "blocker": "scrobble_limit",
+   "expected": "truncate_to_50_api_default",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s4",
+   "blocker": "userid_source",
+   "expected": "derive_userid_from_context",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s6",
+   "blocker": "userid_source",
+   "expected": "derive_userid_from_context",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_16-s7",
+   "blocker": "scrobble_ordering",
+   "expected": "descending_by_timestamp",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_18-s16",
+   "blocker": "default_manifest_pack_mode",
+   "expected": "product_style_aliases",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_18-s23",
+   "blocker": "default_manifest_pack_mode",
+   "expected": "product_style_aliases",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_18-s3",
+   "blocker": "unsupported_manifest_value_policy",
+   "expected": "fail_at_option_construction_or_config_load",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_18-s5",
+   "blocker": "default_manifest_pack_mode",
+   "expected": "product_style_aliases",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_18-s6",
+   "blocker": "default_manifest_pack_mode",
+   "expected": "product_style_aliases",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_19-s15",
+   "blocker": "contradictory_remove_vs_deprecate_unsafeproxy",
+   "expected": "remove_class_entirely",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_19-s17",
+   "blocker": "contradictory_remove_vs_deprecate_unsafeproxy",
+   "expected": "keep_class_with_identity_preservation",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_19-s20",
+   "blocker": "contradictory_remove_vs_deprecate_unsafeproxy",
+   "expected": "keep_class_with_identity_preservation",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_19-s21",
+   "blocker": "missing_bytearray_handling",
+   "expected": "bytearray_as_unsafe_text",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_19-s23",
+   "blocker": "missing_bytearray_handling",
+   "expected": "bytearray_as_unsafe_text",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_2-s11",
+   "blocker": "ambiguous_minutes_ago_rounding_policy",
+   "expected": "floor_truncate",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_2-s11",
+   "blocker": "conflicting_folder_emit_mode_list_rules",
+   "expected": "includes_auto",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_2-s11",
+   "blocker": "missing_overflow_sentinel_int",
+   "expected": "clamp_to_maxint32",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_2-s19",
+   "blocker": "ambiguous_minutes_ago_rounding_policy",
+   "expected": "floor_truncate",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_2-s23",
+   "blocker": "ambiguous_minutes_ago_rounding_policy",
+   "expected": "floor_truncate",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_20-s0",
+   "blocker": "ambiguous_eviction_strategy",
+   "expected": "lru_least_recently_used",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s11",
+   "blocker": "ambiguous_gain_processing_stage",
+   "expected": "use_first_value",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s18",
+   "blocker": "ambiguous_gain_processing_stage",
+   "expected": "reject_multi_valued",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s18",
+   "blocker": "missing_loudness_normalization_definition",
+   "expected": "verbatim_parsefloat_no_conversion",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s19",
+   "blocker": "missing_loudness_normalization_definition",
+   "expected": "verbatim_parsefloat_no_conversion",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s3",
+   "blocker": "ambiguous_gain_processing_stage",
+   "expected": "use_first_value",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s3",
+   "blocker": "missing_loudness_normalization_definition",
+   "expected": "verbatim_parsefloat_no_conversion",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s7",
+   "blocker": "ambiguous_gain_processing_stage",
+   "expected": "reject_multi_valued",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_21-s9",
+   "blocker": "conflicting_compatibility_vs_new_format_support",
+   "expected": "always_prefer_r128_alternative",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_23-s19",
+   "blocker": "missing_persisted_session_staleness_ttl_ms",
+   "expected": "delegated_freshness_helper",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_24-s3",
+   "blocker": "missing_detection_api_parameters",
+   "expected": "importlib_find_spec_imp_fallback",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_25-s3",
+   "blocker": "flag_primary_key_composition",
+   "expected": "namespace_first_signature_order",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_26-s18",
+   "blocker": "safe_versus_interactive_rendering",
+   "expected": "retain_event_handlers_add_attr",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s1",
+   "blocker": "ambiguous_contact_display_mode",
+   "expected": "keep_table_layout",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s1",
+   "blocker": "conflicting_internal_vs_external_compose",
+   "expected": "in_modal_composer",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s11",
+   "blocker": "conflicting_internal_vs_external_compose",
+   "expected": "in_modal_composer",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s13",
+   "blocker": "conflicting_internal_vs_external_compose",
+   "expected": "in_modal_composer",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s20",
+   "blocker": "ambiguous_contact_display_mode",
+   "expected": "keep_table_layout",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s22",
+   "blocker": "conflicting_internal_vs_external_compose",
+   "expected": "in_modal_composer",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s23",
+   "blocker": "ambiguous_contact_display_mode",
+   "expected": "keep_table_layout",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s5",
+   "blocker": "ambiguous_contact_display_mode",
+   "expected": "keep_table_layout",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_27-s8",
+   "blocker": "ambiguous_contact_display_mode",
+   "expected": "keep_table_layout",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_3-s3",
+   "blocker": "contradictory_password_input_format",
+   "expected": "newline_terminated",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_30-s20",
+   "blocker": "ambiguous_non_collection_spec_ownership",
+   "expected": "synthesize_module_spec",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_30-s5",
+   "blocker": "contradictory_path_argument_type",
+   "expected": "single_element_list",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_32-s19",
+   "blocker": "contradictory_timeout_granularity_restriction",
+   "expected": "uniform_multiples_of_10",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s11",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s14",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s15",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s16",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s17",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s19",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s3",
+   "blocker": "ambiguous_entity_reference_isolation",
+   "expected": "direct_references",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s3",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s7",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_33-s9",
+   "blocker": "missing_return_property_names",
+   "expected": "cachedlinks_isdecrypting",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_35-s18",
+   "blocker": "contradictory_parse_parameters_scope",
+   "expected": "instance_method_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s0",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s10",
+   "blocker": "controller_replacement_import_path",
+   "expected": "keep_shim_controller",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s14",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s17",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s18",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s20",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s21",
+   "blocker": "controller_replacement_import_path",
+   "expected": "keep_shim_controller",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s21",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s22",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s23",
+   "blocker": "controller_replacement_import_path",
+   "expected": "keep_shim_controller",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s23",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s3",
+   "blocker": "controller_replacement_import_path",
+   "expected": "keep_shim_controller",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s3",
+   "blocker": "runtime_replacement_import_path",
+   "expected": "stdlib_collections_abc_runtime",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s3",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s4",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s5",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s6",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s7",
+   "blocker": "controller_replacement_import_path",
+   "expected": "keep_shim_controller",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s7",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_36-s9",
+   "blocker": "shim_transition_signal_mode",
+   "expected": "documentation_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_39-s1",
+   "blocker": "playcount_rounding_strategy",
+   "expected": "math_round",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_39-s1",
+   "blocker": "songcount_zero_behavior",
+   "expected": "return_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_39-s11",
+   "blocker": "compilation_album_normalization",
+   "expected": "exclude_compilations",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_39-s17",
+   "blocker": "songcount_zero_behavior",
+   "expected": "skip_normalization",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_39-s4",
+   "blocker": "compilation_album_normalization",
+   "expected": "exclude_compilations",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_39-s4",
+   "blocker": "songcount_zero_behavior",
+   "expected": "return_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_4-s13",
+   "blocker": "contradictory_auto_seed_serialization_and_digest_scope",
+   "expected": "id_mixed_into_digest",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_4-s19",
+   "blocker": "missing_hasher_digest_and_auto_seed_rules",
+   "expected": "fresh_hash_per_call",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_41-s11",
+   "blocker": "conflicting_path_separator",
+   "expected": "pipe_separator",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_41-s17",
+   "blocker": "conflicting_path_normalization",
+   "expected": "absolute_toslash",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_42-s19",
+   "blocker": "missing_max_bearer_token_length",
+   "expected": "max_1024",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_42-s6",
+   "blocker": "missing_max_bearer_token_length",
+   "expected": "max_4096",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_43-s11",
+   "blocker": "disabled_duration",
+   "expected": "elapsed_time",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_43-s13",
+   "blocker": "entry_id",
+   "expected": "uuid_per_entry",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_43-s15",
+   "blocker": "disabled_duration",
+   "expected": "elapsed_time",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_43-s7",
+   "blocker": "abort_rule",
+   "expected": "nil_with_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_45-s15",
+   "blocker": "contradictory_genre_dedup_equality",
+   "expected": "dedup_by_id_desc_first_kept",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_45-s19",
+   "blocker": "contradictory_genre_dedup_equality",
+   "expected": "dedup_by_id_desc_first_kept",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_46-s2",
+   "blocker": "missing_referral_sender_eligibility_scope",
+   "expected": "primary_sender_only",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_47-s13",
+   "blocker": "contradictory_enum_definition_location",
+   "expected": "hooks_useselectioncontrols",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_47-s19",
+   "blocker": "contradictory_enum_definition_location",
+   "expected": "hooks_useselectioncontrols",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_47-s20",
+   "blocker": "contradictory_enum_definition_location",
+   "expected": "hooks_useselectioncontrols",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_47-s5",
+   "blocker": "ambiguous_checkbox_toggle_behavior",
+   "expected": "full_only_clears",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_47-s5",
+   "blocker": "contradictory_enum_definition_location",
+   "expected": "hooks_useselectioncontrols",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_47-s8",
+   "blocker": "contradictory_enum_definition_location",
+   "expected": "hooks_useselectioncontrols",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_49-s11",
+   "blocker": "analytics_storage_backend_string_value",
+   "expected": "clickhouse_word",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_49-s14",
+   "blocker": "uuid_rotation_vs_persistence_policy",
+   "expected": "rotate_fresh_each_start",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_49-s21",
+   "blocker": "analytics_storage_backend_string_value",
+   "expected": "clickhouse_word",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_5-s11",
+   "blocker": "name_required_vs_optional",
+   "expected": "name_optional",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_50-s18",
+   "blocker": "conflicting_jxl_ios_support_directive",
+   "expected": "desktop_only_jxl",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_50-s23",
+   "blocker": "conflicting_jxl_ios_support_directive",
+   "expected": "desktop_only_jxl",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_50-s4",
+   "blocker": "unspecified_mime_detection_precedence_and_fallback_chain",
+   "expected": "content_sniffing",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_51-s15",
+   "blocker": "missing_share_default_expiration_duration",
+   "expected": "one_year",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_52-s0",
+   "blocker": "missing_default_values_for_open_connections_and_connection_lifetime",
+   "expected": "longer_lifetime",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_52-s6",
+   "blocker": "missing_default_values_for_open_connections_and_connection_lifetime",
+   "expected": "open_10_or_more",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_53-s10",
+   "blocker": "upgrade_deps_depth_limit",
+   "expected": "depth_1_limit",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_53-s12",
+   "blocker": "upgrade_deps_depth_limit",
+   "expected": "depth_1_limit",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_53-s15",
+   "blocker": "upgrade_deps_depth_limit",
+   "expected": "depth_1_limit",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_53-s8",
+   "blocker": "upgrade_source_fallback_depth",
+   "expected": "all_servers_checked",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_54-s0",
+   "blocker": "hoststate_str_state_label_prefix_convention",
+   "expected": "legacy_prefixed_labels",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_54-s0",
+   "blocker": "module_public_api_exposure",
+   "expected": "all_three_exported",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_54-s11",
+   "blocker": "hoststate_str_state_label_prefix_convention",
+   "expected": "legacy_prefixed_labels",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_54-s23",
+   "blocker": "hoststate_str_state_label_prefix_convention",
+   "expected": "legacy_prefixed_labels",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_55-s16",
+   "blocker": "mp_validate_cleanup_rejects_non_db_methods",
+   "expected": "reject_with_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_55-s4",
+   "blocker": "mp_validate_cleanup_rejects_non_db_methods",
+   "expected": "reject_with_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_55-s5",
+   "blocker": "mp_validate_cleanup_rejects_non_db_methods",
+   "expected": "reject_with_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_55-s6",
+   "blocker": "mp_validate_cleanup_rejects_non_db_methods",
+   "expected": "reject_with_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_55-s8",
+   "blocker": "mp_validate_cleanup_rejects_non_db_methods",
+   "expected": "reject_with_error",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_56-s7",
+   "blocker": "contradictory_unset_vs_vcard_fallback",
+   "expected": "undefined_return",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_58-s1",
+   "blocker": "invalid_request_precedence_in_read_only_mode",
+   "expected": "own_error_immediate",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_58-s18",
+   "blocker": "invalid_request_precedence_in_read_only_mode",
+   "expected": "own_error_immediate",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_58-s8",
+   "blocker": "invalid_request_precedence_in_read_only_mode",
+   "expected": "own_error_immediate",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_6-s14",
+   "blocker": "ambiguous_redirect_metadata_ownership_boundary",
+   "expected": "private_to_verifier",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_6-s14",
+   "blocker": "contradictory_pre_verification_status_partition",
+   "expected": "throw_terminal_before_verify",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_6-s14",
+   "blocker": "missing_modal_startup_contract",
+   "expected": "submit_path_only_omit_initial",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_8-s12",
+   "blocker": "contradictory_role_reference_assignment",
+   "expected": "inherit_from_block",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_9-s11",
+   "blocker": "ambiguous_limit_count_source",
+   "expected": "total_including_trashed",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_9-s6",
+   "blocker": "missing_create_default_vault_precheck_maxage",
+   "expected": "other_duration",
+   "label_source": "trace"
+  },
+  {
+   "run": "swe_51-s14",
+   "blocker": "ambiguous_which_timestamp_fields_nullable",
+   "expected": "expiration_and_lastvisited_only",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_47-s21",
+   "blocker": "ambiguous_checkbox_toggle_behavior",
+   "expected": "full_only_clears",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_21-s22",
+   "blocker": "ambiguous_gain_processing_stage",
+   "expected": "reject_multi_valued",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_39-s12",
+   "blocker": "playcount_rounding_strategy",
+   "expected": "math_round",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_19-s23",
+   "blocker": "missing_unsafe_attribute_check",
+   "expected": "isinstance_only",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_12-s1",
+   "blocker": "contradictory_spotlight_ownership_boundary",
+   "expected": "provider_owns_feature_hooks",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s13",
+   "blocker": "conflicting_context_freshness_policy",
+   "expected": "create_fresh_isolated_context",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_6-s19",
+   "blocker": "missing_modal_startup_contract",
+   "expected": "submit_path_only_omit_initial",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_11-s16",
+   "blocker": "max_nesting_depth_policy_conflict",
+   "expected": "different_depth_value",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_35-s12",
+   "blocker": "contradictory_parse_parameters_scope",
+   "expected": "keep_module_level",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_19-s22",
+   "blocker": "contradictory_remove_vs_deprecate_unsafeproxy",
+   "expected": "keep_class_with_identity_preservation",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_10-s2",
+   "blocker": "missing_network_facts_dict_key_snr_scope_host_addrs",
+   "expected": "descriptive_key_name",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_19-s0",
+   "blocker": "missing_tuple_wrapping",
+   "expected": "tuple_converted_to_list",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_54-s22",
+   "blocker": "module_public_api_exposure",
+   "expected": "all_three_exported",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_37-s17",
+   "blocker": "renew_disabled_ignores_upcoming",
+   "expected": "renew_disabled_ignores",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_59-s8",
+   "blocker": "ambiguous_ics_extension_detection",
+   "expected": "raw_string_endswith",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_3-s22",
+   "blocker": "contradictory_password_input_format",
+   "expected": "newline_terminated",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s4",
+   "blocker": "missing_cache_parameter_default",
+   "expected": "default_selective",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_43-s1",
+   "blocker": "entry_id",
+   "expected": "uuid_per_entry",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_37-s20",
+   "blocker": "renew_disabled_ignores_upcoming",
+   "expected": "renew_disabled_ignores",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_5-s8",
+   "blocker": "name_required_vs_optional",
+   "expected": "name_optional",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_47-s1",
+   "blocker": "missing_selection_state_wire_labels",
+   "expected": "none_some_all_literals",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_35-s17",
+   "blocker": "contradictory_parse_parameters_scope",
+   "expected": "instance_method_only",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_44-s20",
+   "blocker": "contradictory_duplicate_versus_unique_values",
+   "expected": "return_unchanged",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_49-s0",
+   "blocker": "analytics_storage_backend_string_value",
+   "expected": "clickhouse_word",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_0-s6",
+   "blocker": "non_linux_distribution_version_source",
+   "expected": "platform_apis",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_2-s16",
+   "blocker": "ambiguous_minutes_ago_rounding_policy",
+   "expected": "floor_truncate",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_59-s2",
+   "blocker": "missing_calendar_url_max_length",
+   "expected": "len_other",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_43-s5",
+   "blocker": "abort_rule",
+   "expected": "nil_with_error",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_51-s4",
+   "blocker": "ambiguous_which_timestamp_fields_nullable",
+   "expected": "expiration_and_lastvisited_only",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_37-s22",
+   "blocker": "forced_renewal_flags_when_cancelled",
+   "expected": "forced_nonrenew_presentation",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_26-s23",
+   "blocker": "sanitization_tag_allowlist",
+   "expected": "dompurify_defaults",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_53-s6",
+   "blocker": "upgrade_deps_depth_limit",
+   "expected": "depth_1_limit",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_36-s18",
+   "blocker": "runtime_replacement_import_path",
+   "expected": "stdlib_collections_abc_runtime",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_15-s16",
+   "blocker": "missing_auth_id_audit_display_length",
+   "expected": "prefix_length_8",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_39-s0",
+   "blocker": "playcount_rounding_strategy",
+   "expected": "math_round",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_55-s1",
+   "blocker": "mp_validate_cleanup_rejects_non_db_methods",
+   "expected": "reject_with_error",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_49-s9",
+   "blocker": "analytics_storage_backend_string_value",
+   "expected": "clickhouse_word",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_44-s7",
+   "blocker": "contradictory_duplicate_versus_unique_values",
+   "expected": "return_unchanged",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_50-s17",
+   "blocker": "unspecified_mime_detection_precedence_and_fallback_chain",
+   "expected": "type_then_extension_then_default",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_23-s21",
+   "blocker": "ambiguous_resume_success_predicate_for_auth_updates",
+   "expected": "guard_on_truthy_resumedsession",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_43-s22",
+   "blocker": "state_value",
+   "expected": "lowercase_disabled_literal",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s22",
+   "blocker": "conflicting_context_freshness_policy",
+   "expected": "create_fresh_isolated_context",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_23-s2",
+   "blocker": "missing_persisted_session_staleness_ttl_ms",
+   "expected": "ttl_7_days",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_0-s5",
+   "blocker": "non_linux_distribution_normalization",
+   "expected": "capitalize_first",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_31-s9",
+   "blocker": "missing_commerce_copy_tokens",
+   "expected": "policy_exact_tokens",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_2-s13",
+   "blocker": "ambiguous_minutes_ago_rounding_policy",
+   "expected": "floor_truncate",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s20",
+   "blocker": "conflicting_context_freshness_policy",
+   "expected": "create_fresh_isolated_context",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s4",
+   "blocker": "conflicting_context_freshness_policy",
+   "expected": "create_fresh_isolated_context",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_52-s17",
+   "blocker": "missing_yaml_key_name_for_database_connection_lifetime",
+   "expected": "lifetime_named_keys",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s2",
+   "blocker": "contradictory_cache_versus_freshness",
+   "expected": "per_call_site_none_all_selective",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_0-s22",
+   "blocker": "non_linux_distribution_source_precedence_on_conflict",
+   "expected": "platform_system_preferred",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_51-s16",
+   "blocker": "missing_share_default_expiration_duration",
+   "expected": "days_30",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_23-s16",
+   "blocker": "missing_persisted_session_staleness_ttl_ms",
+   "expected": "ttl_7_days",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_24-s16",
+   "blocker": "missing_detection_api_parameters",
+   "expected": "direct_import_pip",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_19-s6",
+   "blocker": "contradictory_remove_vs_deprecate_unsafeproxy",
+   "expected": "keep_class_with_identity_preservation",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_26-s8",
+   "blocker": "safe_versus_interactive_rendering",
+   "expected": "retain_event_handlers_add_attr",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s9",
+   "blocker": "missing_cache_parameter_default",
+   "expected": "default_selective",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_7-s21",
+   "blocker": "disable_cycle_selector_conflict",
+   "expected": "include_disable_true",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_37-s6",
+   "blocker": "cancellation_context_parameter",
+   "expected": "boolean_cancelled_default_false",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_26-s21",
+   "blocker": "safe_versus_interactive_rendering",
+   "expected": "retain_event_handlers_add_attr",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_14-s4",
+   "blocker": "update_interval_zero_handling",
+   "expected": "twenty_four_hours",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_25-s9",
+   "blocker": "flag_primary_key_composition",
+   "expected": "namespace_first_signature_order",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_51-s22",
+   "blocker": "missing_share_default_expiration_duration",
+   "expected": "one_year",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_58-s6",
+   "blocker": "invalid_request_precedence_in_read_only_mode",
+   "expected": "own_error_immediate",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_51-s8",
+   "blocker": "ambiguous_which_timestamp_fields_nullable",
+   "expected": "expiration_and_lastvisited_only",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_24-s5",
+   "blocker": "missing_pip_module_target",
+   "expected": "plain_pip_module",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_23-s10",
+   "blocker": "contradictory_localid_source_for_resume_call",
+   "expected": "persisted_session_localid",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s0",
+   "blocker": "missing_cache_parameter_default",
+   "expected": "default_selective",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_49-s16",
+   "blocker": "analytics_storage_backend_string_value",
+   "expected": "clickhouse_word",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_18-s16",
+   "blocker": "unsupported_manifest_value_policy",
+   "expected": "fail_at_option_construction_or_config_load",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_49-s22",
+   "blocker": "analytics_storage_backend_string_value",
+   "expected": "clickhouse_word",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_43-s1",
+   "blocker": "abort_rule",
+   "expected": "nil_with_error",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s10",
+   "blocker": "conflicting_context_freshness_policy",
+   "expected": "create_fresh_isolated_context",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s8",
+   "blocker": "ambiguous_selective_caching_criteria",
+   "expected": "cache_all_unconditionally",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_2-s1",
+   "blocker": "conflicting_folder_emit_mode_list_rules",
+   "expected": "includes_auto",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_54-s15",
+   "blocker": "hoststate_str_state_label_prefix_convention",
+   "expected": "legacy_prefixed_labels",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_34-s1",
+   "blocker": "ambiguous_exception_preservation_mechanism",
+   "expected": "exception_chaining_from_e",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_58-s10",
+   "blocker": "invalid_request_precedence_in_read_only_mode",
+   "expected": "own_error_immediate",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_11-s5",
+   "blocker": "max_nesting_depth_policy_conflict",
+   "expected": "different_depth_value",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_47-s12",
+   "blocker": "contradictory_enum_definition_location",
+   "expected": "hooks_useselectioncontrols",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s18",
+   "blocker": "ambiguous_selective_caching_criteria",
+   "expected": "cache_all_unconditionally",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s16",
+   "blocker": "contradictory_cache_versus_freshness",
+   "expected": "per_call_site_none_all_selective",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_27-s0",
+   "blocker": "ambiguous_contact_display_mode",
+   "expected": "keep_table_layout",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_44-s20",
+   "blocker": "missing_deprecation_call_parameters",
+   "expected": "warnings_warn",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_43-s10",
+   "blocker": "abort_rule",
+   "expected": "nil_with_error",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_11-s13",
+   "blocker": "max_nesting_depth_policy_conflict",
+   "expected": "different_depth_value",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_21-s9",
+   "blocker": "ambiguous_gain_processing_stage",
+   "expected": "use_first_value",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_10-s16",
+   "blocker": "ambiguous_route_line_acceptance_and_field_extraction_contract",
+   "expected": "positional_destination_token",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_2-s14",
+   "blocker": "missing_player_id_base_offset",
+   "expected": "other_fixed_offset",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_6-s17",
+   "blocker": "missing_modal_startup_contract",
+   "expected": "submit_path_only_omit_initial",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_24-s13",
+   "blocker": "missing_detection_api_parameters",
+   "expected": "importlib_find_spec_imp_fallback",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_39-s2",
+   "blocker": "songcount_zero_behavior",
+   "expected": "return_error",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_0-s1",
+   "blocker": "non_linux_distribution_version_source",
+   "expected": "platform_apis",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_12-s4",
+   "blocker": "ambiguous_feature_toggle_token",
+   "expected": "drivesearchspotlight_family",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_10-s14",
+   "blocker": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+   "expected": "show_or_symbolic_local",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_30-s2",
+   "blocker": "ambiguous_non_collection_spec_ownership",
+   "expected": "delegate_wrapped_find_spec",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_16-s14",
+   "blocker": "scrobble_ordering",
+   "expected": "descending_by_timestamp",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_5-s21",
+   "blocker": "name_required_vs_optional",
+   "expected": "name_optional",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_52-s12",
+   "blocker": "missing_default_values_for_open_connections_and_connection_lifetime",
+   "expected": "open_10_or_more",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_19-s0",
+   "blocker": "contradictory_remove_vs_deprecate_unsafeproxy",
+   "expected": "keep_class_with_identity_preservation",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s2",
+   "blocker": "conflicting_context_freshness_policy",
+   "expected": "create_fresh_isolated_context",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_12-s16",
+   "blocker": "missing_spotlight_eligibility_cutoff",
+   "expected": "different_cutoff_value",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_2-s17",
+   "blocker": "ambiguous_minutes_ago_rounding_policy",
+   "expected": "floor_truncate",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_13-s22",
+   "blocker": "ambiguous_selective_caching_criteria",
+   "expected": "cache_all_unconditionally",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s5",
+   "blocker": "conflicting_context_freshness_policy",
+   "expected": "create_fresh_isolated_context",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_24-s1",
+   "blocker": "missing_pip_module_target",
+   "expected": "plain_pip_module",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_25-s21",
+   "blocker": "flag_primary_key_composition",
+   "expected": "namespace_first_signature_order",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_37-s20",
+   "blocker": "cancellation_context_parameter",
+   "expected": "boolean_cancelled_default_false",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_14-s14",
+   "blocker": "update_interval_zero_handling",
+   "expected": "twenty_four_hours",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_6-s4",
+   "blocker": "contradictory_pre_verification_status_partition",
+   "expected": "throw_terminal_before_verify",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_11-s4",
+   "blocker": "max_input_length_unspecified",
+   "expected": "different_length_value",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_38-s10",
+   "blocker": "contradiction_non_positive_lifetime_write_policy",
+   "expected": "store_as_infinite",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_26-s12",
+   "blocker": "safe_versus_interactive_rendering",
+   "expected": "retain_event_handlers_add_attr",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_17-s1",
+   "blocker": "operational_time_bound_policy",
+   "expected": "timeout_5_seconds",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_49-s3",
+   "blocker": "analytics_field_json_representation_when_disabled",
+   "expected": "omit_key",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_36-s21",
+   "blocker": "runtime_replacement_import_path",
+   "expected": "stdlib_collections_abc_runtime",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_10-s5",
+   "blocker": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+   "expected": "show_or_symbolic_local",
+   "label_source": "actions"
+  },
+  {
+   "run": "swe_47-s14",
+   "blocker": "contradictory_enum_definition_location",
+   "expected": "state_useselection",
+   "label_source": "actions"
+  }
+ ]
+}
