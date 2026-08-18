@@ -162,9 +162,21 @@ def main() -> int:
         run = d_run[i]
         if run not in cache:
             task = run.rsplit("-s", 1)[0]
+            # v3.1 (decisions/026): same text acquisition as the labeler --
+            # raw segment join, else untranslated .txt -- so the raw `char`
+            # offsets from the debug trail slice the string they were born
+            # in. The old read_text() slice was displaced on CRLF runs.
+            seg = Path(args.a0) / task / f"{run}.segments.json"
             p = Path(args.a0) / task / f"{run}.txt"
-            cache[run] = (p.read_text(encoding="utf-8", errors="replace")
-                          if p.exists() else "")
+            if seg.exists():
+                cache[run] = "\n\n".join(
+                    json.loads(seg.read_text(encoding="utf-8")))
+            elif p.exists():
+                with open(p, encoding="utf-8", errors="replace",
+                          newline="") as fh:
+                    cache[run] = fh.read()
+            else:
+                cache[run] = ""
         t = cache[run]
         c = int(d_char_a[i])
         if c < 0:

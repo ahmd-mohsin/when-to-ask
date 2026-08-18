@@ -79,11 +79,15 @@ def main() -> int:
             for i in np.where(m)[0]:
                 dist[i] = min(abs(ds.read_token_idx[i] - t) for t in ments)
 
-    def loro_acc(mask_extra) -> tuple[float, float, int, int]:
+    def loro_acc(mask_extra) -> tuple[float, float, float, int, int]:
         """leave-one-run-out centroid acc over forked decisions, on reads
-        passing mask_extra; returns (acc, chance, n_reads, n_decisions)."""
+        passing mask_extra; returns (acc, chance, majority_baseline,
+        n_reads, n_decisions). decisions/026 §5: the trivial train-majority
+        predictor is reported alongside 1/n_classes -- imbalanced forks make
+        1/n_classes a misleading reference (the R2 '+0.135 over chance'
+        FAR-read numbers were ~0.2 BELOW their majority baselines)."""
         lab = (ds.cls >= 0) & mask_extra
-        cor = tot = 0
+        cor = tot = base_cor = 0
         chances, n_dec = [], 0
         for dec in np.unique(ds.decision[lab]):
             m = lab & (ds.decision == dec)
@@ -91,7 +95,7 @@ def main() -> int:
             cls_of = {r: ds.cls[m & (ds.run_idx == r)][0] for r in runs}
             if len(set(cls_of.values())) < 2 or len(runs) < 4:
                 continue
-            dec_cor = dec_tot = 0
+            dec_cor = dec_tot = dec_base = 0
             for r_out in runs:
                 tr, te = m & (ds.run_idx != r_out), m & (ds.run_idx == r_out)
                 cls_tr = ds.cls[tr]
@@ -101,18 +105,22 @@ def main() -> int:
                 for c in set(cls_tr.tolist()):
                     v = ds.h[tr][cls_tr == c].mean(0)
                     cents[c] = v / np.linalg.norm(v)
+                maj = max(set(cls_tr.tolist()), key=cls_tr.tolist().count)
                 for x, y in zip(ds.h[te], ds.cls[te]):
                     xn = x / np.linalg.norm(x)
                     pred = max(cents, key=lambda c: float(xn @ cents[c]))
                     dec_cor += int(pred == y)
+                    dec_base += int(maj == y)
                     dec_tot += 1
             if dec_tot:
                 n_dec += 1
                 chances.append(1 / len(set(cls_of.values())))
                 cor += dec_cor
+                base_cor += dec_base
                 tot += dec_tot
         return (cor / tot if tot else float("nan"),
-                float(np.mean(chances)) if chances else float("nan"), tot, n_dec)
+                float(np.mean(chances)) if chances else float("nan"),
+                base_cor / tot if tot else float("nan"), tot, n_dec)
 
     print(f"reads with a finite mention-distance: {(np.isfinite(dist)).sum()} "
           f"of {len(dist)}")
@@ -121,9 +129,9 @@ def main() -> int:
                        ("FAR  (>= %d tok from every mention)" % FAR,
                         np.isfinite(dist) & (dist >= FAR)),
                        ("ALL  (any labeled read)", np.isfinite(dist))]:
-        acc, chance, n, nd = loro_acc(mask)
+        acc, chance, base, n, nd = loro_acc(mask)
         print(f"{name}: acc {acc:.3f} vs chance {chance:.3f} "
-              f"({n} reads, {nd} decisions)")
+              f"vs MAJORITY {base:.3f} ({n} reads, {nd} decisions)")
     print("\nInterpretation: if NEAR >> FAR, value info is transiently present "
           "at emission -> the --value-reads collection (and 70B run) should "
           "capture it; if NEAR ~ FAR ~ chance, the value-fork negative hardens.")

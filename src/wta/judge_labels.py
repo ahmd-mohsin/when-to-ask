@@ -20,7 +20,21 @@ import random
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .labeling import _is_mutating, _norm, load_class_artifact
+from .labeling import (_SEG_SEP, _is_mutating, _norm, _norm_map,
+                       load_class_artifact)
+
+
+def _read_trace(a0_dir: Path, task: str, run_id: str) -> str:
+    """The run's trace in the labeler's coordinate system (labels.md v3.1):
+    the raw segment join when the sidecar exists, else the .txt read WITHOUT
+    newline translation. Byte-identical to build_labels' `text`, so judge
+    commit_char offsets are raw-join per spec judge_labels.md §4."""
+    seg_file = a0_dir / task / f"{run_id}.segments.json"
+    if seg_file.exists():
+        return _SEG_SEP.join(json.loads(seg_file.read_text(encoding="utf-8")))
+    with open(a0_dir / task / f"{run_id}.txt", encoding="utf-8",
+              errors="replace", newline="") as f:
+        return f.read()
 
 JUDGE_MODEL = "claude-fable-5"           # decisions/025 §5 (owner's choice)
 JUDGE_MAX_TOKENS = 3000                  # caps thinking + text on this model
@@ -205,8 +219,7 @@ def build_judge_items(a0_dir: str | Path, classes_path: str | Path,
     for k, (run_id, blocker) in enumerate(sorted(pairs)):
         task = task_of[blocker]
         spec = spec_of[blocker]
-        txt_path = a0_dir / task / f"{run_id}.txt"
-        text = txt_path.read_text(encoding="utf-8", errors="replace")
+        text = _read_trace(a0_dir, task, run_id)
         if task not in desc_cache:
             desc_cache[task] = _registry_descriptions(registries_dir, task)
         excerpt, policy = make_excerpt(
@@ -297,37 +310,20 @@ def parse_judge_response(text: str) -> dict | None:
             "reasoning": str(obj.get("reasoning") or "")}
 
 
-def _norm_with_map(s: str) -> tuple[str, list[int]]:
-    out, idx, prev_space = [], [], True
-    for i, ch in enumerate(s):
-        if ch.isspace():
-            if prev_space:
-                continue
-            out.append(" ")
-            idx.append(i)
-            prev_space = True
-        else:
-            out.append(ch.lower())
-            idx.append(i)
-            prev_space = False
-    if out and out[-1] == " ":
-        out.pop()
-        idx.pop()
-    return "".join(out), idx
-
-
 def locate_evidence(trace: str, evidence: str) -> int:
     """Raw char offset of the evidence span in the FULL trace, or -1.
-    Exact match first; whitespace-normalized fallback (mirrors labeling._norm
-    semantics) mapped back to raw offsets. No repair beyond that: an
-    unlocatable span rejects the label (spec §4)."""
+    Exact match first; whitespace-normalized fallback via the labeler's own
+    _norm_map (v3.1: IDENTICAL _norm semantics, exact norm->raw index — the
+    old local _norm_with_map dropped leading/trailing whitespace and desynced
+    on 1->2 lowercase expansions). No repair beyond that: an unlocatable span
+    rejects the label (spec §4)."""
     ev = evidence.strip()
     if not ev:
         return -1
     p = trace.find(ev)
     if p >= 0:
         return p
-    tn, tmap = _norm_with_map(trace)
+    tn, tmap = _norm_map(trace)
     en = _norm(ev).strip()
     if not en:
         return -1
@@ -370,8 +366,7 @@ def freeze_results(items: list[JudgeItem], responses: dict[str, dict],
                     rec["status"] = "bad_class"
                     rec["class"] = parsed["class"]
                 else:
-                    text = (a0_dir / it.task / f"{it.run_id}.txt").read_text(
-                        encoding="utf-8", errors="replace")
+                    text = _read_trace(a0_dir, it.task, it.run_id)
                     pos = locate_evidence(text, parsed["evidence"])
                     if pos < 0:
                         rec["status"] = "evidence_not_found"

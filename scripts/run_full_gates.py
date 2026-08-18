@@ -37,7 +37,8 @@ from wta.a4_gates import (  # noqa: E402
     gate4_conflation, gate5_lean_separation, gate6_ood_transfer,
     gate7_aggregate, gate7_lead_time, kfold_group_indices,
 )
-from wta.labeling import build_labels, coverage_table, resolve_tokenizer  # noqa: E402
+from wta.labeling import (LabeledDataset, build_labels, coverage_table,  # noqa: E402
+                          resolve_tokenizer)
 
 
 # ---------------------------------------------------------------------------
@@ -235,15 +236,22 @@ def gates_1to6(ds, model, split, out_notes: list):
 
 
 def kfold_gates(ds, split, k: int, epochs: int, eps: float, window: int,
-                seed: int = 0, action_reads: dict | None = None) -> dict:
-    """N-fold cross-fit over non-OOD (task, seed) groups; pool gates 1/5/7
-    (decisions/014). Retrains A2 per fold."""
+                seed: int = 0, action_reads: dict | None = None,
+                lhe_dump: Path | None = None) -> dict:
+    """N-fold cross-fit over non-OOD (task, seed) groups; pool gates
+    1/2/3/5/6/7 (decisions/014; 2/3/6 added by decisions/026 §5 — at 24 seeds
+    the s6,s7 single split had zero fork pairs, so gates 3 and 6 had NO 32B
+    measurement while this path only pooled 1/5/7). Retrains A2 per fold."""
     base = split["lab"] & ~split["is_ood"]
     base_idx = np.where(base)[0]
     gid = np.array([f"{split['task_of_read'][i]}::{split['seed_of_read'][i]}"
                     for i in base_idx])
+    ood = split["lab"] & split["is_ood"]
     acc = {"g1_acc": [], "g1_chance": [], "g1_eta2": [], "g1_ndec": [],
+           "g2_acc": [], "g2_chance": [],
+           "g3_same": [], "g3_diff": [], "g3_theta": [], "g3_nsame": [],
            "g5_ratio": [], "g5_sil": [], "g5_ndec": [],
+           "g6_purity": [], "g6_nbuckets": [], "g6_ndec": [],
            "g7_medK": [], "g7_fracpos": [], "g7_ndec": [], "folds": 0}
     for tr_local, te_local in kfold_group_indices(gid, k, seed):
         train = np.zeros(len(ds.h), bool); train[base_idx[tr_local]] = True
@@ -252,8 +260,26 @@ def kfold_gates(ds, split, k: int, epochs: int, eps: float, window: int,
         t_tr, t_ev = model.encode_topic(ds.h[train]), model.encode_topic(ds.h[evalm])
         g1 = gate1_topic_leakage(t_tr, ds.cls[train], t_ev, ds.cls[evalm],
                                  dec_he=ds.decision[evalm]).numbers
-        g5 = gate5_lean_separation(model.encode_lean(ds.h[evalm]),
-                                   ds.decision[evalm], ds.cls[evalm]).numbers
+        g2 = gate2_decision_recovery(t_tr, ds.decision[train],
+                                     t_ev, ds.decision[evalm]).numbers
+        g3 = gate3_fork_collocation(t_ev, ds.decision[evalm],
+                                    ds.cls[evalm]).numbers
+        l_ev = model.encode_lean(ds.h[evalm])
+        g5 = gate5_lean_separation(l_ev, ds.decision[evalm],
+                                   ds.cls[evalm]).numbers
+        if lhe_dump is not None:
+            # decisions/026 §5: persist each fold's held-out LEAN embeddings
+            # so gate5_lhe_permutation.py can run the run-level permutation
+            # on the exact space gate5's kfold ratio is computed in (the
+            # HANDOFF 1b "missing step"). Small: eval reads x lean dim.
+            lhe_dump.mkdir(parents=True, exist_ok=True)
+            keep = ds.cls[evalm] >= 0
+            np.savez_compressed(
+                lhe_dump / f"fold{acc['folds']}.npz",
+                l=l_ev[keep].astype(np.float32),
+                decision=ds.decision[evalm][keep],
+                cls=ds.cls[evalm][keep],
+                run_idx=ds.run_idx[evalm][keep])
         calib, *_ = fit_a3(ds, model, train, eps, window)
         g7 = compute_gate7(ds, model, evalm, calib, window, action_reads)
         acc["folds"] += 1
@@ -262,6 +288,21 @@ def kfold_gates(ds, split, k: int, epochs: int, eps: float, window: int,
             acc["g1_chance"].append(g1["within_decision_chance"])
             acc["g1_eta2"].append(g1["mean_partial_eta2"])
             acc["g1_ndec"].append(g1["n_decisions"])
+        if "topic_from_T_acc" in g2:
+            acc["g2_acc"].append(g2["topic_from_T_acc"])
+            acc["g2_chance"].append(g2["chance"])
+        theta = g3.get("theta")
+        if theta is not None and np.isfinite(theta):
+            acc["g3_same"].append(g3["mean_same_decision_cos"])
+            acc["g3_diff"].append(g3["mean_diff_decision_cos"])
+            acc["g3_theta"].append(theta)
+            acc["g3_nsame"].append(g3["n_same"])
+            if ood.any():
+                g6 = gate6_ood_transfer(model.encode_topic(ds.h[ood]),
+                                        ds.decision[ood], theta).numbers
+                acc["g6_purity"].append(g6["bucket_purity"])
+                acc["g6_nbuckets"].append(g6["n_buckets"])
+                acc["g6_ndec"].append(g6["n_decisions"])
         if "between_within_ratio" in g5:
             acc["g5_ratio"].append(g5["between_within_ratio"])
             acc["g5_sil"].append(g5["silhouette"])
@@ -306,18 +347,28 @@ def main() -> int:
     ap.add_argument("--held-seeds", default="s6,s7")
     ap.add_argument("--kfold", type=int, default=0,
                     help="N>0 -> N-fold cross-fit gates 1/5/7 (power fix)")
+    ap.add_argument("--labels-npz", default=None,
+                    help="load a prebuilt labels.npz instead of rebuilding "
+                         "(decisions/026: skips the ~2h/16GB label pass; the "
+                         "npz must have been built with the SAME --layer)")
     args = ap.parse_args()
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     layer = None if args.layer is None else int(args.layer)
     epss, windows = _floats(args.eps_settle), _ints(args.window)
 
-    print("=== labels (audit trail -> labels_debug.jsonl) ===")
-    ds = build_labels(args.a0, args.classes, debug_path=out / "labels_debug.jsonl",
-                      layer=layer,
-                      tokenizer_name=resolve_tokenizer(args.a0, "auto"))
+    if args.labels_npz:
+        print(f"=== labels (prebuilt: {args.labels_npz}; "
+              f"debug trail not regenerated) ===")
+        ds = LabeledDataset.load(args.labels_npz)
+    else:
+        print("=== labels (audit trail -> labels_debug.jsonl) ===")
+        ds = build_labels(args.a0, args.classes,
+                          debug_path=out / "labels_debug.jsonl",
+                          layer=layer,
+                          tokenizer_name=resolve_tokenizer(args.a0, "auto"))
+        ds.save(out / "labels.npz")
     print(coverage_table(ds))
-    ds.save(out / "labels.npz")
     split = prepare_split(ds, args.n_ood, tuple(args.held_seeds.split(",")))
     print(f"\nOOD tasks: {sorted(split['ood_tasks'])} | layer={layer}")
     print(f"reads: {split['lab'].sum()} labeled | train {split['train'].sum()} | "
@@ -337,16 +388,29 @@ def main() -> int:
     if args.kfold > 0:
         print(f"\n=== {args.kfold}-FOLD CROSS-FIT GATES (eps={epss[0]}, window={windows[0]}) ===")
         acc = kfold_gates(ds, split, args.kfold, args.epochs, epss[0], windows[0],
-                          action_reads=action_reads)
+                          action_reads=action_reads,
+                          lhe_dump=out / "lhe_folds")
         g1 = _ms(acc["g1_acc"]); g1c = _ms(acc["g1_chance"]); g1e = _ms(acc["g1_eta2"])
+        g2 = _ms(acc["g2_acc"]); g2c = _ms(acc["g2_chance"])
+        g3s = _ms(acc["g3_same"]); g3d = _ms(acc["g3_diff"]); g3t = _ms(acc["g3_theta"])
         g5r = _ms(acc["g5_ratio"]); g5s = _ms(acc["g5_sil"])
+        g6p = _ms(acc["g6_purity"])
         g7 = _ms(acc["g7_medK"]); g7f = _ms(acc["g7_fracpos"])
         print(f"folds={acc['folds']}")
         print(f"  gate1 within-decision: acc {g1[0]:.3f}+-{g1[1]:.3f} vs chance "
               f"{g1c[0]:.3f}; partial eta2 {g1e[0]:.3f}+-{g1e[1]:.3f} "
               f"(pooled decisions {sum(acc['g1_ndec'])})")
+        print(f"  gate2 decision-recovery: acc {g2[0]:.3f}+-{g2[1]:.3f} vs "
+              f"chance {g2c[0]:.4f} ({len(acc['g2_acc'])} folds)")
+        print(f"  gate3 fork-collocation: same {g3s[0]:.3f}+-{g3s[1]:.3f} vs "
+              f"diff {g3d[0]:.3f}+-{g3d[1]:.3f}, theta {g3t[0]:.3f} "
+              f"(pooled same-pairs {sum(acc['g3_nsame'])}, "
+              f"{len(acc['g3_theta'])} folds with theta)")
         print(f"  gate5 lean-sep: ratio {g5r[0]:.3f}+-{g5r[1]:.3f}, silhouette "
               f"{g5s[0]:.3f}+-{g5s[1]:.3f} (pooled decisions {sum(acc['g5_ndec'])})")
+        print(f"  gate6 OOD purity: {g6p[0]:.3f}+-{g6p[1]:.3f} "
+              f"({len(acc['g6_purity'])} folds; pooled OOD decisions "
+              f"{sum(acc['g6_ndec'])})")
         print(f"  gate7 lead-time: median_K {g7[0]:.2f}+-{g7[1]:.2f}, frac_pos "
               f"{g7f[0]:.2f} (pooled decisions {sum(acc['g7_ndec'])})")
         (out / "gate_report_kfold.json").write_text(json.dumps(acc, indent=1), encoding="utf-8")

@@ -63,6 +63,28 @@ value `judge`. The judge never overrides an actions/trace label. Gate numbers
 computed with judge labels are a SEPARATE labelled arm (025 §4b), never
 substituted for lexicon-teacher numbers.
 
+## v3.1: one coordinate system (2026-08-18, decisions/026 — defect repair)
+
+All char offsets live in ONE coordinate system: **RAW-join** — the exact
+string `"\n\n".join(segments)` from the run's `.segments.json` (CR bytes
+preserved), which is byte-identical to the on-disk `.txt` read without newline
+translation. Rules:
+
+1. The builder's `text` IS the raw join when the sidecar exists; otherwise the
+   `.txt` read with `newline=""` (never universal-newline translation).
+2. The ±`window_chars` window is sliced from raw `text` at the read's raw
+   char; the window CONTENT is normalized (`_norm`) before anchor scoring.
+   The window parameter's meaning — "±400 chars of trace around the read" —
+   is unchanged; v3.0 sliced the collapsed string at raw offsets, which
+   displaced the window (the decisions/026 defect).
+3. `commit_char` is raw for ALL three label sources: `actions` (native),
+   `trace` (normalized-find mapped back through the exact `_norm_map`
+   norm→raw index), `judge` (raw per spec judge_labels.md §4).
+4. The `phase` comparison (`char >= commit_char`) therefore compares like
+   units. Semantics unchanged.
+5. Debug-trail `snippet`/`window_snippet` are slices of the same raw `text`
+   at the same raw offsets the scorer used.
+
 ## Design decisions (and their honesty caveats)
 
 1. **Class ids are flattened globally** (each (blocker, class) pair is one id)
@@ -110,3 +132,7 @@ Deterministic; no model forward passes; no GPU.
    read for that decision.
 4. Token→char sanity: every read's window is non-empty and windows are
    monotonically ordered in the trace.
+5. Debug-trail honesty (v3.1): every read row's `window_snippet` and
+   `anchor_scores` are reproducible from the raw trace text and the row's
+   `char` alone (re-slice, re-normalize, re-score → identical values); every
+   labeled commitment row's `snippet` is the raw slice at `commit_char`.

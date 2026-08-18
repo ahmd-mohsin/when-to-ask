@@ -68,9 +68,44 @@ class Vocab:
 
 _WS = re.compile(r"\s+")
 
+# collect_v2 writes <run>.txt as _SEG_SEP.join(segments); this join IS the
+# canonical coordinate system for every char offset (spec labels.md v3.1,
+# decisions/026).
+_SEG_SEP = "\n\n"
+
 
 def _norm(text: str) -> str:
     return _WS.sub(" ", text.lower())
+
+
+def _norm_map(text: str) -> tuple[str, list[int]]:
+    """_norm(text) plus, per normalized char, the raw index that produced it
+    (spec labels.md v3.1) -- so a position found in normalized text can be
+    mapped back to the raw trace instead of being compared across coordinate
+    systems (the decisions/026 defect).
+
+    Whitespace runs collapse to one " " mapped to the run's FIRST raw char --
+    leading/trailing runs included. Non-whitespace chars contribute one entry
+    per char of ch.lower(): some Unicode lowercases 1->2 chars ('İ'), and the
+    map must stay in lockstep with _norm's whole-string lower(). lower()'s
+    only context-dependent rule (final sigma) is 1->1, so the per-char walk
+    stays length-synchronized; the assert turns any exception into a loud
+    failure instead of a silent mislabel. idx is non-decreasing, so argmin
+    over normalized positions maps to argmin over raw positions."""
+    norm = _norm(text)
+    idx: list[int] = []
+    pos = 0
+    for m in _WS.finditer(text):
+        s, e = m.span()
+        for i in range(pos, s):
+            idx.extend([i] * len(text[i].lower()))
+        idx.append(s)  # the whole whitespace run -> one " "
+        pos = e
+    for i in range(pos, len(text)):
+        idx.extend([i] * len(text[i].lower()))
+    assert len(idx) == len(norm), \
+        f"_norm_map desync: {len(idx)} map entries vs {len(norm)} norm chars"
+    return norm, idx
 
 
 def _hits(text_norm: str, terms: list[str]) -> int:
@@ -176,6 +211,39 @@ class LabeledDataset:
                    coverage=meta["coverage"])
 
 
+def _run_files(task_dir: Path):
+    """Run-log selection predicate for one task dir. Shared by build_labels'
+    counting pass and labeling pass so the two cannot diverge
+    (decisions/026); the final `assert ptr == n_rows` backstops it."""
+    for jf in sorted(task_dir.glob("*.json")):
+        run_id = jf.stem
+        if run_id.endswith(".segments") or not (task_dir / f"{run_id}.npz").exists():
+            continue  # sidecar/metadata json, not a run log
+        yield jf, run_id
+
+
+def _iter_run_files(a0_dir: Path, task_specs: dict):
+    for task_dir in sorted(p for p in a0_dir.iterdir() if p.is_dir()):
+        if task_dir.name not in task_specs:
+            continue
+        for jf, run_id in _run_files(task_dir):
+            yield task_dir, task_dir.name, jf, run_id
+
+
+def _npz_h_dim(npz_path: Path) -> int:
+    """Last-axis size of the stored h from the npy header alone (no data
+    read) -- same technique as gate5_permutation_test.stream_project."""
+    import zipfile
+    with zipfile.ZipFile(npz_path) as zf:
+        name = "h.npy" if "h.npy" in zf.namelist() else "h"
+        with zf.open(name) as raw:
+            major, _minor = np.lib.format.read_magic(raw)
+            reader = (np.lib.format.read_array_header_1_0 if major == 1
+                      else np.lib.format.read_array_header_2_0)
+            shape, _fortran, _dtype = reader(raw)
+    return int(shape[-1]) if shape else 0
+
+
 def build_labels(a0_dir: str | Path, classes_path: str | Path,
                  tokenizer_name: str = "Qwen/Qwen2.5-Coder-7B-Instruct",
                  window_chars: int = 400, min_anchor_hits: int = 1,
@@ -193,7 +261,12 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
     (run_id, blocker) -> (class_name, commit_char, confidence) map from
     wta.judge_labels.load_judge_labels. Consulted only where both the actions
     and trace stages abstained; never overrides a lexicon label. The builder
-    stays deterministic given its inputs -- no model call happens here."""
+    stays deterministic given its inputs -- no model call happens here.
+    commit_char in the artifact is a RAW-join offset (spec judge_labels.md §4,
+    labels.md v3.1) -- the same coordinate system as every other offset here.
+
+    Coordinates (v3.1, decisions/026): text IS the raw segment join; all char
+    offsets are raw; windows are sliced raw and their CONTENT normalized."""
     from transformers import AutoTokenizer
 
     a0_dir = Path(a0_dir)
@@ -215,8 +288,22 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
             entries.append((did, spec))
         task_specs[task] = entries
 
-    rows_h, rows = [], {k: [] for k in
-                        ("decision", "cls", "phase", "task_idx", "run_idx", "tok")}
+    # pass 1 (decisions/026): count rows + find H so h can be PREALLOCATED.
+    # The old list-of-views + np.stack path kept every per-run matrix alive
+    # and peaked at ~2x the final array (~32GB on the 1415-run collection).
+    n_rows, H = 0, 0
+    for task_dir, _task, jf, run_id in _iter_run_files(a0_dir, task_specs):
+        n_reads = len(json.loads(jf.read_text(encoding="utf-8"))["reads"])
+        n_rows += n_reads
+        if H == 0 and n_reads:
+            H = _npz_h_dim(task_dir / f"{run_id}.npz")
+    if n_rows == 0:
+        raise ValueError(f"no labelable runs with reads under {a0_dir}")
+    h_all = np.empty((n_rows, H), dtype=np.float32)
+    ptr = 0
+
+    rows = {k: [] for k in
+            ("decision", "cls", "phase", "task_idx", "run_idx", "tok")}
     tasks, runs = [], []
     coverage: dict[str, dict] = {}
 
@@ -228,28 +315,44 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
         t_i = tasks.index(task)
         cov = coverage.setdefault(task, {"reads": 0, "decision_labeled": 0,
                                          "class_labeled": 0, "anchor_ties": 0,
+                                         "txt_join_mismatch": 0,
+                                         "segment_clamped": 0,
+                                         "token_clamped": 0,
                                          "committed_classes": {}})
-        for jf in sorted(task_dir.glob("*.json")):
-            run_id = jf.stem
-            if run_id.endswith(".segments") or not (task_dir / f"{run_id}.npz").exists():
-                continue  # sidecar/metadata json, not a run log
+        for jf, run_id in _run_files(task_dir):
             log = load_run_log(task_dir, run_id, layer=layer)  # multi-layer: select-at-load
-            text = (task_dir / f"{run_id}.txt").read_text(encoding="utf-8",
-                                                          errors="replace")
-            text_norm = _norm(text)
-            # v2 multi-segment runs (decisions/017): token_idx restarts per
-            # turn, so the token->char map is per segment; the run's .txt is
-            # "\n\n".join(segments), so segment k's chars start at offs[k].
+            # v3.1 (decisions/026): ONE coordinate system. text IS the raw
+            # segment join (CR preserved) -- the string every offset is born
+            # in. The old universal-newline .read_text() shortened it on
+            # CRLF runs and desynced every offset downstream.
+            txt_file = task_dir / f"{run_id}.txt"
             seg_file = task_dir / f"{run_id}.segments.json"
             if seg_file.exists():
                 segments = json.loads(seg_file.read_text(encoding="utf-8"))
+                text = _SEG_SEP.join(segments)
+                # v2 multi-segment runs (decisions/017): token_idx restarts
+                # per turn, so the token->char map is per segment; segment
+                # k's chars start at offs[k].
                 seg_starts, offs, pos = [], [], 0
                 for s in segments:
                     seg_starts.append(token_char_positions(s, tokenizer))
                     offs.append(pos)
-                    pos += len(s) + 2  # the join separator
+                    pos += len(s) + len(_SEG_SEP)
+                # diagnostics only: the join must equal the on-disk .txt
+                # (raw, or newline-translated when a Windows writer CRLF'd
+                # the whole file). A mismatch means the sidecar and txt
+                # disagree about the trace -- count it, never guess.
+                with open(txt_file, encoding="utf-8", errors="replace",
+                          newline="") as f:
+                    disk_txt = f.read()
+                if text not in (disk_txt, disk_txt.replace("\r\n", "\n")):
+                    cov["txt_join_mismatch"] += 1
             else:
+                with open(txt_file, encoding="utf-8", errors="replace",
+                          newline="") as f:
+                    text = f.read()
                 seg_starts, offs = [token_char_positions(text, tokenizer)], [0]
+            text_norm, norm_raw = _norm_map(text)
             runs.append((task, run_id))
             r_i = len(runs) - 1
 
@@ -274,8 +377,12 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                                      spec["classes"][cand]["signatures"]]
                         for a in mut_actions:
                             if any(s in _norm(a.action_text) for s in sig_norms):
+                                cov["segment_clamped"] += int(
+                                    a.segment_idx > len(seg_starts) - 1)
                                 seg = min(a.segment_idx, len(seg_starts) - 1)
                                 s_st = seg_starts[seg]
+                                cov["token_clamped"] += int(
+                                    bool(s_st) and a.token_idx > len(s_st) - 1)
                                 pos = offs[seg] + (s_st[min(a.token_idx,
                                                             len(s_st) - 1)]
                                                    if s_st else 0)
@@ -289,9 +396,14 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                             and scores[order[0]] > scores[order[1]]):
                         local = int(order[0])
                         sig_terms = spec["classes"][local]["signatures"]
-                        pos = min((p for t in sig_terms
-                                   if (p := text_norm.find(_norm(t))) >= 0),
-                                  default=-1)
+                        # earliest signature mention, found in normalized
+                        # text, mapped BACK to raw coords (v3.1): the map is
+                        # non-decreasing, so the norm-side min is the raw-side
+                        # min and the earliest-occurrence semantics are exact.
+                        pos_norm = min((p for t in sig_terms
+                                        if (p := text_norm.find(_norm(t))) >= 0),
+                                       default=-1)
+                        pos = norm_raw[pos_norm] if pos_norm >= 0 else -1
                         source = "trace"
                 # v3 (spec labels.md): frozen judge labels fill in ONLY where
                 # both lexicon stages abstained -- never override.
@@ -328,12 +440,19 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
             h = log.read_matrix().astype(np.float32)
             for k, read in enumerate(log.reads):
                 tok = read.token_idx
+                cov["segment_clamped"] += int(
+                    read.segment_idx > len(seg_starts) - 1)
                 seg = min(read.segment_idx, len(seg_starts) - 1)
                 s_starts = seg_starts[seg]
+                cov["token_clamped"] += int(
+                    bool(s_starts) and tok > len(s_starts) - 1)
                 local = s_starts[min(tok, len(s_starts) - 1)] if s_starts else 0
                 char = offs[seg] + local
+                # v3.1 core fix: slice the RAW text at the raw char, then
+                # normalize the window CONTENT. Slicing text_norm at raw
+                # offsets displaced the window (decisions/026 defect (a)).
                 lo, hi = max(0, char - window_chars), char + window_chars
-                win = text_norm[lo:hi]
+                win = _norm(text[lo:hi])
 
                 d_scores = [(did, _hits(win, spec["anchors"]))
                             for did, spec in task_specs[task]]
@@ -362,7 +481,8 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                                       for d, s in d_scores if s > 0},
                        window_snippet=text[max(0, char - 80):char + 80])
 
-                rows_h.append(h[k])
+                h_all[ptr] = h[k]
+                ptr += 1
                 rows["decision"].append(did)
                 rows["cls"].append(gcls)
                 rows["phase"].append(phase)
@@ -372,14 +492,17 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
                 cov["reads"] += 1
                 cov["decision_labeled"] += int(did >= 0)
                 cov["class_labeled"] += int(gcls >= 0)
+            del h, log  # free this run before loading the next (026 memory)
 
         cov["committed_classes"] = {k: sorted(v) for k, v in
                                     cov["committed_classes"].items()}
 
     if dbg:
         dbg.close()
+    assert ptr == n_rows, \
+        f"pass-1/pass-2 divergence: counted {n_rows} reads, filled {ptr}"
     return LabeledDataset(
-        h=np.stack(rows_h).astype(np.float32),
+        h=h_all,
         decision=np.array(rows["decision"], dtype=np.int64),
         cls=np.array(rows["cls"], dtype=np.int64),
         phase=np.array(rows["phase"], dtype=np.int64),

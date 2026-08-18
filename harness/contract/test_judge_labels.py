@@ -64,7 +64,9 @@ def _a0(tmp: Path) -> Path:
                  reads=[ReadRecord(token_idx=0, trigger="cadence", cue=None,
                                    h=np.zeros(8, dtype=np.float16))])
     save_run_log(log, task_dir)
-    (task_dir / "swe_90-s0.txt").write_text(TRACE, encoding="utf-8")
+    # write_bytes, not write_text: Windows newline translation would put
+    # \r\n on disk and shift raw commit_char offsets (labels.md v3.1).
+    (task_dir / "swe_90-s0.txt").write_bytes(TRACE.encode("utf-8"))
     return a0
 
 

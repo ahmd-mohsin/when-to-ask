@@ -72,16 +72,35 @@ def fork_kind(ds, art) -> dict[int, str]:
 
 def loro(ds, h, mask) -> dict:
     """Leave-one-run-out nearest-class-centroid over forked decisions,
-    restricted to labeled reads passing `mask`. Per-decision + pooled."""
+    restricted to labeled reads passing `mask`. Per-decision + pooled.
+
+    decisions/026 §5: eligibility now requires EVERY class to be carried by
+    >= 2 runs. With a single-run minority, holding that run out left a
+    one-class train set that was silently skipped, so minority reads were
+    never tested while `chance` still claimed 1/n_classes — the defect
+    behind the 14B '0.71-0.73 vs 0.50' scaling justification (its
+    train-majority baseline was 0.916). Each decision now also reports the
+    trivial train-majority baseline and balanced accuracy; decisions
+    excluded by the new rule are counted in '_excluded_single_run_minority'
+    so the census stays visible."""
     lab = (ds.cls >= 0) & mask
     per_dec = {}
+    excluded = 0
     for dec in np.unique(ds.decision[lab]):
         m = lab & (ds.decision == dec)
         runs = np.unique(ds.run_idx[m])
         cls_of = {r: ds.cls[m & (ds.run_idx == r)][0] for r in runs}
-        if len(set(cls_of.values())) < 2 or len(runs) < 4:
+        run_ct = {}
+        for c in cls_of.values():
+            run_ct[c] = run_ct.get(c, 0) + 1
+        if len(run_ct) < 2 or len(runs) < 4:
+            continue
+        if min(run_ct.values()) < 2:
+            excluded += 1
             continue
         cor = tot = 0
+        base_cor = 0
+        by_cls_cor, by_cls_tot = {}, {}
         for r_out in runs:
             tr, te = m & (ds.run_idx != r_out), m & (ds.run_idx == r_out)
             cls_tr = ds.cls[tr]
@@ -91,24 +110,40 @@ def loro(ds, h, mask) -> dict:
             for c in set(cls_tr.tolist()):
                 v = h[tr][cls_tr == c].mean(0)
                 cents[c] = v / np.linalg.norm(v)
+            maj = max(set(cls_tr.tolist()), key=cls_tr.tolist().count)
             for x, y in zip(h[te], ds.cls[te]):
                 xn = x / np.linalg.norm(x)
                 pred = max(cents, key=lambda c: float(xn @ cents[c]))
                 cor += int(pred == y)
+                base_cor += int(maj == y)
+                by_cls_cor[y] = by_cls_cor.get(y, 0) + int(pred == y)
+                by_cls_tot[y] = by_cls_tot.get(y, 0) + 1
                 tot += 1
         if tot:
+            bal = float(np.mean([by_cls_cor[c] / by_cls_tot[c]
+                                 for c in by_cls_tot]))
             per_dec[int(dec)] = {"acc": cor / tot, "n": tot,
-                                 "chance": 1 / len(set(cls_of.values()))}
+                                 "chance": 1 / len(run_ct),
+                                 "majority_baseline": base_cor / tot,
+                                 "balanced_acc": bal}
+    per_dec["_excluded_single_run_minority"] = excluded
     return per_dec
 
 
 def pool(per_dec: dict) -> str:
-    if not per_dec:
-        return "acc   nan vs chance   nan (0 reads, 0 decisions)"
-    n = sum(d["n"] for d in per_dec.values())
-    acc = sum(d["acc"] * d["n"] for d in per_dec.values()) / n
-    ch = float(np.mean([d["chance"] for d in per_dec.values()]))
-    return f"acc {acc:.3f} vs chance {ch:.3f} ({n} reads, {len(per_dec)} decisions)"
+    excluded = per_dec.get("_excluded_single_run_minority", 0)
+    decs = {k: v for k, v in per_dec.items() if isinstance(k, int)}
+    if not decs:
+        return ("acc   nan vs chance   nan (0 reads, 0 decisions; "
+                f"{excluded} excluded single-run-minority)")
+    n = sum(d["n"] for d in decs.values())
+    acc = sum(d["acc"] * d["n"] for d in decs.values()) / n
+    ch = float(np.mean([d["chance"] for d in decs.values()]))
+    base = sum(d["majority_baseline"] * d["n"] for d in decs.values()) / n
+    bal = float(np.mean([d["balanced_acc"] for d in decs.values()]))
+    return (f"acc {acc:.3f} vs chance {ch:.3f} vs MAJORITY {base:.3f}; "
+            f"balanced {bal:.3f} ({n} reads, {len(decs)} decisions; "
+            f"{excluded} excluded single-run-minority)")
 
 
 def main() -> int:
@@ -135,16 +170,21 @@ def main() -> int:
             per_dec = loro(ds, h, smask)
             groups = defaultdict(dict)
             for dec, d in per_dec.items():
-                groups[kind[dec]][dec] = d
+                if isinstance(dec, int):
+                    groups[kind[dec]][dec] = d
             print(f"  {sub:8s}: {pool(per_dec)}")
             for k in ("structural", "value"):
                 print(f"    {k:11s}-forks: {pool(groups[k])}")
         # per-decision detail once per layer, ALL reads
         print("  per-decision (ALL reads):")
-        for dec, d in sorted(loro(ds, h, subsets['ALL']).items(),
+        for dec, d in sorted(((k, v) for k, v in
+                              loro(ds, h, subsets['ALL']).items()
+                              if isinstance(k, int)),
                              key=lambda kv: -kv[1]["acc"]):
             task, blocker = ds.vocab.decisions[dec]
-            print(f"    {d['acc']:.3f} (chance {d['chance']:.2f}, n={d['n']:4d}) "
+            print(f"    {d['acc']:.3f} (chance {d['chance']:.2f}, "
+                  f"majority {d['majority_baseline']:.2f}, "
+                  f"balanced {d['balanced_acc']:.2f}, n={d['n']:4d}) "
                   f"[{kind[dec][:6]}] {task}/{blocker}")
     return 0
 
