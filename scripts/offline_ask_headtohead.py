@@ -196,8 +196,9 @@ def main() -> int:
     fold_info = []
     for fold_i, (tr, te) in enumerate(
             kfold_group_indices(gid, args.folds, args.seed)):
-        train_tasks = [tasks[i] for i in tr]
-        eval_tasks = [tasks[i] for i in te]
+        # kfold_group_indices yields boolean MASKS over gid
+        train_tasks = [tasks[i] for i in np.where(tr)[0]]
+        eval_tasks = [tasks[i] for i in np.where(te)[0]]
         ref = benign_reference(train_tasks, feats, committed, rounds, art)
 
         best, best_f1 = None, -1.0

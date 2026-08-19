@@ -146,3 +146,47 @@ TaskContext never carries the registry — eval/policies.py:36 discipline
 extends to the offline replay). The judge-labelling arm (025) remains
 STOPPED and is unaffected. The sealed pool remains sealed until §5 stage 2's
 final table.
+
+## Amendment A (2026-08-19, same day — stage-1 NO-GO as-run; owner decision: both-sequenced)
+
+Written AFTER the stage-1 numbers and BEFORE any v2-feature number exists.
+Nothing in §1-§7 is edited; §6's stage-1 criterion stands and was NOT met.
+
+**(1) Stage-1 result, as-run** (results/offline_headtohead_stage1.json,
+1415 runs, 5 folds, frozen grid): detector F1 0.507 vs random-budget-matched
+0.582 and trivial always-ask-style baselines 0.800 — NO-GO (bar was 0.90).
+Context findings: 40/60 tasks contain a fork at 24 rollouts (the task-level
+metric is prevalence-saturated — itself a census finding); on true-positive
+fires, attribution 13/18 (the firing bucket contained the forked runs) and
+median lead +3 turns. A driver bug (boolean-mask fold indexing) was fixed
+after the freeze; it is in the DRIVER, not the frozen detector, and preceded
+any successful run.
+
+**(2) Diagnosis (measured, not asserted).** The v1 hashed char-3gram
+r-vectors carry almost no resolution signal: same-class commitment pairs sit
+at mean distance 0.783 vs different-class 0.834 (unit geometry: orthogonal =
+1.414), separation AUROC 0.555. The benign reference calibrated to ~1.13 —
+near saturation — so the CUSUM had nothing to work with. The trigger
+machinery itself is validated (contract tests: planted forks fire, twins
+quiet). This is spec B2 caveat #1 realized in full.
+
+**(3) Owner decision (in-session): BOTH, SEQUENCED.** (a) The fallback
+science paper (§4's pre-declared framing, now enriched: the fork signal is
+absent from single-run activations (026) AND from surface-form behavioral
+hashes (this entry) — it lives in semantically-interpreted ensemble
+behavior) starts drafting immediately; it is the paper's first half
+regardless. (b) ONE pre-declared feature iteration runs in parallel, gated:
+
+- **v2 features**: r_vec = a local sentence-embedding (CPU,
+  sentence-transformers/all-MiniLM-L6-v2 via transformers, mean-pooled,
+  l2-normalized, deterministic) of the mutating turn's
+  `subgoal + action_text + error_signature`. ONLY r_vec changes; topic
+  vectors, trigger, grid, folds, metric, and every §6 criterion stay frozen.
+- **HARD GATE, frozen now**: v2 same-vs-diff class separation AUROC ≥ 0.75
+  on the same all-task commitment-pair pool that scored v1 at 0.555 (a
+  feature-validity measure independent of detection thresholds; eval-fold
+  DETECTION numbers remain untouched until the gate passes). Gate fails →
+  automatic fallback, no further feature iterations, mechanism section
+  dropped from the paper.
+- Gate passes → stage-1 reruns once with v2 under the §6 criteria unchanged,
+  reported alongside v1 whichever way it lands.
