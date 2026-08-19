@@ -1,0 +1,21 @@
+[    0.8s] loading label arrays ...
+[    0.9s] reads=787281 decisions=214 runs=1415
+[    0.9s] scanning debug trail (compact: run/char/token_idx only) ...
+[    4.3s] debug read records=787281
+[    4.3s] token_idx alignment = 1.0000
+[    4.5s] train=40000 test=9180 classes=110 chance=0.0091
+[    4.5s] materializing text windows for selected rows only ...
+[    4.7s] windows built for 49180 rows over 995 traces
+[    4.7s] (b) fitting TEXT model (word tfidf 1-2gram) ...
+[    8.3s]     tfidf features=120000
+[  103.9s] (b) TEXT tfidf prefix-only 400ch : acc=0.7456
+[  103.9s] (a) streaming + projecting activations ...
+[  124.6s]     h streamed 163840/787281
+[  144.9s]     h streamed 327680/787281
+[  165.2s]     h streamed 491520/787281
+[  185.4s]     h streamed 655360/787281
+[  219.1s] (a) ACTIV h->256d (JL)   : acc=0.2745
+
+chance 0.0091 | TEXT 0.7456 | ACTIVATIONS 0.2745 | act/text 0.37x
+gate2 as reported (A2 topic space T): 0.4102 vs 0.0101 chance
+[  219.1s] wrote results json

@@ -1,0 +1,73 @@
+2026-08-19T05:14:32+00:00
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+a0=/ssd/wta_data/a0_v3_32b  classes=data/interpretation_classes.json  tokenizer=Qwen/Qwen3-32B  layer=mid
+
+task        reads  dec%   cls%  ties   forked-blockers
+swe_0       12188    29%     9%   507   0/4 with >=2 classes
+swe_1       10532    36%    13%   832   1/4 with >=2 classes
+swe_10       4253    54%    18%   393   0/4 with >=2 classes
+swe_11      16258    12%     9%   336   2/3 with >=2 classes
+swe_12      15030    44%    27%   705   1/3 with >=2 classes
+swe_13      13920    26%     8%   275   2/3 with >=2 classes
+swe_14       9141    38%     5%  1550   2/5 with >=2 classes
+swe_15      13649    15%     2%    35   1/3 with >=2 classes
+swe_16       4600    80%    16%   243   2/3 with >=2 classes
+swe_17       9085    17%     8%    47   1/3 with >=2 classes
+swe_18      12724    32%     7%  2133   1/2 with >=2 classes
+swe_19      20124    21%     8%   515   3/5 with >=2 classes
+swe_2       18393    45%     9%  1394   3/4 with >=2 classes
+swe_20       3749    45%     2%    54   0/2 with >=2 classes
+swe_21      26496     4%     2%    29   2/3 with >=2 classes
+swe_22      18420    16%     3%   341   1/3 with >=2 classes
+swe_23      16278    28%     6%  1037   3/4 with >=2 classes
+swe_24      11885    28%     2%   348   1/3 with >=2 classes
+swe_25      22929    17%     1%   136   1/3 with >=2 classes
+swe_26      10447    11%     1%    78   1/2 with >=2 classes
+swe_27      18896    20%     1%   564   3/3 with >=2 classes
+swe_28       4747    21%     0%    61   0/1 with >=2 classes
+swe_29      12667    14%     0%    61   0/1 with >=2 classes
+swe_3        7907    44%    14%   693   4/4 with >=2 classes
+swe_30      11577     4%     1%     0   2/3 with >=2 classes
+swe_31       8430    22%     2%   167   1/2 with >=2 classes
+swe_32      14602     5%     0%     6   0/2 with >=2 classes
+swe_33      15962     8%     5%    25   0/3 with >=2 classes
+swe_34       4939    61%     3%   115   1/3 with >=2 classes
+swe_35       6697    13%     6%     3   1/1 with >=2 classes
+swe_36       7941    20%    11%   664   2/3 with >=2 classes
+swe_37      14578    24%     0%   213   2/3 with >=2 classes
+swe_38       4316    39%     0%   391   1/2 with >=2 classes
+swe_39      17181     2%     1%    56   2/3 with >=2 classes
+swe_4       23383    15%     4%    74   2/2 with >=2 classes
+swe_40       9147    45%     0%    89   0/0 with >=2 classes
+swe_41      26273    15%     1%    42   1/3 with >=2 classes
+swe_42      16540    15%     2%   758   2/5 with >=2 classes
+swe_43      25148    12%     0%   206   0/4 with >=2 classes
+swe_44      16543    14%     2%    10   1/2 with >=2 classes
+swe_45       7588    38%     5%   288   0/5 with >=2 classes
+swe_46      11950     4%     1%     9   0/2 with >=2 classes
+swe_47      18599     9%     5%     8   1/3 with >=2 classes
+swe_48      12671     4%     0%     6   0/0 with >=2 classes
+swe_49      24371     7%     2%   124   0/3 with >=2 classes
+swe_5        4862    49%     0%    26   0/1 with >=2 classes
+swe_50       7789    14%     2%    71   1/3 with >=2 classes
+swe_51      20048    23%     7%   258   1/3 with >=2 classes
+swe_52      16050    19%     2%   126   1/4 with >=2 classes
+swe_53      12381     3%     1%    15   0/2 with >=2 classes
+swe_54      10334    45%    15%   287   0/3 with >=2 classes
+swe_55      13199    35%     0%   129   0/2 with >=2 classes
+swe_56       7366     7%     1%     0   1/1 with >=2 classes
+swe_57       6855    14%     0%   102   1/2 with >=2 classes
+swe_58       6253    10%     4%   198   0/2 with >=2 classes
+swe_59      11475    38%    10%   579   0/4 with >=2 classes
+swe_6       21623     2%     1%     2   1/3 with >=2 classes
+swe_7        9337    15%     0%    57   0/1 with >=2 classes
+swe_8        7009    45%     0%    43   1/1 with >=2 classes
+swe_9       19946    14%     5%   218   2/4 with >=2 classes
+
+reads: 787281 total, 154766 decision-labeled (20%), 33422 class-labeled (4%)
+runs: 1415 across 60 tasks; forked blockers (>=2 committed classes): 63
+commitments: 1595 labeled (actions: 1414, trace: 181), 3446 unlabeled of 5041 (run, decision) pairs
+
+stored: models/v3_32b_fixed/labels.npz + models/v3_32b_fixed/labels_debug.jsonl
+STEP2_OK
+2026-08-19T06:08:33+00:00

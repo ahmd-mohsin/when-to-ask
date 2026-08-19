@@ -1,0 +1,9 @@
+(fold, decision) cells: 44 over 5 folds
+  observed L-space ratio  mean 0.737
+  RUN-level null          mean 0.719
+  observed / run-null     1.024x
+  TESTABLE at alpha=0.05: 0 / 44
+  cells with p < 0.05: 0 of 0 testable
+  GLOBAL Stouffer test:   S_obs +4.612  p 0.1598   (23 informative cells)   <- the headline for l_he
+
+wrote results/gate5_lhe_permutation.json

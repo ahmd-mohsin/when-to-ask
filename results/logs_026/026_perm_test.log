@@ -1,0 +1,32 @@
+projecting h -> 128 dims (streaming) ...
+projected: (787281, 128)
+
+gate5-eligible decisions: 37
+  observed ratio          mean 0.382
+  RUN-level null          mean 0.376   <- the honest no-signal reference
+  read-level null         mean 0.265   <- too permissive (reads are not independent)
+  observed / run-null     1.015x
+  TESTABLE at alpha=0.05: 13 / 37   (the rest cannot reach p<0.05 at ANY effect size)
+  decisions with p < 0.05: 0 of 13 testable (37 eligible)
+  GLOBAL Stouffer test:   S_obs +2.320  p 0.3387   (33 informative decisions, 1000 joint draws)   <- the headline
+  median runs per decision: 6
+
+per-decision (first 15):
+  dec  reads  runs     obs  runnull       p method   minp test
+    7     14     2   0.821    0.821  1.0000  exact  0.500    -
+   15    862    11   0.202    0.165  0.1758  exact  0.006    y
+   17     96     4   0.876    0.520  0.2500  exact  0.250    -
+   19   1056    10   0.250    0.253  0.5000  exact  0.100    -
+   20     48     6   0.631    0.644  0.5000  exact  0.167    -
+   22     58     2   0.502    0.502  1.0000  exact  0.500    -
+   26     98     4   0.339    0.607  1.0000  exact  0.250    -
+   27    166     8   0.490    0.372  0.2500  exact  0.125    -
+   30    523     7   0.386    0.267  0.2857  exact  0.143    -
+   32    163     5   0.285    0.318  1.0000  exact  0.200    -
+   33    351     9   0.318    0.397  0.5556  exact  0.111    -
+   36    784    14   0.244    0.264  0.3306  exact  0.000    y
+   39    130     4   0.336    0.366  0.5000  exact  0.250    -
+   43   1356    18   0.271    0.307  0.5556  exact  0.056    -
+   44   1076    10   0.166    0.199  0.6110  exact  0.000    y
+
+wrote results/gate5_permutation_test_fixed.json

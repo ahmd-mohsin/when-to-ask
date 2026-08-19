@@ -1,0 +1,13 @@
+{
+ "n_train": 40000,
+ "n_test": 9180,
+ "n_classes": 110,
+ "chance": 0.00909090909090909,
+ "acc_text": 0.7456427015250545,
+ "acc_activations": 0.27450980392156865,
+ "window_chars": 400,
+ "proj_dim": 256,
+ "mask_anchors": false,
+ "causal_prefix_only": true,
+ "gate2_reported_T": 0.4102
+}

@@ -236,3 +236,111 @@ decision, global Stouffer p=0.043 on the planted set; the kfold path now
 pools gates 2/3/6 (v1-sample smoke: g2 0.474 vs 0.025 chance, g3 theta 0.844,
 g6 purity 0.299 — consistent with decisions/013-era values) and dumps
 per-fold l_he for gate5_lhe_permutation.py, which runs end-to-end.
+
+## Amendment B (2026-08-19, GPU box — the rebuild and gate rerun, as-run)
+
+Protocol items 5 and 6 of §7, executed on the Blackwell box in runbook order.
+Numbers unmodified per decisions/011. Artifacts: `models/v3_32b_fixed/`
+(FROZEN from here), evidence JSON in `results/`, run logs in
+`results/logs_026/`. Box: 4x RTX PRO 6000, torch 2.13.0+cu130, transformers
+5.15.0, numpy 2.5.2, sklearn 1.9.0. Total 7h00m wall clock.
+
+**(1) Rebuild — every §7.5 sanity gate passes.** 787,281 reads over 1415 runs
+(exact), `txt_join_mismatch` 0, `segment_clamped` 0, `token_clamped` 4,934 =
+0.63% spread over all 60 tasks (top task 3.2% of the total, worst per-task
+rate 2.0%) — diffuse, as the laptop sample predicted. Fork census 63 forked
+blockers (frozen 1385-run build: 62). Suite before spending box time: 220
+passed, 12 skipped, 0 failed; the 6 `test_labeling_coords.py` contract tests
+pass here. The 12 skips are data absent on the box (`data/a0` v1 sample x6,
+`models/v2_14b_gates_single` x6), so §7.2's "v1 labels unchanged" remains a
+laptop-verified item, not a box-verified one.
+
+**(2) Matched-baseline coverage — the comparison A(3) should have had.**
+Amendment A compared against the frozen 1385-run build, a different
+denominator. `models/v3_32b_secondary_1415/` is an OLD-labeler build on the
+SAME 1415 runs and is the correct baseline:
+
+    decision-labeled  151,701 (19%) -> 154,766 (20%)   +2.0% relative
+    class-labeled      30,879       ->  33,422         +8.2% relative
+    commitments        1,595 (actions 1414 / trace 181) -> IDENTICAL
+
+Consistency check, as specified: action-source commitments were
+coordinate-clean by construction and did not move; the window/phase repairs
+move read-level class assignment and did. A(3)'s correction stands and
+tightens — on the matched baseline the aggregate is nearly flat, while
+per-read identity churned ~13.4% (A(2)).
+
+**(3) k-fold layer 3 (pre-registered), fixed labels.** eps 0.6 / window 3,
+5 folds. Old-labeler 1415-run baseline in brackets:
+
+    gate1 within-decision  acc 0.837+-0.044 vs chance 0.493; eta2 0.027+-0.007
+                           (42 pooled decisions)         [0.858; eta2 0.035; 35]
+    gate2 decision-recovery acc 0.315+-0.104 vs chance 0.0073   [NOT MEASURED]
+    gate3 fork-collocation  same 0.899+-0.085 vs diff 0.783+-0.161,
+                           theta 0.884 (86 same-pairs)          [NOT MEASURED]
+    gate5 lean-sep         ratio 0.742+-0.124, sil 0.069+-0.017
+                           (44 pooled decisions)     [0.805+-0.148; 0.071; 38]
+    gate6 OOD purity       0.245+-0.020 (60 OOD decisions)      [NOT MEASURED]
+    gate7 lead-time        medK 15.70+-5.17, frac_pos 0.95
+                           (35 pooled decisions)          [19.5; 0.938; 29]
+
+Gates 2/3/6 have their first 32B measurement (§5). Every pooled decision
+count rose (35->42, 38->44, 29->35): the repair bought power, not a sign
+flip. Two sklearn ConvergenceWarnings (lbfgs, max_iter=1000) in the run.
+
+**(4) l_he permutation — HANDOFF §1b's missing step, now closed.**
+
+    n_cells 44 (5 folds)  observed_mean 0.7366   run_null_mean 0.7195
+    n_sig_p05 0           n_testable 0
+    global Stouffer S_obs 4.612, p = 0.1598 (23 informative, 1000 draws)
+
+In A2's learned L space — where §1's 0.894 lived — the statistic is 1.024x its
+own run-level null, global p = 0.16. **`n_testable` is 0**: no fold-decision
+cell has enough runs for ANY achievable p < 0.05 (rows bottom out at
+n_assignments 2/3/6, min_p 0.5/0.33/0.17). §1b's prohibition is lifted, and
+the honest statement is now available: the learned-space separation is
+indistinguishable from a run-level label permutation, AND at ~6 runs per
+decision this design cannot detect a per-cell effect even if one exists.
+That second clause is a power property of the collection, not of the model.
+
+**(5) Corrected permutation test, raw activations, fixed labels.**
+
+                        frozen/old (§1b)      fixed
+    eligible decisions        35               37
+    observed mean           0.392            0.3819
+    run-level null          0.396            0.3764
+    observed / run-null     0.991x           1.015x
+    read-level null         0.258            0.2651
+    p < 0.05                0 / 35           0 / 13 testable
+    global Stouffer p         --             0.339
+
+**(6) Gate-2 text controls on the fixed labels/debug pair** (chance 0.0091;
+gate 2 as reported in A2 topic space T: 0.4102):
+
+    +-400ch window            TEXT 0.8220 | ACTIV 0.2745 | 0.33x
+    causal, prefix-only       TEXT 0.7456 | ACTIV 0.2745 | 0.37x
+    causal + anchors masked   TEXT 0.7300 | ACTIV 0.2745 | 0.38x
+
+With symmetric slicing (the control no longer pro-text on CRLF runs, §1) the
+lexical baseline beats gate 2 in all three variants, including the hardest.
+§2b's verdict survives the repair.
+
+**(7) Single-split layer 3 — still uninformative, exactly as §2.**
+gate1 n_decisions=0, gate3 n_same=0 (no theta), gate5 n_decisions=0, gate6
+skipped, gate7 medK=nan. Only gate2_decision_recovery produced a number:
+0.4156 vs chance 0.0101. GRL treadmill check clean
+(`treadmill_suspected: false`). a1/a2/a3 artifacts saved (a2: 200 epochs).
+
+**(8) What this settles, and what it does not.** The repair did not flip the
+sign; it strengthened the negative and made it defensible, which §2
+pre-registered as an acceptable outcome. The gates were rerun against labels
+that are correct by the spec's own coordinate rule, with run-level nulls
+instead of the wrong constant, and the lean signal still sits on its
+permutation null in both raw and learned spaces. NOT settled by this
+amendment: whether more runs per decision would make l_he testable (item 4's
+n_testable=0 is new evidence bearing on HANDOFF §6, which argued against more
+seeds on different grounds), and the judge arm, which stays STOPPED (§6 —
+`data/label_judge_validation.json` still needs rebuilding from fixed-teacher
+labels before any revival). Steps 6's remaining 7 layers were NOT run; the
+owner reads layer 3 first per the runbook. The sealed pool remains untouched
+(decisions/019).

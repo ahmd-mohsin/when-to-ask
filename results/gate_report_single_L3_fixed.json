@@ -1,0 +1,21 @@
+{
+ "gate1_topic_leakage": {
+  "n_decisions": 0
+ },
+ "gate2_decision_recovery": {
+  "topic_from_T_acc": 0.4155550262029538,
+  "chance": 0.010101010101010102
+ },
+ "gate3_fork_collocation": {
+  "n_same": 0,
+  "n_diff": 3967
+ },
+ "gate5_lean_separation": {
+  "n_decisions": 0
+ },
+ "_notes": [
+  "gate1 GLOBAL/confounded: {\"class_from_T_acc\": 0.21322803553800593, \"chance\": 0.034482758620689655, \"eta2\": 0.27768982569703604}",
+  "gate6_ood_transfer: SKIPPED (no OOD tasks or no theta)",
+  "gate7_lead_time: INSUFFICIENT forked decisions in eval"
+ ]
+}
