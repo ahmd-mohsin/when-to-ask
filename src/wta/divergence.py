@@ -47,10 +47,15 @@ class TurnFeatures:
     weight: float                  # 0.0 pre-commitment, 1.0 after
 
 
-def behavior_features(actions: list) -> list[TurnFeatures]:
+def behavior_features(actions: list, r_embedder=None) -> list[TurnFeatures]:
     """Per-turn features for one run, from its ActionEvents in generation
     order. Sticky votes: weight flips to 1.0 at the first mutating action and
-    stays; r_vec is the latest mutating action's vector (spec B2)."""
+    stays; r_vec is the latest mutating action's vector (spec B2).
+
+    r_embedder (027 Amendment A, v2): optional callable(text) -> unit vector
+    replacing the hashed r_vec with a semantic embedding of the mutating
+    turn's subgoal + command + error signature. Everything else unchanged.
+    """
     ordered = sorted(actions, key=lambda a: a.segment_idx)
     feats: list[TurnFeatures] = []
     r_vec = np.zeros(R_DIM, dtype=np.float64)
@@ -60,10 +65,16 @@ def behavior_features(actions: list) -> list[TurnFeatures]:
     for k, a in enumerate(ordered):
         obs = a.observables or {}
         if _is_mutating(a.action_text or ""):
-            body = " ".join([_norm(a.action_text or ""),
-                             " ".join(obs.get("region") or []),
-                             str(obs.get("error_signature") or "")])
-            r_vec = signed_hash_vec(_char3grams(body), R_DIM, seed=0)
+            if r_embedder is not None:
+                body = " ".join([str(obs.get("subgoal") or ""),
+                                 a.action_text or "",
+                                 str(obs.get("error_signature") or "")])
+                r_vec = r_embedder(body)
+            else:
+                body = " ".join([_norm(a.action_text or ""),
+                                 " ".join(obs.get("region") or []),
+                                 str(obs.get("error_signature") or "")])
+                r_vec = signed_hash_vec(_char3grams(body), R_DIM, seed=0)
             weight = 1.0
         toks = [w for f in (obs.get("files") or []) for w in _norm(str(f)).split()]
         toks += _norm(str(obs.get("subgoal") or "")).split()

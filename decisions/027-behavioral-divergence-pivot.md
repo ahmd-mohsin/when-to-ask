@@ -190,3 +190,28 @@ regardless. (b) ONE pre-declared feature iteration runs in parallel, gated:
   dropped from the paper.
 - Gate passes → stage-1 reruns once with v2 under the §6 criteria unchanged,
   reported alongside v1 whichever way it lands.
+
+## Amendment B (2026-08-19, same day — the gate failed; fallback locked)
+
+As-run (results/feature_signal_gate.json, same commitment-pair pool that
+scored v1): **v2 MiniLM AUROC 0.580** (same-class mean 0.716 vs diff-class
+0.770; v1 hashed 0.555). The Amendment A gate was 0.75. **FAIL → automatic
+fallback**, per the pre-commitment: no further feature iterations, no stage-1
+rerun, the mechanism section is dropped from the paper.
+
+What this measures, stated carefully: even a semantic sentence embedding of
+the mutating turn (subgoal + command + error signature) barely distinguishes
+"these two runs resolved this blocker the SAME way" from "differently" —
+within the same blocker, so task context is controlled. Combined with 026
+(internals) and stage-1 v1 (surface hashes), the negative arc is now
+three-deep: the fork signal is not recoverable by GENERIC single-run or
+surface representations at all; it is visible only under decision-aware
+interpretation (the registry/labels lens that the census itself uses). That
+sharpens the paper's claim and honestly bounds registry-free divergence
+triggers: the forks are real (40/60 tasks at N=24), but knowing WHAT to
+compare is the hard part — a finding, not a failure of the census.
+
+Paper consequence (§4 fallback, owner's both-sequenced decision resolved):
+the measurement-science framing is now the paper, with the three-negative
+arc as its spine. The stage-2 live eval, the introspection head-to-head, and
+the sealed pool remain UNSPENT. The sealed pool stays sealed.

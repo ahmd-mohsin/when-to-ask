@@ -1,0 +1,645 @@
+{
+ "config": {
+  "folds": 5,
+  "n_runs": null,
+  "theta_grid": [
+   0.3,
+   0.5,
+   0.7
+  ],
+  "h_grid": [
+   3.0,
+   6.0,
+   12.0
+  ],
+  "ref_quantile": 0.9,
+  "seed": 0
+ },
+ "folds": [
+  {
+   "fold": 0,
+   "reference": 1.1258548182865586,
+   "theta": 0.5,
+   "h": 3.0,
+   "train_f1": 0.5614035087719298
+  },
+  {
+   "fold": 1,
+   "reference": 1.1013986008516656,
+   "theta": 0.5,
+   "h": 3.0,
+   "train_f1": 0.5614035087719298
+  },
+  {
+   "fold": 2,
+   "reference": 1.1322994079803659,
+   "theta": 0.3,
+   "h": 3.0,
+   "train_f1": 0.4528301886792453
+  },
+  {
+   "fold": 3,
+   "reference": 1.1382940898777194,
+   "theta": 0.3,
+   "h": 3.0,
+   "train_f1": 0.5263157894736842
+  },
+  {
+   "fold": 4,
+   "reference": 1.140921748554883,
+   "theta": 0.3,
+   "h": 3.0,
+   "train_f1": 0.4814814814814815
+  }
+ ],
+ "detector": {
+  "precision": 0.5806451612903226,
+  "recall": 0.45,
+  "f1": 0.5070422535211268,
+  "n_fired": 31,
+  "n_true": 40,
+  "n_tasks": 60
+ },
+ "baselines": {
+  "random_budget_matched": {
+   "f1_mean": 0.5816901408450704,
+   "f1_sd": 0.04566074669703471,
+   "seeds": 20
+  },
+  "fixed_step_at_median_fire": {
+   "precision": 0.6666666666666666,
+   "recall": 1.0,
+   "f1": 0.8,
+   "n_fired": 60,
+   "n_true": 40,
+   "n_tasks": 60
+  },
+  "ask_at_first_mutating": {
+   "precision": 0.6666666666666666,
+   "recall": 1.0,
+   "f1": 0.8,
+   "n_fired": 60,
+   "n_true": 40,
+   "n_tasks": 60
+  }
+ },
+ "lead_turns": [
+  18,
+  7,
+  2,
+  -17,
+  -34,
+  31,
+  -31,
+  3,
+  5,
+  3,
+  6,
+  -1,
+  14,
+  8,
+  -21,
+  -11,
+  10
+ ],
+ "attribution": {
+  "n_tp": 18,
+  "n_attributed": 13
+ },
+ "per_task": {
+  "swe_17": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_18": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_20": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": false,
+   "n_rounds": 28,
+   "has_mutating": true
+  },
+  "swe_23": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_26": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_28": {
+   "fired": true,
+   "first_fire_round": 22,
+   "n_fires": 1,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_4": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_46": {
+   "fired": true,
+   "first_fire_round": 19,
+   "n_fires": 2,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_48": {
+   "fired": true,
+   "first_fire_round": 15,
+   "n_fires": 1,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_50": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_58": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": false,
+   "n_rounds": 49,
+   "has_mutating": true
+  },
+  "swe_9": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_10": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_11": {
+   "fired": true,
+   "first_fire_round": 32,
+   "n_fires": 1,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 11,
+   "lead_turns": -21
+  },
+  "swe_13": {
+   "fired": true,
+   "first_fire_round": 5,
+   "n_fires": 4,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 8,
+   "lead_turns": 3
+  },
+  "swe_19": {
+   "fired": true,
+   "first_fire_round": 41,
+   "n_fires": 1,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": false,
+   "action_div_round": 7,
+   "lead_turns": -34
+  },
+  "swe_2": {
+   "fired": true,
+   "first_fire_round": 12,
+   "n_fires": 3,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 1,
+   "lead_turns": -11
+  },
+  "swe_33": {
+   "fired": true,
+   "first_fire_round": 15,
+   "n_fires": 3,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_41": {
+   "fired": true,
+   "first_fire_round": 12,
+   "n_fires": 6,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": false,
+   "action_div_round": null,
+   "lead_turns": null
+  },
+  "swe_43": {
+   "fired": true,
+   "first_fire_round": 16,
+   "n_fires": 7,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_52": {
+   "fired": true,
+   "first_fire_round": 8,
+   "n_fires": 2,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 14,
+   "lead_turns": 6
+  },
+  "swe_55": {
+   "fired": true,
+   "first_fire_round": 7,
+   "n_fires": 5,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_6": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_8": {
+   "fired": true,
+   "first_fire_round": 6,
+   "n_fires": 7,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 20,
+   "lead_turns": 14
+  },
+  "swe_0": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_1": {
+   "fired": true,
+   "first_fire_round": 9,
+   "n_fires": 2,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 17,
+   "lead_turns": 8
+  },
+  "swe_12": {
+   "fired": true,
+   "first_fire_round": 32,
+   "n_fires": 1,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": false,
+   "action_div_round": 15,
+   "lead_turns": -17
+  },
+  "swe_15": {
+   "fired": true,
+   "first_fire_round": 7,
+   "n_fires": 6,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 38,
+   "lead_turns": 31
+  },
+  "swe_27": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 47,
+   "has_mutating": true
+  },
+  "swe_29": {
+   "fired": true,
+   "first_fire_round": 37,
+   "n_fires": 1,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_38": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 14,
+   "has_mutating": true
+  },
+  "swe_39": {
+   "fired": true,
+   "first_fire_round": 9,
+   "n_fires": 3,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 27,
+   "lead_turns": 18
+  },
+  "swe_40": {
+   "fired": true,
+   "first_fire_round": 15,
+   "n_fires": 1,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_49": {
+   "fired": true,
+   "first_fire_round": 9,
+   "n_fires": 2,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_51": {
+   "fired": true,
+   "first_fire_round": 4,
+   "n_fires": 4,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 11,
+   "lead_turns": 7
+  },
+  "swe_53": {
+   "fired": true,
+   "first_fire_round": 13,
+   "n_fires": 6,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_16": {
+   "fired": true,
+   "first_fire_round": 7,
+   "n_fires": 5,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 17,
+   "lead_turns": 10
+  },
+  "swe_21": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 49,
+   "has_mutating": true
+  },
+  "swe_22": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_3": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_31": {
+   "fired": true,
+   "first_fire_round": 41,
+   "n_fires": 1,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": false,
+   "action_div_round": 10,
+   "lead_turns": -31
+  },
+  "swe_32": {
+   "fired": true,
+   "first_fire_round": 6,
+   "n_fires": 6,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_34": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_36": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_5": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_54": {
+   "fired": true,
+   "first_fire_round": 29,
+   "n_fires": 1,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_56": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_59": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_14": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_24": {
+   "fired": true,
+   "first_fire_round": 9,
+   "n_fires": 2,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 11,
+   "lead_turns": 2
+  },
+  "swe_25": {
+   "fired": true,
+   "first_fire_round": 9,
+   "n_fires": 5,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 8,
+   "lead_turns": -1
+  },
+  "swe_30": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_35": {
+   "fired": true,
+   "first_fire_round": 9,
+   "n_fires": 2,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": true,
+   "action_div_round": 12,
+   "lead_turns": 3
+  },
+  "swe_37": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 49,
+   "has_mutating": true
+  },
+  "swe_42": {
+   "fired": true,
+   "first_fire_round": 8,
+   "n_fires": 4,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true,
+   "attributed": false,
+   "action_div_round": 13,
+   "lead_turns": 5
+  },
+  "swe_44": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_45": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": false,
+   "n_rounds": 47,
+   "has_mutating": true
+  },
+  "swe_47": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 50,
+   "has_mutating": true
+  },
+  "swe_57": {
+   "fired": false,
+   "first_fire_round": null,
+   "n_fires": 0,
+   "needs_ask": true,
+   "n_rounds": 29,
+   "has_mutating": true
+  },
+  "swe_7": {
+   "fired": true,
+   "first_fire_round": 12,
+   "n_fires": 1,
+   "needs_ask": false,
+   "n_rounds": 50,
+   "has_mutating": true
+  }
+ }
+}
