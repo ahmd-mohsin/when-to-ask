@@ -1,0 +1,63 @@
+{
+ "14b": {
+  "a0": "data/a0_v2",
+  "labels_debug": "models/t5_v2_14b_fixed/labels_debug.jsonl",
+  "census": {
+   "n_tasks": 20,
+   "n_runs": 160,
+   "n_action_events": 1807,
+   "n_commitments": 244,
+   "n_forked_blockers": 16,
+   "n_forked_tasks": 11,
+   "frac_tasks_forked": 0.55
+  },
+  "pair_pool": {
+   "r3_hashed": {
+    "auroc": 0.6220779220779221,
+    "n_same": 286,
+    "n_diff": 70,
+    "same_mean": 0.6418009265299105,
+    "diff_mean": 0.7566603676585061
+   },
+   "r4_minilm": {
+    "auroc": 0.6662337662337663,
+    "n_same": 286,
+    "n_diff": 70,
+    "same_mean": 0.5342785630989941,
+    "diff_mean": 0.6640238851864456
+   }
+  }
+ },
+ "7b": {
+  "a0": "data/a0",
+  "labels_debug": "models/t5_a0_7b_fixed/labels_debug.jsonl",
+  "census": {
+   "n_tasks": 20,
+   "n_runs": 160,
+   "n_action_events": 0,
+   "n_commitments": 354,
+   "n_forked_blockers": 32,
+   "n_forked_tasks": 18,
+   "frac_tasks_forked": 0.9
+  },
+  "pair_pool": {
+   "r3_hashed": {
+    "auroc": null,
+    "n_same": 0,
+    "n_diff": 0,
+    "note": "empty pair pool \u2014 no action-anchored commitments (v1 collection predates composite action logging)"
+   },
+   "r4_minilm": {
+    "auroc": null,
+    "n_same": 0,
+    "n_diff": 0,
+    "note": "no recorded actions in collection"
+   }
+  }
+ },
+ "reference_32b": {
+  "r3_hashed_auroc": 0.555,
+  "r4_minilm_auroc": 0.58,
+  "source": "results/feature_signal_gate.json"
+ }
+}
