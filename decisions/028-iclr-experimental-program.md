@@ -99,6 +99,68 @@ no-fork tasks for a human-agreement point.
 5. Analysis freeze -> writing (paper/OUTLINE.md section order), target ~10
    writing days, ICLR deadline buffer >= 5 days.
 
+## Amendment A (2026-08-20 — as-implemented instantiation, frozen BEFORE first runs)
+
+Recorded before any 028 number exists. Nothing above is edited; these pin
+the implementation choices the entry left open, each settled pre-run:
+
+1. **F2 floor universe (pre-run adversarial review finding, confirmed on
+   real data).** "026's exact-test machinery" computes floors over the
+   GATE5 universe — per decision, runs carrying >=1 class-labeled READ
+   (debug-trail phase==1), eligibility >=4 class-labeled reads and >=2
+   classes — which on the full fixed labels has 37 eligible decisions at
+   median 6 runs vs 63/10 in the commitment trail. F2's quantity (c) is
+   therefore computed in the gate5 universe (execution-checked to reproduce
+   exactly 37 eligible / median 6 / 13 testable before the first run);
+   quantities (a)/(b) stay census (commitment-trail). Commitment-universe
+   floors are emitted as clearly-labeled supplementary data.
+2. **F4 frozen definitions**: commitment round per offline_ask_headtohead.
+   commit_rounds; fork onset = min datable commitment round in the fork;
+   fork completion = gate7 formula per blocker; ask window = completion -
+   onset; modal class = largest committed class (ties by name sort).
+3. **R6 instantiation** (scripts/r6_build_items.py IS the frozen
+   instantiation, committed before any judgment): R6a = 4 judged runs per
+   task x 60 tasks (equal per-task fire chances; fewer where fewer eligible
+   runs), forked-task cut = the run's first commitment round on a forked
+   blocker, non-forked cuts cycled from the sorted forked-k pool; prefix =
+   turn-by-turn ActionEvent summaries (subgoal/command<=400ch/error) + the
+   verbatim baseline/instruction.md; R6b stratification = round-robin over
+   (task, blocker) groups, rng seed 0; judge-visible payload keys pinned by
+   contract test (registry-blind, 4 new tests; suite 240). R6b AUROC score
+   = confidence signed by the different/same answer, AUROC computed as the
+   exact Mann-Whitney U with ties counted 0.5 (scores take 10 discrete
+   values; a non-tie-aware rank formula was caught pre-run and replaced).
+   Transport: items shuffled deterministically (seed 0) before 20-item
+   chunking so no judge sees a truth-homogeneous chunk; payload item_ids
+   re-keyed to opaque salted hashes (build-order ids monotonically encoded
+   ground truth — an id-threshold rule scored 100% with zero excerpt use;
+   caught pre-run, private map results/r6_items/blind_id_map.json
+   translates back at scoring); judges instructed to read ONLY their
+   payload file (transcripts audited for stray reads after the run);
+   chunks stored via scripts/r6_store_chunks.py only when judgment ids
+   exactly match the payload's id set (resumable: unstored chunks re-run).
+4. **T5 data fact**: the v1 7B collection recorded ZERO ActionEvents
+   (predates composite logging), so its R3/R4 pair pool is structurally
+   empty; the 7B row reports census only, with this reason. 14B labels
+   regenerated with the fixed labeler (models/t5_v2_14b_fixed: 244
+   commitments, 182 action-sourced, 16 forked blockers — matches the
+   historical 14B numbers); 7B likewise (models/t5_a0_7b_fixed: 354
+   commitments, all trace-sourced, 32 forked blockers).
+5. **R5 embedder**: BgeEmbedder = CLS pooling + l2 norm (model-card
+   recipe), truncation 256 to match the MiniLM row, batch 32; driver
+   recomputes v1/v2 alongside as consistency checks (no gate — 027 B's
+   fallback stands; the row is reported as-run).
+6. **T3**: split code replicated verbatim from gate2_text_control.py;
+   MLP = sklearn MLPClassifier hidden 512, relu, adam, alpha 1e-4, batch
+   256, lr 1e-3, max_iter 100, early stopping, random_state 0; every
+   unpinned hyperparameter stays at the sklearn default (a stricter
+   patience that crept into the draft script was caught pre-run and
+   removed; the as-run config including patience and validation fraction
+   is recorded in the output JSON); a 256-d JL linear probe runs first as
+   a consistency check vs the recorded 0.2745; input-identity guards abort
+   on any npz that is not the fixed-label set (787,281 reads; s6,s7 test
+   split 9,180 / 110 classes); results persist after each probe.
+
 ## Stop rules and reporting
 
 Every cell lands in the paper as-run. No cell is rerun with variations
