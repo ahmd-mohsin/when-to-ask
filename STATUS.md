@@ -115,7 +115,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T3** | Probe robustness | ⏳ **OWNER — GPU box** | [RUNBOOK_T3_PROBE.md](RUNBOOK_T3_PROBE.md). Needs `models/v3_32b_fixed/labels.npz` |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
-| — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** | AUROC .540 vs .564 (CIs overlap, both contain chance) → negatives NOT a registry artifact. **But census differs: 85% vs 57.5% of tasks forked** → the 2/3 headline is registry-quality-dependent, likely a LOWER bound. `results/blind_vs_informed_split.json` |
+| — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (hashed + MiniLM) | hashed .540 informed vs .564 blind; MiniLM .600 informed vs .558 blind — direction FLIPS between reps and CIs overlap → no systematic registry-leak effect. **On the trace-blind 40, MiniLM's CI [.499,.616] touches chance** → on the cleanest subset nothing generic beats chance. **But census differs sharply: 85% vs 57.5% forked.** `results/blind_vs_informed_split*.json` |
 | — | Train-fold vs eval-fold check | ✅ **DONE** | Stage-1 detection train F1 **0.517** vs eval **0.507** — fails equally on data it was tuned on → signal absence, not overfitting |
 
 Legend: ✅ done · 🔄 in progress · ⏳ not started
@@ -164,8 +164,12 @@ Legend: ✅ done · 🔄 in progress · ⏳ not started
 - **Nothing is fitted in T1 rows R3–R5.** Those AUROCs use a fixed
   representation and Euclidean distance; there is no capacity to overfit,
   so no train/test split applies.
-- **Registry construction is not the cause.** Trace-blind and
-  trace-informed tasks give the same AUROC (.564 vs .540).
+- **Registry construction is not the cause.** The informed-vs-blind gap
+  flips sign between representations (hashed .540/.564, MiniLM .600/.558)
+  with overlapping CIs — noise, not a leak. Stronger still: restricted to
+  the 40 tasks whose registry was authored **before any trace existed**,
+  MiniLM's CI [.499, .616] includes chance, so on the cleanest subset no
+  generic representation is distinguishable from chance.
 - **Adaptive analysis inflates false POSITIVES.** The long 011→028 chain
   spent its researcher degrees of freedom trying to find signal and failed,
   which makes the null more credible, not less.
