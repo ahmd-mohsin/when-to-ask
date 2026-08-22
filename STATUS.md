@@ -109,18 +109,46 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R2** | Learned L-space | ✅ done (026) | Null; n_testable=0 |
 | **T1·R3** | Surface hashes | ✅ done (027) | AUROC .555 — clustered CI **[0.492, 0.631], contains chance** |
 | **T1·R4** | MiniLM | ✅ done (027) | AUROC .580 — clustered CI **[0.535, 0.628], excludes chance** but far below the 0.75 bar |
-| **T1·R5** | bge-large | ✅ **DONE** | AUROC **0.573** — no better than MiniLM's .580 despite 15× the parameters. v1/v2 reproduced exactly (.555/.580). `results/t1_r5_strong_embedder.json` |
+| **T1·R5** | bge-large | ✅ **DONE** | AUROC **0.573**, clustered CI [.525, .627] — no better than MiniLM's .580 despite 15× the parameters. v1/v2 reproduced exactly. `results/t1_r5_strong_embedder.json` |
 | **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
 | **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
 | **T3** | Probe robustness | ⏳ **OWNER — GPU box** | [RUNBOOK_T3_PROBE.md](RUNBOOK_T3_PROBE.md). Needs `models/v3_32b_fixed/labels.npz` |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
-| — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (hashed + MiniLM) | hashed .540 informed vs .564 blind; MiniLM .600 informed vs .558 blind — direction FLIPS between reps and CIs overlap → no systematic registry-leak effect. **On the trace-blind 40, MiniLM's CI [.499,.616] touches chance** → on the cleanest subset nothing generic beats chance. **But census differs sharply: 85% vs 57.5% forked.** `results/blind_vs_informed_split*.json` |
+| — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
 | — | Train-fold vs eval-fold check | ✅ **DONE** | Stage-1 detection train F1 **0.517** vs eval **0.507** — fails equally on data it was tuned on → signal absence, not overfitting |
 
 Legend: ✅ done · 🔄 in progress · ⏳ not started
 
 ---
+
+## The T1 generic-representation rows, with honest CIs
+
+Task-clustered bootstrap, 2000 draws, seed 0 (`scripts/t1_auroc_ci.py`).
+The pooled point estimates are the pre-registered as-run numbers.
+
+| Row | Params | Pooled AUROC | Clustered 95% CI | vs chance |
+|---|---|---|---|---|
+| R3 hashed char-3grams | — | .555 | [.492, .631] | contains .50 |
+| R4 MiniLM-L6 | 22M | .580 | [.535, .628] | excludes |
+| R5 bge-large | 335M | .573 | [.525, .627] | excludes |
+
+Split by registry provenance (`scripts/blind_vs_informed_split.py`):
+
+| Row | trace-informed (20 tasks) | trace-blind (40 tasks) |
+|---|---|---|
+| hashed | .540 [.448, .656] | .564 [.471, .685] |
+| MiniLM | .600 [.527, .679] | .558 [.499, .616] |
+| bge | .546 [.483, .627] | .599 [.534, .673] |
+
+**How to say this.** Every generic representation lands in a narrow
+**.54–.60** band. Some intervals exclude chance, some do not, and which
+ones do is not stable across representations or subgroups. The band is flat
+across a 15× parameter increase and across registry provenance. So the
+claim is *detectable but useless, and flat* — **NOT** "no signal at all,"
+and **NOT** "nothing beats chance on the clean subset" (bge does, at
+.599 [.534, .673]). Over-claiming either way is the easiest way to lose a
+reviewer who reruns the bootstrap.
 
 ## Known gaps a reviewer will attack
 
@@ -165,11 +193,9 @@ Legend: ✅ done · 🔄 in progress · ⏳ not started
   representation and Euclidean distance; there is no capacity to overfit,
   so no train/test split applies.
 - **Registry construction is not the cause.** The informed-vs-blind gap
-  flips sign between representations (hashed .540/.564, MiniLM .600/.558)
-  with overlapping CIs — noise, not a leak. Stronger still: restricted to
-  the 40 tasks whose registry was authored **before any trace existed**,
-  MiniLM's CI [.499, .616] includes chance, so on the cleanest subset no
-  generic representation is distinguishable from chance.
+  flips sign across representations (blind higher for hashed and bge,
+  informed higher for MiniLM) with heavily overlapping CIs — noise, not a
+  leak. See the full 3×2 table below.
 - **Adaptive analysis inflates false POSITIVES.** The long 011→028 chain
   spent its researcher degrees of freedom trying to find signal and failed,
   which makes the null more credible, not less.
