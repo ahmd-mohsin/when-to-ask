@@ -173,6 +173,25 @@ the implementation choices the entry left open, each settled pre-run:
    point estimates already recorded are unchanged and remain the as-run
    numbers.
 
+8. **Trace-blind vs trace-informed registry split (added 2026-08-22, BEFORE
+   the numbers were computed).** The class artifact was authored in two
+   passes with different exposure to the data, which gives a free
+   construct-validity contrast that partially substitutes for the never-run
+   collection-R3 sealed/OOD leg:
+   - **trace-informed (20 tasks)**: swe_0, swe_1, swe_2, swe_10..swe_26 —
+     drafted "grounded in registry+traces" and subsequently anchor-leak
+     repaired (77 uniquely-predictive anchors dropped).
+   - **trace-blind (40 tasks)**: swe_3..swe_9, swe_27..swe_59 — derived
+     2026-07-18 REGISTRY-ONLY, before any traces for those tasks existed.
+   Reported per group, as-run: fork census (fraction of tasks forked,
+   forked blockers, commitments) and the commitment-pair separation AUROC
+   with its task-clustered CI. Pre-declared reading: if the census and the
+   AUROCs agree across groups, the fork construct and the negatives are not
+   artifacts of registry authors having seen traces; a large gap is a
+   construct-validity finding that MUST be reported and discussed either
+   way. This is a subgroup analysis of existing cells, not a rerun; no
+   pre-registered point estimate changes.
+
 ## Stop rules and reporting
 
 Every cell lands in the paper as-run. No cell is rerun with variations

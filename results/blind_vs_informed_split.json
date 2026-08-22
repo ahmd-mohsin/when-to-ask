@@ -1,0 +1,72 @@
+{
+ "split": {
+  "trace_informed": [
+   "swe_0",
+   "swe_1",
+   "swe_10",
+   "swe_11",
+   "swe_12",
+   "swe_13",
+   "swe_14",
+   "swe_15",
+   "swe_16",
+   "swe_17",
+   "swe_18",
+   "swe_19",
+   "swe_2",
+   "swe_20",
+   "swe_21",
+   "swe_22",
+   "swe_23",
+   "swe_24",
+   "swe_25",
+   "swe_26"
+  ],
+  "n_informed": 20,
+  "n_blind": 40
+ },
+ "census": {
+  "trace_informed": {
+   "n_tasks": 20,
+   "n_forked_tasks": 17,
+   "frac_tasks_forked": 0.85,
+   "n_forked_blockers": 28,
+   "n_blockers": 72,
+   "n_commitments": 728
+  },
+  "trace_blind": {
+   "n_tasks": 40,
+   "n_forked_tasks": 23,
+   "frac_tasks_forked": 0.575,
+   "n_forked_blockers": 35,
+   "n_blockers": 142,
+   "n_commitments": 867
+  }
+ },
+ "pair_pool": {
+  "trace_informed": {
+   "rep": "hashed",
+   "auroc": 0.5403034166298841,
+   "n_pairs": 4062,
+   "n_diff": 655,
+   "n_same": 3407,
+   "n_tasks": 20,
+   "ci95": [
+    0.44832735681687114,
+    0.6564481184918464
+   ]
+  },
+  "trace_blind": {
+   "rep": "hashed",
+   "auroc": 0.5639275298788591,
+   "n_pairs": 4505,
+   "n_diff": 591,
+   "n_same": 3914,
+   "n_tasks": 36,
+   "ci95": [
+    0.47083552172464027,
+    0.6850039761109021
+   ]
+  }
+ }
+}

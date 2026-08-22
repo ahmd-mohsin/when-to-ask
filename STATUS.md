@@ -115,6 +115,8 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T3** | Probe robustness | ⏳ **OWNER — GPU box** | [RUNBOOK_T3_PROBE.md](RUNBOOK_T3_PROBE.md). Needs `models/v3_32b_fixed/labels.npz` |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
+| — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** | AUROC .540 vs .564 (CIs overlap, both contain chance) → negatives NOT a registry artifact. **But census differs: 85% vs 57.5% of tasks forked** → the 2/3 headline is registry-quality-dependent, likely a LOWER bound. `results/blind_vs_informed_split.json` |
+| — | Train-fold vs eval-fold check | ✅ **DONE** | Stage-1 detection train F1 **0.517** vs eval **0.507** — fails equally on data it was tuned on → signal absence, not overfitting |
 
 Legend: ✅ done · 🔄 in progress · ⏳ not started
 
@@ -134,11 +136,33 @@ Legend: ✅ done · 🔄 in progress · ⏳ not started
    ceiling: if an LLM CAN separate them, the generic failures are
    informative rather than lack of effort.
 4. **No OOD — the missing collection-R3.** One model family, one benchmark,
-   one scaffold. `scripts/scaffold_robustness.py` exists and cheaply covers
-   the scaffold half. SQL/sealed OOD needs new class artifacts → likely out
-   of scope for this cycle; state as a limitation.
+   one scaffold. **The sealed pool was never *collected*, not merely never
+   tested** — there is no data for swe_60+. Partially mitigated by the
+   trace-blind/informed split (028 Am.A item 8) and by T5's cross-scale
+   rows. `scripts/scaffold_robustness.py` cheaply covers the scaffold half.
+   SQL/sealed OOD needs new class artifacts → out of scope this cycle;
+   state as a limitation.
 5. **Prevalence saturation.** Always-ask baselines hit F1 0.800 because 2/3
    of tasks fork. Report AUPRC or move to decision-level attribution.
+6. **Census is registry-quality-dependent (NEW, 2026-08-22).** Trace-blind
+   registries find forks in 57.5% of tasks vs 85% for trace-informed ones.
+   Since the known labeler failure mode is UNDER-detection (prose anchors
+   never uttered by code-first traces), the 2/3 headline is best presented
+   as a **lower bound**, with this decomposition shown rather than hidden.
+
+## What defends the negatives (say these out loud in the paper)
+
+- **Train ≈ eval.** Stage-1 detection scores F1 0.517 on the folds it was
+  tuned on vs 0.507 held out. The failure is not generalization — the
+  signal cannot be fit even with the answers in view.
+- **Nothing is fitted in T1 rows R3–R5.** Those AUROCs use a fixed
+  representation and Euclidean distance; there is no capacity to overfit,
+  so no train/test split applies.
+- **Registry construction is not the cause.** Trace-blind and
+  trace-informed tasks give the same AUROC (.564 vs .540).
+- **Adaptive analysis inflates false POSITIVES.** The long 011→028 chain
+  spent its researcher degrees of freedom trying to find signal and failed,
+  which makes the null more credible, not less.
 
 ## Sealed / untouched resources
 
