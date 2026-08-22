@@ -108,7 +108,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R1** | Raw activations | ✅ done (026) | At permutation null; global Stouffer p=.339 |
 | **T1·R2** | Learned L-space | ✅ done (026) | Null; n_testable=0 |
 | **T1·R3** | Surface hashes | ✅ done (027) | AUROC .555 — clustered CI **[0.492, 0.631], contains chance** |
-| **T1·R4** | MiniLM | ✅ done (027) | AUROC .580 |
+| **T1·R4** | MiniLM | ✅ done (027) | AUROC .580 — clustered CI **[0.535, 0.628], excludes chance** but far below the 0.75 bar |
 | **T1·R5** | bge-large | ✅ **DONE** | AUROC **0.573** — no better than MiniLM's .580 despite 15× the parameters. v1/v2 reproduced exactly (.555/.580). `results/t1_r5_strong_embedder.json` |
 | **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
 | **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
@@ -149,6 +149,12 @@ Legend: ✅ done · 🔄 in progress · ⏳ not started
    Since the known labeler failure mode is UNDER-detection (prose anchors
    never uttered by code-first traces), the 2/3 headline is best presented
    as a **lower bound**, with this decomposition shown rather than hidden.
+7. **Do not over-claim "zero signal" (NEW, 2026-08-22).** With honest
+   clustered CIs the rows differ: hashed .555 [.492,.631] **contains**
+   chance, MiniLM .580 [.535,.628] **excludes** it. The defensible claim is
+   *detectable but useless* — a whisper of signal nowhere near the 0.75 a
+   detector needs — not "no signal at all." Say it that way before a
+   reviewer says it for us.
 
 ## What defends the negatives (say these out loud in the paper)
 

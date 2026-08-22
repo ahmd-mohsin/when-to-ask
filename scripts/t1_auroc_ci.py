@@ -60,6 +60,34 @@ def auroc_from(labels: np.ndarray, dists: np.ndarray) -> float:
     return float((wins + 0.5 * ties) / (len(pos) * len(neg)))
 
 
+def warm_cache(actions, embedder) -> int:
+    """Pre-embed every mutating turn's text in ONE batched pass.
+
+    behavior_features calls the embedder one text at a time; for bge-large
+    that is ~21h of batch-1 forward passes. The embedders cache by exact
+    text, so warming the cache with the identical strings makes the later
+    per-turn calls pure lookups. The text construction here MUST match
+    wta.divergence.behavior_features exactly, and batching cannot change a
+    CLS-pooled result given correct attention masking — verified by the
+    AUROC reproducing the as-run point estimate.
+    """
+    from wta.labeling import _is_mutating
+    texts = []
+    for runs in actions.values():
+        for acts in runs.values():
+            for a in acts:
+                if _is_mutating(a.action_text or ""):
+                    obs = a.observables or {}
+                    texts.append(" ".join([str(obs.get("subgoal") or ""),
+                                           a.action_text or "",
+                                           str(obs.get("error_signature") or "")]))
+    uniq = list(dict.fromkeys(texts))
+    for i in range(0, len(uniq), 256):
+        embedder.embed(uniq[i:i + 256])
+        print(f"  warmed {min(i + 256, len(uniq))}/{len(uniq)}", flush=True)
+    return len(uniq)
+
+
 def build_pair_rows(actions, art, committed, embedder):
     """[(task, blocker, label, distance)] over the frozen pool construction
     (feature_signal_gate.pair_distances), with task provenance kept."""
@@ -120,6 +148,9 @@ def main() -> int:
         elif args.rep == "bge":
             from wta.embed import BgeEmbedder
             emb = BgeEmbedder()
+        if emb is not None:
+            n = warm_cache(actions, emb)
+            print(f"warmed {n} unique texts ({time.time() - t0:.0f}s)")
         rows = build_pair_rows(actions, art, committed, emb)
         cache.parent.mkdir(parents=True, exist_ok=True)
         cache.write_text(json.dumps(rows), encoding="utf-8")
