@@ -1,0 +1,29 @@
+{
+ "v1_hashed": {
+  "auroc": 0.5545272806322672,
+  "n_same": 7321,
+  "n_diff": 1246,
+  "same_mean": 0.7825887936453371,
+  "diff_mean": 0.8338364937392853
+ },
+ "v2_minilm": {
+  "auroc": 0.580046121636498,
+  "n_same": 7321,
+  "n_diff": 1246,
+  "same_mean": 0.7160090318155246,
+  "diff_mean": 0.7700233881973619
+ },
+ "r5_bge_large": {
+  "auroc": 0.5731412504716638,
+  "n_same": 7321,
+  "n_diff": 1246,
+  "same_mean": 0.548257820484381,
+  "diff_mean": 0.5798048346900386
+ },
+ "consistency": {
+  "v1_recorded": 0.555,
+  "v2_recorded": 0.58,
+  "v1_reproduced": 0.555,
+  "v2_reproduced": 0.58
+ }
+}

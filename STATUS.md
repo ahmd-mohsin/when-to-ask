@@ -109,7 +109,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R2** | Learned L-space | ✅ done (026) | Null; n_testable=0 |
 | **T1·R3** | Surface hashes | ✅ done (027) | AUROC .555 — clustered CI **[0.492, 0.631], contains chance** |
 | **T1·R4** | MiniLM | ✅ done (027) | AUROC .580 |
-| **T1·R5** | bge-large | 🔄 **RUNNING** | 9,274 texts, batch-1 on CPU. Writes `results/t1_r5_strong_embedder.json` |
+| **T1·R5** | bge-large | ✅ **DONE** | AUROC **0.573** — no better than MiniLM's .580 despite 15× the parameters. v1/v2 reproduced exactly (.555/.580). `results/t1_r5_strong_embedder.json` |
 | **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
 | **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
 | **T3** | Probe robustness | ⏳ **OWNER — GPU box** | [RUNBOOK_T3_PROBE.md](RUNBOOK_T3_PROBE.md). Needs `models/v3_32b_fixed/labels.npz` |
@@ -163,6 +163,9 @@ Legend: ✅ done · 🔄 in progress · ⏳ not started
 - **Adaptive analysis inflates false POSITIVES.** The long 011→028 chain
   spent its researcher degrees of freedom trying to find signal and failed,
   which makes the null more credible, not less.
+- **Encoder capacity is not the bottleneck.** bge-large (335M, 1024-d)
+  scores .573 vs MiniLM (22M, 384-d) at .580 — 15× the parameters buys
+  nothing. "Use a better embedder" is answered empirically, not by assertion.
 
 ## Sealed / untouched resources
 
