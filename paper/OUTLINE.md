@@ -139,10 +139,13 @@ code + census release plan (needs owner call on what ships).
 | Asset | Section |
 |---|---|
 | models/v3_32b_fixed (box) + census JSONs | 3 |
+| results/rollout_budget_ablation.json (F2, as-run 2026-08-21) | 3 + 8 (design guidance: forked .10→.67, testable frac .35 at N=24) |
+| results/lead_time_fork_anatomy.json (F4, as-run 2026-08-21) | 3 (ask window median 4 turns; onset t4 → completion t11) |
 | 026 Amendment B gate reports + permutation JSONs | 4 |
 | gate2 text controls (3 variants) | 4 |
-| full-dim + nonlinear probe rerun | 4 (TODO, box) |
-| feature_signal_gate.json + stage-1 JSON | 5 (+7 if pass) |
-| introspection arm (Fable subagents, chunked) | 7 (conditional) |
-| Phase-4 eval harness | 7 (conditional, box) |
+| results/gate2_probe_robustness.json (T3, box — owner runs RUNBOOK_T3_PROBE.md) | 4 |
+| feature_signal_gate.json + stage-1 JSON | 5 |
+| results/t5_cross_scale.json (T5, as-run 2026-08-21: 14B r3 .622 / r4 .666, small-pool caveat; 7B census-only) | 5 (generality row) |
+| results/t1_r5_strong_embedder.json (R5, bge-large row) | 5 (T1 matrix) |
+| results/r6_llm_cells.json (R6a introspection F1 + R6b ensemble AUROC) | 5 (T1 matrix) + 8 |
 | novelty sweep output (w7n0rxmf0) | 2 |

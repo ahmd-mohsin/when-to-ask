@@ -161,6 +161,18 @@ the implementation choices the entry left open, each settled pre-run:
    on any npz that is not the fixed-label set (787,281 reads; s6,s7 test
    split 9,180 / 110 classes); results persist after each probe.
 
+7. **AUROC uncertainty (added 2026-08-22, BEFORE the intervals were
+   computed).** Every T1/T5 separation AUROC gains a TASK-CLUSTERED
+   bootstrap 95% CI (2000 draws, seed 0, scripts/t1_auroc_ci.py). This is
+   additive: it does not rerun or vary any pre-registered cell, it puts a
+   sampling interval around the same statistic. Clustering is required for
+   the same reason gate5's permutation had to be run-level rather than
+   read-level (026): commitment pairs are not independent — they share runs
+   and tasks — so Hanley-McNeil or a naive pair bootstrap understates the
+   SE. Both are reported, the naive one only to show the inflation. The
+   point estimates already recorded are unchanged and remain the as-run
+   numbers.
+
 ## Stop rules and reporting
 
 Every cell lands in the paper as-run. No cell is rerun with variations
