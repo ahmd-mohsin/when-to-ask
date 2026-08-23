@@ -425,3 +425,87 @@ by construction because the task list is derived exactly as collect_v2
 derives it).
 
 **No HF token is required for T7.**
+
+## Amendment D (2026-08-23 — error_signature input bound, frozen DURING the T7 run)
+
+Found while diagnosing an idle GPU 5h into the T7 collection. Recorded before
+the fix was applied, per rule 2.
+
+**The defect.** `agent_loop.run_agent` computed the action's failure
+fingerprint from the FULL, untruncated command output, and only truncated
+afterwards for the transcript:
+
+```python
+event.observables["error_signature"] = error_signature(code, out)   # full output
+obs = truncate_obs(out, cfg.obs_head, cfg.obs_tail)                 # then truncate
+```
+
+On `swe_1-s10` the model issued `grep -r -` in `/app` — a malformed grep that
+matches the literal `-` in every file, recursively. Measured in a scratch
+container from the same image: **723 MB of output** inside the 120 s exec
+window. `error_signature` then scanned all 723 MB, capturing whole lines
+(`^.*?(...)$`) and allocating a normalized copy of each match. Shard 1 spent
+**over an hour at 97% CPU on a single metadata field** with a loaded 24B model
+idle beside it, while shards 0/2/3 ran normally at 93-96% GPU.
+
+It is deterministic — seeds are fixed and generation is seeded per segment —
+so restarting the shard replays the same command and wedges again. It is also
+present in the R2 code path unchanged, and can recur on any runaway command
+across the remaining ~1,385 runs.
+
+**Decision (owner, 2026-08-23): fingerprint the observation the model actually
+received.** Truncate first, then compute the signature from the truncated
+observation:
+
+```python
+obs = truncate_obs(out, cfg.obs_head, cfg.obs_tail)
+event.observables["error_signature"] = error_signature(code, obs)
+```
+
+The justification is not only speed. The docstring defines the field as the
+"normalized failure fingerprint of the observation an action produced", and
+the observation the agent conditioned on WAS the truncated one — the dropped
+middle never entered the trajectory. Fingerprinting text the model never saw
+was arguably the bug, independent of cost.
+
+**Honest statement of the blast radius.** This is NOT limited to pathological
+outputs. `truncate_obs` fires on any output over `obs_head + obs_tail`
+(1500 + 500 = 2000 chars), so the signature can change for ordinary actions
+too — specifically when an error-matching line falls in the dropped middle and
+shifts which hit is selected. In practice the function prefers the LAST typed
+`Name: message` line, and typed exceptions land at the end of output, which
+`obs_tail` retains — so most signatures should be unchanged. **That
+expectation is not measured and must not be reported as if it were:** the
+collector never persists observations (only the model's generated text), so
+the impact on already-collected runs cannot be recomputed after the fact.
+
+**What this change does NOT touch — checked, because the first framing of it
+overstated the risk.** `truncate_obs(out, cfg.obs_head, cfg.obs_tail)` is
+byte-identical before and after: same call, same arguments, moved two lines
+earlier. `obs_head=1500 / obs_tail=500` are unchanged and last moved in
+`31be8b4` (v2 collection, decisions/017) — *before* R2, unchanged since. The
+line that feeds the model,
+`messages.append({... f"[exit {code}]\n{obs}\n\nNext step?"})`, does not
+appear in the diff at all.
+
+So the agent was ALREADY conditioned on the truncated observation, in R2 too.
+The 723 MB the old code scanned was text the model never saw — discarded by
+`truncate_obs` on the very next line. **Trajectories, reads, activations and
+fork behaviour are bit-identical before and after this amendment.** Nothing
+here shortens a trajectory or suppresses a disagreement; the shortened-window
+failure mode the owner has previously measured concerns `obs_head`/`obs_tail`,
+which this amendment does not modify.
+
+The only quantity that can differ is the `error_signature` string, on actions
+whose raw output exceeded 2000 chars and whose error line fell in the dropped
+middle.
+
+**Disposition of the 55 pre-amendment runs (owner, 2026-08-23): KEEP them,
+restart all four shards on the fixed code.** Rationale: since the model's
+input is unchanged and seeds are deterministic, re-collecting those runs would
+reproduce the same trajectories and differ only in that metadata string —
+5.5 h of GPU time to alter one field, recovering no lost behaviour. They stay
+identifiable (collected before 2026-08-23 17:17Z) and can be dropped at
+analysis time if `error_signature` ever proves load-bearing for a T7 number.
+All four shards were restarted at 17:17Z so every subsequent run uses one code
+path.

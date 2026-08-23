@@ -172,10 +172,16 @@ def run_agent(session, env, instruction: str, *, run_id: str, task_id: str,
             result.stop_reason = "submit_marker"
             break
         code, out = env.execute(cmd)
+        # decisions/028 Amendment D: truncate FIRST, then fingerprint the
+        # observation the model actually received. The dropped middle never
+        # entered the trajectory, so fingerprinting it described text the
+        # agent never saw -- and on a runaway command (a malformed `grep -r -`
+        # produced 723 MB inside one exec window) scanning it wedged a shard
+        # for over an hour at 97% CPU with its GPU idle.
+        obs = truncate_obs(out, cfg.obs_head, cfg.obs_tail)
         # the signature is only knowable after execution -- fill it in on the
         # event we already logged (observables is mutable by design)
-        event.observables["error_signature"] = error_signature(code, out)
-        obs = truncate_obs(out, cfg.obs_head, cfg.obs_tail)
+        event.observables["error_signature"] = error_signature(code, obs)
         messages.append({"role": "user", "content":
                          f"[exit {code}]\n{obs}\n\nNext step?"})
     else:
