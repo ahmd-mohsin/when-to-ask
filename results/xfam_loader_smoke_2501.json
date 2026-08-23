@@ -1,0 +1,76 @@
+{
+ "model_id": "mistralai/Mistral-Small-24B-Instruct-2501",
+ "wrapper_class": "MistralForCausalLM",
+ "n_layers": 40,
+ "hidden_dim": 5120,
+ "layer_fractions": [
+  0.2,
+  0.3,
+  0.4,
+  0.5,
+  0.6,
+  0.7,
+  0.8,
+  0.85
+ ],
+ "layer_indices": [
+  8,
+  12,
+  16,
+  20,
+  24,
+  28,
+  32,
+  34
+ ],
+ "generation_config": {
+  "shipped": {
+   "do_sample": true,
+   "temperature": 0.15,
+   "top_p": null,
+   "top_k": null,
+   "min_p": null,
+   "repetition_penalty": null
+  },
+  "overrides": {
+   "top_p": 1.0,
+   "top_k": 0,
+   "min_p": 0.0
+  }
+ },
+ "chat_template_set": true,
+ "tokenizer_class": "TokenizersBackend",
+ "n_reads": 24,
+ "gen_chars": 929,
+ "gen_head": "When faced with a KeyError in a Python test suite related to config loading, the first two steps I would take to diagnose the issue are:\n\n1. **Check the Error Message**: Carefully read the error message to understand which key is missing. The error message should indicate the exa",
+ "h_shape_per_read": [
+  8,
+  5120
+ ],
+ "h_finite": true,
+ "h_nonzero_frac": 0.9992584228515625,
+ "h_abs_mean": 0.1946900486946106,
+ "h_norm_by_layer": [
+  6.213407039642334,
+  7.918650150299072,
+  10.554970741271973,
+  15.300745964050293,
+  21.995615005493164,
+  31.659650802612305,
+  39.60784912109375,
+  44.87813186645508
+ ],
+ "triggers": [
+  "cadence"
+ ],
+ "checks": {
+  "loaded": true,
+  "depth_width_resolved": true,
+  "eight_distinct_layers": true,
+  "reads_captured": true,
+  "h_shape_ok": true,
+  "h_finite": true,
+  "generated_text": true
+ },
+ "PASS": true
+}
