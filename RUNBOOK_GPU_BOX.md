@@ -43,10 +43,17 @@ to **~21 GB** — the full collection WILL fill root and die partway through a
 be done on the box, exactly as R2 did it:
 
 ```bash
-mkdir -p /ssd2/wta_data/xfam_<slug> /ssd2/wta_data/xfam_<slug>_smoke
-ln -sfn /ssd2/wta_data/xfam_<slug>       data/xfam_<slug>
-ln -sfn /ssd2/wta_data/xfam_<slug>_smoke data/xfam_<slug>_smoke
+mkdir -p /ssd3/wta_data/xfam_<slug> /ssd3/wta_data/xfam_<slug>_smoke
+ln -sfn /ssd3/wta_data/xfam_<slug>       data/xfam_<slug>
+ln -sfn /ssd3/wta_data/xfam_<slug>_smoke data/xfam_<slug>_smoke
 ```
+
+**`/ssd3` is a dedicated 500 GB EBS volume** attached 2026-08-23 for exactly
+this (`/dev/nvme5n1`, ext4, label `wta_data500`, in `/etc/fstab` with
+`nofail`). It exists because 24-seed T7 does NOT fit anywhere else: measured
+T7 output is **50.7 MB/run** — higher than R2's 29.6 because Mistral produces
+841 median reads/run vs R2's 556 — so 1,440 runs project to **~73 GB**, and
+`/ssd2` had only 45 GB free.
 
 Heavy irreproducible data (traces, activations) goes on the EBS volumes
 (`/ssd`, `/ssd2`); only reproducible things (weights, venv, docker images)
