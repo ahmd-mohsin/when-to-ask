@@ -1,0 +1,13 @@
+{
+ "a0": "data/xfam_mistralai-mistral-small-24b-instruct-2501_smoke",
+ "n_runs": 6,
+ "n_leak": 0,
+ "frac_runs_with_mutating": 1.0,
+ "median_reads": 841.0,
+ "criteria": {
+  "leak_free": true,
+  "mutating": true,
+  "reads": true
+ },
+ "passed": true
+}
