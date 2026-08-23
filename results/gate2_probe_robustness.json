@@ -1,0 +1,27 @@
+{
+ "n_train": 40000,
+ "n_test": 9180,
+ "n_classes": 110,
+ "chance": 0.00909090909090909,
+ "references": {
+  "text_masked_causal": 0.73,
+  "activ_256d_recorded": 0.2745,
+  "gate2_reported_T": 0.4102
+ },
+ "acc_256d_linear": 0.27450980392156865,
+ "acc_fulldim_linear": 0.5406318082788671,
+ "acc_fulldim_mlp": 0.506644880174292,
+ "mlp_config": {
+  "hidden": 512,
+  "activation": "relu",
+  "alpha": 0.0001,
+  "batch_size": 256,
+  "learning_rate_init": 0.001,
+  "max_iter": 100,
+  "early_stopping": true,
+  "n_iter_no_change": 10,
+  "validation_fraction": 0.1,
+  "random_state": 0,
+  "n_iter_": 18
+ }
+}

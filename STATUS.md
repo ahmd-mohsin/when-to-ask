@@ -1,6 +1,6 @@
 # STATUS — what every code name means, and what is done vs left
 
-**Living document. Last updated: 2026-08-22.**
+**Living document. Last updated: 2026-08-23.**
 Update rule at the bottom: this file is edited in the SAME commit as any
 experiment that lands. If it disagrees with reality, reality wins and this
 file is stale — fix it.
@@ -112,8 +112,8 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R5** | bge-large | ✅ **DONE** | AUROC **0.573**, clustered CI [.525, .627] — no better than MiniLM's .580 despite 15× the parameters. v1/v2 reproduced exactly. `results/t1_r5_strong_embedder.json` |
 | **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
 | **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
-| **T3** | Probe robustness | ⏳ **OWNER — GPU box** | [RUNBOOK_T3_PROBE.md](RUNBOOK_T3_PROBE.md). Needs `models/v3_32b_fixed/labels.npz` |
-| **T7** | Cross-family replication (2nd model, same 60 tasks) | ⏳ **OWNER — GPU box, launch-ready** | Closes gap #4's family half. No new artifacts, no Fable budget. [RUNBOOK_GPU_BOX.md](RUNBOOK_GPU_BOX.md), smoke gate pre-registered (028 Am.A item 9) |
+| **T3** | Probe robustness | ✅ **DONE** | Neither escape works. full-dim linear **.541**, full-dim MLP **.507** — both far below the causal+anchors-masked TEXT baseline **.730**; the MLP is *worse* than the linear probe. 256-d consistency check reproduced **.2745** exactly. `results/gate2_probe_robustness.json` |
+| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🚫 **BLOCKED — not launch-ready** | Two blockers found on the box 2026-08-23, see "T7 blockers" below. Both pre-registered models are multimodal wrappers the collector cannot load, and the hil-bench task images no longer exist. [RUNBOOK_GPU_BOX.md](RUNBOOK_GPU_BOX.md), 028 Am.A item 9 |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
@@ -150,6 +150,45 @@ claim is *detectable but useless, and flat* — **NOT** "no signal at all,"
 and **NOT** "nothing beats chance on the clean subset" (bge does, at
 .599 [.534, .673]). Over-claiming either way is the easiest way to lose a
 reviewer who reruns the bootstrap.
+
+## T7 blockers (found on the box, 2026-08-23) — needs an owner decision
+
+T7 was handed over as "launch-ready". It is not. Neither blocker is visible
+from the laptop; both were found on the box before spending GPU time.
+
+**1. Both pre-registered models are multimodal wrappers the collector cannot
+load.** `src/wta/hf_reader.py` uses `AutoModelForCausalLM` and then reads
+`config.num_hidden_layers` / `config.hidden_size` directly (lines 92-97).
+
+- `mistralai/Mistral-Small-3.2-24B-Instruct-2506` is
+  `Mistral3ForConditionalGeneration`; **`mistral3` is not in the
+  `AutoModelForCausalLM` mapping at all**, so the load raises. Its real depth
+  (40 layers) and width (5120) live in `config.text_config`, so
+  `config.num_hidden_layers` is `None` and layer resolution would break even
+  if the load succeeded.
+- The fallback `google/gemma-3-27b-it` *is* in the CausalLM mapping, but it is
+  **`gated=manual` on the Hub** and no HF token is configured on this box, so
+  the pre-registered fallback path cannot be exercised either.
+
+Supporting a nested `text_config` is a small compatibility fix, but it changes
+which layers get captured relative to R2, so it is a **pre-registration
+question, not a judgement call** — 028 Am.A item 9 says explicitly not to tune
+the protocol until a model complies. Cleanest alternative: pick a plain
+decoder-only 20-30B model from a genuinely different family (the collector
+already handles `mistral`, `llama`, `qwen3`, `gemma3_text`), which changes only
+the model, not the capture protocol.
+
+**2. The hil-bench task docker images are gone.** The ephemeral NVMe was wiped;
+`/opt/dlami/nvme/docker` no longer exists. `docker images` still lists ~100
+`hilbench-swe:*` entries, but every one reports **0B** and
+`docker run` fails with `blob not found` — they are phantom metadata rows.
+`DockerTaskEnv` starts one container per run, so **no collection of any kind
+can run until the images are rebuilt** via
+`third_party/hil-bench/harbor_swe/build_images.sh`.
+
+The same wipe destroyed `/opt/dlami/nvme/wta-venv`, which every launcher and
+runbook hard-codes. It has been rebuilt (py3.12, torch 2.9.1+cu128, CUDA sees
+4 GPUs) — but treat it as ephemeral: **it will not survive the next VM stop.**
 
 ## Known gaps a reviewer will attack
 
