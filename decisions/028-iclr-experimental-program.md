@@ -242,3 +242,70 @@ prompts, and sample sizes above are frozen by this entry once accepted.
 Suite must stay green; every experiment ships with its driver script in
 scripts/ and its output in results/ (fresh files, never overwriting R2-era
 or 026/027 artifacts).
+
+## Amendment B (2026-08-23 — T7 loader compatibility, frozen BEFORE the run)
+
+Amendment A item 9 named `mistralai/Mistral-Small-3.2-24B-Instruct-2506` as
+T7's primary model and forbade "protocol tuning to make a model comply." On
+the box, that model turns out not to be loadable by the collector at all —
+not a tuning question, a hard incompatibility found before any GPU time was
+spent. This amendment records the diagnosis and the owner's chosen fix.
+
+**Diagnosis (verified on the box, no weights downloaded — meta-device
+instantiation from the published config).**
+
+1. `Mistral-Small-3.2` is `Mistral3ForConditionalGeneration`, a multimodal
+   wrapper. `mistral3` is **not present in transformers'
+   `MODEL_FOR_CAUSAL_LM_MAPPING_NAMES`**, so `hf_reader`'s
+   `AutoModelForCausalLM.from_pretrained` raises rather than loading it.
+2. Its depth and width live in `config.text_config` (40 layers, hidden
+   5120); top-level `config.num_hidden_layers` / `config.hidden_size` are
+   absent, so `hf_reader`'s layer resolution would break even if the load
+   succeeded.
+3. Its decoder blocks are at `model.model.language_model.layers`, not
+   `model.model.layers`, so `layer_capture._decoder_layers` raises too.
+4. The pre-registered fallback `google/gemma-3-27b-it` is `gated=manual` on
+   the Hub and no HF token is configured on the box, so the fallback path
+   as written is unreachable there.
+
+**Options considered.** (a) Swap to `Mistral-Small-24B-Instruct-2501` — the
+text-only predecessor, ungated, `MistralForCausalLM`, and *identical* depth
+and width (40 x 5120) to the 3.2 text tower; zero code change, model id
+only. (b) Teach the reader to load multimodal wrappers and read the nested
+config. (c) Token + gemma fallback. (d) Drop T7.
+
+**Decision (owner, 2026-08-23): option (b).** Keep the pre-registered model
+literal and extend the loader. The change is a *compatibility* extension,
+not a protocol tune: it does not alter what is captured, when, or how — the
+layer fractions (0.2..0.85), cadence, cue selection, sampling params and
+max_steps are untouched, and the Llama/Qwen path is byte-for-byte unchanged
+(the nested lookups are fallbacks that only fire when the flat layout is
+absent).
+
+**Frozen specifics.**
+
+- Load: try `AutoModelForCausalLM`; on a wrapper architecture fall back to
+  `AutoModelForImageTextToText`. Text-only models are unaffected.
+- Config: read `num_hidden_layers` / `hidden_size` from `config.text_config`
+  when present, else top-level.
+- Capture: `_decoder_layers` accepts `model.model.language_model.layers` as
+  a fallback when `model.model.layers` is absent; the final-norm lookup
+  follows the same object, preserving the last-layer post-norm semantics
+  that make hook capture bit-compatible with the R2 path.
+- **Contract test** (rule 4) pins all three on the real published config via
+  meta-device instantiation, so it needs no weights and no GPU.
+
+**Stated risk, recorded rather than hidden.** T7 captures from a different
+family's decoder stack; the layer *fractions* are identical but the blocks
+they land on are a different model's. That is inherent to any cross-family
+comparison and is exactly what T7 measures. What this amendment must NOT be
+read as licensing: no per-model tuning of fractions, cadence, or sampling to
+improve a result. If the smoke gate fails on Mistral-3.2 under this loader,
+the NO-GO stands as written in Amendment A item 9.
+
+**Blocker still open at the time of writing.** The hil-bench task docker
+images were destroyed by an ephemeral-NVMe wipe on the box, and rebuilding
+them pulls from `ScaleAI/hil-bench-swe-images`, which returns 401
+unauthenticated. Until an HF token is present on the box, T7 cannot run
+regardless of this amendment. The loader fix is landed and tested; the
+collection is not started.

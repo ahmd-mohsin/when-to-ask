@@ -35,6 +35,16 @@ def resolve_layers(n_layers: int, specs: list[float | int]) -> list[int]:
     return idxs
 
 
+def _text_config(config):
+    """Depth/width live in ``config.text_config`` for multimodal wrappers
+    (decisions/028 Amendment B); flat causal LMs carry them at the top level.
+    Pure -- unit-tested without weights."""
+    nested = getattr(config, "text_config", None)
+    if getattr(nested, "num_hidden_layers", None) is not None:
+        return nested
+    return config
+
+
 def _dtype_kwarg_name(transformers_version: str) -> str:
     """transformers v5 renamed from_pretrained's ``torch_dtype=`` to
     ``dtype=`` (found on the Blackwell box, 2026-08-08: v5 rejects the old
@@ -89,10 +99,20 @@ class HFStreamReader:
             kwargs["device_map"] = "auto"
         if load_in_4bit:
             kwargs["load_in_4bit"] = True
-        self.model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
+        # decisions/028 Amendment B: multimodal wrappers (e.g. Mistral3) are
+        # absent from the CausalLM auto-mapping, so the flat load raises. Fall
+        # back to the image-text-to-text auto class ONLY on that failure --
+        # every text-only model still takes the original path untouched.
+        try:
+            self.model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
+        except (ValueError, KeyError):
+            from transformers import AutoModelForImageTextToText
+            self.model = AutoModelForImageTextToText.from_pretrained(
+                model_id, **kwargs)
         self.model.eval()
-        self.n_layers = self.model.config.num_hidden_layers
-        self.hidden_dim = self.model.config.hidden_size
+        cfg = _text_config(self.model.config)
+        self.n_layers = cfg.num_hidden_layers
+        self.hidden_dim = cfg.hidden_size
         self.mid_layer = resolve_mid_layer(self.n_layers, mid_layer)
         # Multi-layer capture (decisions/014): resolve each spec to an index and
         # store the ORDER we stack them in. None -> single mid layer (legacy).

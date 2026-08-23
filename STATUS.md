@@ -113,7 +113,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
 | **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
 | **T3** | Probe robustness | ✅ **DONE** | Neither escape works. full-dim linear **.541**, full-dim MLP **.507** — both far below the causal+anchors-masked TEXT baseline **.730**; the MLP is *worse* than the linear probe. 256-d consistency check reproduced **.2745** exactly. `results/gate2_probe_robustness.json` |
-| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🚫 **BLOCKED — not launch-ready** | Two blockers found on the box 2026-08-23, see "T7 blockers" below. Both pre-registered models are multimodal wrappers the collector cannot load, and the hil-bench task images no longer exist. [RUNBOOK_GPU_BOX.md](RUNBOOK_GPU_BOX.md), 028 Am.A item 9 |
+| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🚫 **BLOCKED — needs an HF token** | Loader blocker **RESOLVED** (028 Amendment B: nested `text_config` + multimodal wrapper support, 8 contract tests, flat path unchanged). Still blocked: the hil-bench docker images were destroyed by the NVMe wipe and rebuilding them needs a token for `ScaleAI/hil-bench-swe-images` (401). [RUNBOOK_GPU_BOX.md](RUNBOOK_GPU_BOX.md), 028 Am.A item 9 + Am.B |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
@@ -151,13 +151,23 @@ and **NOT** "nothing beats chance on the clean subset" (bge does, at
 .599 [.534, .673]). Over-claiming either way is the easiest way to lose a
 reviewer who reruns the bootstrap.
 
-## T7 blockers (found on the box, 2026-08-23) — needs an owner decision
+## T7 blockers (found on the box, 2026-08-23) — one resolved, one open
 
 T7 was handed over as "launch-ready". It is not. Neither blocker is visible
 from the laptop; both were found on the box before spending GPU time.
+**Blocker 1 is now fixed** (decisions/028 Amendment B); **blocker 2 is open
+and needs a credential only the owner has.**
 
-**1. Both pre-registered models are multimodal wrappers the collector cannot
-load.** `src/wta/hf_reader.py` uses `AutoModelForCausalLM` and then reads
+**1. ✅ RESOLVED — both pre-registered models are multimodal wrappers the
+collector could not load.** Fixed by 028 Amendment B (owner decision: extend
+the loader, keep the pre-registered model literal). `AutoModelForCausalLM`
+now falls back to `AutoModelForImageTextToText`, depth/width read through
+`config.text_config`, and hook capture accepts
+`model.model.language_model.layers` with the final norm taken from the same
+module. The flat Llama/Qwen path is untouched and still passes its
+bit-compatibility contract test. Pinned by
+`harness/contract/test_multimodal_loader.py` (8 tests, no weights, no GPU).
+The original diagnosis, kept for the record: `src/wta/hf_reader.py` uses `AutoModelForCausalLM` and then reads
 `config.num_hidden_layers` / `config.hidden_size` directly (lines 92-97).
 
 - `mistralai/Mistral-Small-3.2-24B-Instruct-2506` is
@@ -178,7 +188,11 @@ decoder-only 20-30B model from a genuinely different family (the collector
 already handles `mistral`, `llama`, `qwen3`, `gemma3_text`), which changes only
 the model, not the capture protocol.
 
-**2. The hil-bench task docker images are gone.** The ephemeral NVMe was wiped;
+**2. 🚫 OPEN — the hil-bench task docker images are gone, and rebuilding
+them needs an HF token.** `third_party/hil-bench/harbor_swe/build_images.sh`
+pulls from `ScaleAI/hil-bench-swe-images`, which returns **401 Repository Not
+Found** unauthenticated. Until a token with access is on the box, no
+collection of any kind can run — T7 or otherwise. The ephemeral NVMe was wiped;
 `/opt/dlami/nvme/docker` no longer exists. `docker images` still lists ~100
 `hilbench-swe:*` entries, but every one reports **0B** and
 `docker run` fails with `blob not found` — they are phantom metadata rows.

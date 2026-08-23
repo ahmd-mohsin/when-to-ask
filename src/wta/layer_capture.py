@@ -17,15 +17,31 @@ from __future__ import annotations
 import numpy as np
 
 
+def _text_stack(model):
+    """The module that OWNS the decoder blocks and the final norm.
+
+    Flat Llama/Qwen-family causal LMs put both on ``model.model``. Multimodal
+    wrappers (Mistral3ForConditionalGeneration, decisions/028 Amendment B)
+    nest the text tower one level deeper, at ``model.model.language_model``,
+    and expose no ``layers`` on ``model.model`` at all. The flat layout is
+    tried FIRST, so every previously collected model resolves exactly as
+    before and the R2 capture path is unchanged.
+    """
+    inner = getattr(model, "model", None)
+    if getattr(inner, "layers", None) is not None:
+        return inner
+    nested = getattr(inner, "language_model", None)
+    if getattr(nested, "layers", None) is not None:
+        return nested
+    raise ValueError(
+        f"unsupported architecture for hook capture: {type(model).__name__} "
+        "(expected model.model.layers, the Llama/Qwen layout, or "
+        "model.model.language_model.layers, the multimodal-wrapper layout)")
+
+
 def _decoder_layers(model):
     """The decoder-block list for Llama/Qwen-family causal LMs."""
-    inner = getattr(model, "model", None)
-    layers = getattr(inner, "layers", None)
-    if layers is None:
-        raise ValueError(
-            f"unsupported architecture for hook capture: {type(model).__name__} "
-            "(expected model.model.layers, the Llama/Qwen layout)")
-    return layers
+    return _text_stack(model).layers
 
 
 class LayerCapture:
@@ -54,8 +70,12 @@ class LayerCapture:
         return hook
 
     def __enter__(self) -> "LayerCapture":
-        layers = _decoder_layers(self._model)
-        norm = getattr(getattr(self._model, "model", None), "norm", None)
+        stack = _text_stack(self._model)
+        layers = stack.layers
+        # final norm must come from the SAME module that owns the blocks, or
+        # the last-layer post-norm semantics above silently break on nested
+        # (multimodal) layouts.
+        norm = getattr(stack, "norm", None)
         last = len(layers) - 1
         for idx in self.layer_indices:
             self._handles.append(layers[idx].register_forward_hook(
