@@ -63,8 +63,8 @@ causal+anchors-masked TEXT baseline of **0.730**?
 python scripts/gate2_probe_robustness.py --labels models/v3_32b_fixed/labels.npz --out results/gate2_probe_robustness.json
 ```
 
-Guards are built in: it aborts unless the npz is the fixed-label set
-(787,281 reads) and the s6,s7 split comes out 9,180 test / 110 classes, and
+Guards are built in: it aborts unless the npz is the fixed-label set and the
+s6,s7 split comes out 9,180 test / 110 classes, and
 it persists after each probe so a late crash never loses finished numbers.
 The 256-d consistency check should print ≈ **0.2745**; if it is far off,
 STOP and paste the log rather than interpreting the run.
@@ -119,6 +119,19 @@ Then tar the output dir and send it back; labeling and the T1 rows are CPU
 work on the laptop.
 
 ---
+
+### 1a. Which labels.npz is the right one?
+
+Read count does NOT identify it: the pre-repair pass `models/v3_32b_1415`
+(2026-08-16) has the SAME 787,281 reads, because the 026 repair changed label
+ASSIGNMENT, not read extraction. The script now checks the discriminator
+itself (decision-labeled / class-labeled read counts) and aborts on the
+pre-repair set. To identify a directory by hand:
+
+| set | `labels_debug.jsonl` bytes | date | dec-labeled / class-labeled |
+|---|---|---|---|
+| pre-repair `v3_32b_1415` | 305,171,934 | Aug 16 | 151,701 / 30,879 |
+| **FIXED `v3_32b_fixed`** | 339,296,497 | Aug 19 | **154,766 / 33,422** |
 
 ## Do NOT do these
 

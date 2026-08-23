@@ -61,12 +61,29 @@ def main() -> int:
     runs = [tuple(r) for r in meta["runs"]]
     log(f"reads={len(dec)} decisions={len(meta['decisions'])} runs={len(runs)}")
     # input-identity guard: the 0.730 / 0.2745 references are only valid for
-    # the FIXED npz (026). The old models/v3_32b/labels.npz has a different
-    # read count; refuse to burn hours on the wrong input.
+    # the FIXED npz (026). Refuse to burn hours on the wrong input.
+    #
+    # Read count alone is NOT sufficient: the pre-repair 1415-run pass
+    # (models/v3_32b_1415, 2026-08-16) has the SAME 787,281 reads, because
+    # the 026 repair changed LABEL assignment, not read extraction. The
+    # discriminator is how many reads carry a decision / a class — the repair
+    # relabeled 13.4% of them. Expected values below were measured from the
+    # fixed labeler's own debug trail (models/v3_32b_fixed_debug).
     if len(dec) != 787281:
-        log(f"!! reads={len(dec)} != 787281 — this is NOT the fixed-label "
-            f"npz (models/v3_32b_fixed). Aborting before the probes.")
+        log(f"!! reads={len(dec)} != 787281 — not the 1415-run label set "
+            f"(the 1385-run models/v3_32b has 683,285). Aborting.")
         return 1
+    n_dec = int((dec >= 0).sum())
+    n_clsreads = int((z["cls"] >= 0).sum())
+    if (n_dec, n_clsreads) != (154766, 33422):
+        log(f"!! decision-labeled={n_dec} class-labeled={n_clsreads}")
+        log(f"   FIXED (models/v3_32b_fixed) expects 154766 / 33422")
+        log(f"   pre-repair (models/v3_32b_1415) has  151701 / 30879")
+        log(f"   -> this looks like the PRE-REPAIR label set. Aborting: "
+            f"running T3 on it would produce a wrong as-run number.")
+        return 1
+    log(f"input identity OK: fixed labels ({n_dec} decision-labeled, "
+        f"{n_clsreads} class-labeled reads)")
 
     # --- split: verbatim gate2_text_control.py logic ----------------------
     held = {int(s) for s in args.held_seeds.split(",")}
