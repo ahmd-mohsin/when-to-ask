@@ -1,0 +1,49 @@
+{
+ "model_id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+ "wrapper_class": "Mistral3ForConditionalGeneration",
+ "n_layers": 40,
+ "hidden_dim": 5120,
+ "layer_fractions": [
+  0.2,
+  0.3,
+  0.4,
+  0.5,
+  0.6,
+  0.7,
+  0.8,
+  0.85
+ ],
+ "layer_indices": [
+  8,
+  12,
+  16,
+  20,
+  24,
+  28,
+  32,
+  34
+ ],
+ "generation_config": {
+  "shipped": {
+   "do_sample": true,
+   "temperature": 0.15,
+   "top_p": null,
+   "top_k": null,
+   "min_p": null,
+   "repetition_penalty": null
+  },
+  "overrides": {
+   "top_p": 1.0,
+   "top_k": 0,
+   "min_p": 0.0
+  }
+ },
+ "chat_template_set": false,
+ "tokenizer_class": "TokenizersBackend",
+ "checks": {
+  "loaded": true,
+  "chat_template_set": false
+ },
+ "PASS": false,
+ "blocker": "tokenizer ships no HF chat_template; apply_chat_template raises, so the collector cannot build agent turns for this model"
+}

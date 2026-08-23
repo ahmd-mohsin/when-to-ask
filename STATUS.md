@@ -113,7 +113,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
 | **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
 | **T3** | Probe robustness | ✅ **DONE** | Neither escape works. full-dim linear **.541**, full-dim MLP **.507** — both far below the causal+anchors-masked TEXT baseline **.730**; the MLP is *worse* than the linear probe. 256-d consistency check reproduced **.2745** exactly. `results/gate2_probe_robustness.json` |
-| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🚫 **BLOCKED — needs an HF token** | Loader blocker **RESOLVED** (028 Amendment B: nested `text_config` + multimodal wrapper support, 8 contract tests, flat path unchanged). Still blocked: the hil-bench docker images were destroyed by the NVMe wipe and rebuilding them needs a token for `ScaleAI/hil-bench-swe-images` (401). [RUNBOOK_GPU_BOX.md](RUNBOOK_GPU_BOX.md), 028 Am.A item 9 + Am.B |
+| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🚫 **BLOCKED — owner decision + HF token** | Loader blocker RESOLVED and verified on real weights (028 Am.B; `results/xfam_loader_smoke.json`). But the pre-registered model **ships no HF chat_template**, so the collector cannot build a turn — supplying one would be the protocol tuning Am.A item 9 forbids. Also still needs an HF token for the destroyed docker images (401). [RUNBOOK_GPU_BOX.md](RUNBOOK_GPU_BOX.md), 028 Am.A item 9 + Am.B |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
@@ -151,7 +151,7 @@ and **NOT** "nothing beats chance on the clean subset" (bge does, at
 .599 [.534, .673]). Over-claiming either way is the easiest way to lose a
 reviewer who reruns the bootstrap.
 
-## T7 blockers (found on the box, 2026-08-23) — one resolved, one open
+## T7 blockers (found on the box, 2026-08-23) — one resolved, three open
 
 T7 was handed over as "launch-ready". It is not. Neither blocker is visible
 from the laptop; both were found on the box before spending GPU time.
@@ -187,6 +187,23 @@ the protocol until a model complies. Cleanest alternative: pick a plain
 decoder-only 20-30B model from a genuinely different family (the collector
 already handles `mistral`, `llama`, `qwen3`, `gemma3_text`), which changes only
 the model, not the capture protocol.
+
+**1b. 🚫 OPEN (new, found after the loader fix) — the pre-registered model
+ships no chat template.** `Mistral-Small-3.2-24B-Instruct-2506` has
+`tokenizer.chat_template = None` (its template lives only in
+`mistral-common`). `generate_segment` builds every agent turn with
+`apply_chat_template`, so the collector cannot construct a single prompt.
+Loading the model was necessary but not sufficient. Supplying a template
+defines what the model sees and is squarely the protocol tuning Am.A item 9
+forbids, so it is an **owner decision**, not a fix to apply.
+`mistralai/Mistral-Small-24B-Instruct-2501` — same family, same size, same
+40 x 5120 — *does* ship one and needs no loader fix either.
+
+**1c. ⚠️ OPEN — Mistral tokenizer regex.** transformers warns on BOTH Mistral
+tokenizers that the shipped regex "will lead to incorrect tokenization" and
+asks for `fix_mistral_regex=True`. Read positions are token indices, so this
+bears on capture and must be settled before any Mistral collection,
+whichever model is chosen. (Unrelated to the R2-era tokenizer flag.)
 
 **2. 🚫 OPEN — the hil-bench task docker images are gone, and rebuilding
 them needs an HF token.** `third_party/hil-bench/harbor_swe/build_images.sh`

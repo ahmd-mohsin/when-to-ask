@@ -309,3 +309,44 @@ them pulls from `ScaleAI/hil-bench-swe-images`, which returns 401
 unauthenticated. Until an HF token is present on the box, T7 cannot run
 regardless of this amendment. The loader fix is landed and tested; the
 collection is not started.
+
+### Amendment B — as-run outcome (2026-08-23, same day)
+
+The loader fix was validated on REAL weights, not just the meta device
+(`scripts/xfam_loader_smoke.py`, `results/xfam_loader_smoke.json`). It works:
+
+    loaded: Mistral3ForConditionalGeneration
+    n_layers=40 hidden=5120 layers=[8, 12, 16, 20, 24, 28, 32, 34]
+
+That is the full Amendment B path exercised end to end — wrapper load,
+nested-config depth/width, and the frozen 0.2..0.85 fractions resolving onto
+the second family's stack. **Blocker 1 is genuinely closed.**
+
+**But the smoke check then FAILED on a blocker Amendment B did not
+anticipate:** `Mistral-Small-3.2-24B-Instruct-2506` **ships no HF
+`chat_template`** (`tokenizer.chat_template is None`; its template lives only
+in `mistral-common`). `generate_segment` builds every agent turn with
+`apply_chat_template`, so the collector cannot construct a single prompt for
+this model. Loading it is necessary but not sufficient.
+
+Supplying a chat template is NOT the same kind of change as the loader fix.
+The loader did not affect what the model sees; a chat template defines
+exactly that — the prompt format the whole trajectory is conditioned on.
+Hand-writing or importing one is squarely the "protocol tuning to make a
+model comply" that Amendment A item 9 forbids, and it would make the two
+families non-comparable in precisely the way that rule exists to prevent.
+
+Two further facts recorded for whoever picks this up:
+
+- `mistralai/Mistral-Small-24B-Instruct-2501` — the text-only predecessor,
+  same family, same size class, **same 40 x 5120 depth and width** — **does**
+  ship a chat template, and is a plain `MistralForCausalLM`. It needs neither
+  the loader fix nor a template decision.
+- transformers warns on BOTH Mistral tokenizers: *"incorrect regex pattern …
+  This will lead to incorrect tokenization. You should set
+  `fix_mistral_regex=True`"*. Since read positions are token indices, this
+  bears on capture and must be settled before any Mistral collection —
+  independently of which of the two models is chosen.
+
+**Status: T7 remains NOT launchable.** No protocol tuning was performed. The
+model choice is back with the owner.
