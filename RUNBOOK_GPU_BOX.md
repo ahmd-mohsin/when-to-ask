@@ -9,8 +9,48 @@ T7 in Amendment A item 9. Report numbers as-run.
 
 ```bash
 git pull            # box tracks main; both branches have the commits
-python -m pytest -q # expect 245 green
+python -m pytest -q # expect 252 collected: 240 passed, 12 skipped
 ```
+
+---
+
+## Step 0 — box prep after ANY VM stop (the instance store is wiped)
+
+`/opt/dlami/nvme` is ephemeral and is rebuilt empty on every stop/start. Three
+things die with it and every one of them is load-bearing:
+
+1. **The venv** `/opt/dlami/nvme/wta-venv`, which this runbook and
+   `launch_xfam.sh` hard-code. Rebuild: `/usr/bin/python3.12 -m venv`, then
+   `pip install numpy scipy scikit-learn pyyaml pytest`, the cached torch
+   wheel in `/opt/dlami/nvme/wheels`, then `transformers accelerate
+   huggingface_hub`. `hf buckets` must resolve or `launch_xfam.sh` aborts.
+2. **The docker/containerd roots.** Both daemons come up "active" pointed at
+   an empty volume, `docker images` lists the old tags at **0B**, and
+   `docker load` fails with `metadata.db: no such file or directory`. Fix:
+   `sudo systemctl stop docker docker.socket containerd`, `sudo mkdir -p
+   /opt/dlami/nvme/docker /opt/dlami/nvme/containerd`, start **containerd
+   first**, then docker.
+3. **The task images.** Restore with
+   `python scripts/restore_hilbench_images.py` (60 tasks, ~174 GB download /
+   ~500 GB unpacked, ~40 min). The bucket is **public — no HF token needed**.
+
+### Storage placement — do this BEFORE the full run
+
+`launch_xfam.sh` writes to `data/xfam_<slug>`, and `data/` is on the **29 GB
+root disk (~2 GB free)**. R2's 1,415 runs are 41 GB, so T7's 720 runs project
+to **~21 GB** — the full collection WILL fill root and die partway through a
+24h job. `data/*` is gitignored, so this cannot be fixed in the repo; it must
+be done on the box, exactly as R2 did it:
+
+```bash
+mkdir -p /ssd2/wta_data/xfam_<slug> /ssd2/wta_data/xfam_<slug>_smoke
+ln -sfn /ssd2/wta_data/xfam_<slug>       data/xfam_<slug>
+ln -sfn /ssd2/wta_data/xfam_<slug>_smoke data/xfam_<slug>_smoke
+```
+
+Heavy irreproducible data (traces, activations) goes on the EBS volumes
+(`/ssd`, `/ssd2`); only reproducible things (weights, venv, docker images)
+belong on the ephemeral NVMe.
 
 ---
 
