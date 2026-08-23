@@ -33,6 +33,14 @@ SLUG=$(echo "$MODEL" | tr '/' '-' | tr '[:upper:]' '[:lower:]')
 export PATH=/opt/dlami/nvme/wta-venv/bin:$PATH
 export HF_HOME=/opt/dlami/nvme/hf
 export TMPDIR=/opt/dlami/nvme/tmp
+# Allocator only -- does not change sampling, seeds, or numerics. Same flag
+# and same reason as the R2 gap-fill (/ssd/gapfill_r2.sh): the original R2 lost
+# 55 runs to CUDA-OOM that needed ~3.2 GiB while ~2.8-3.0 GiB was free and
+# 4.4 GiB sat reserved-but-unallocated -- exactly the fragmentation this
+# removes. T7 was observed at 3.2-3.7 GiB free on 3 of 4 cards, i.e. sitting
+# in R2's OOM band, so it is set here from the start rather than after the
+# losses.
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 PY=/opt/dlami/nvme/wta-venv/bin/python
 
 if [ "$MODE" = "smoke" ]; then
