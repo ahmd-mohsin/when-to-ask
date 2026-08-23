@@ -45,6 +45,25 @@ def _text_config(config):
     return config
 
 
+def _load_tokenizer(model_id: str):
+    """Load the tokenizer with ``fix_mistral_regex=True`` (decisions/028
+    Amendment C).
+
+    transformers warns that Mistral's shipped regex "will lead to incorrect
+    tokenization" and asks for this flag. Reads are recorded at token indices,
+    so tokenization is not cosmetic here. The flag is passed UNCONDITIONALLY
+    because it was verified to be a no-op elsewhere -- Qwen3 (the R2 family)
+    yields byte-identical ids with and without it -- which keeps one code path
+    for every model instead of a family branch. Older tokenizers that reject
+    the kwarg fall back to the plain load.
+    """
+    from transformers import AutoTokenizer
+    try:
+        return AutoTokenizer.from_pretrained(model_id, fix_mistral_regex=True)
+    except (TypeError, ValueError):
+        return AutoTokenizer.from_pretrained(model_id)
+
+
 def _dtype_kwarg_name(transformers_version: str) -> str:
     """transformers v5 renamed from_pretrained's ``torch_dtype=`` to
     ``dtype=`` (found on the Blackwell box, 2026-08-08: v5 rejects the old
@@ -91,7 +110,7 @@ class HFStreamReader:
         self.top_p = top_p
         self.top_k = top_k
         self.min_p = min_p
-        self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+        self.tokenizer = _load_tokenizer(model_id)
         import transformers
         kwargs: dict = {
             _dtype_kwarg_name(transformers.__version__): getattr(torch, dtype)}

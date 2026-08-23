@@ -22,7 +22,12 @@ cd /home/ubuntu/when-to-ask
 
 MODE="${1:-smoke}"
 NRUNS="${2:-12}"
-MODEL="${MODEL:-mistralai/Mistral-Small-3.2-24B-Instruct-2506}"
+# decisions/028 Amendment C: the originally pre-registered 3.2-24B ships no HF
+# chat_template, so the collector cannot build a turn for it. 2501 is the
+# text-only predecessor -- same family, same size class, same 40 x 5120 depth
+# and width -- and ships its own template, so nothing about the prompt format
+# is chosen by us.
+MODEL="${MODEL:-mistralai/Mistral-Small-24B-Instruct-2501}"
 SLUG=$(echo "$MODEL" | tr '/' '-' | tr '[:upper:]' '[:lower:]')
 
 export PATH=/opt/dlami/nvme/wta-venv/bin:$PATH

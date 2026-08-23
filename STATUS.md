@@ -113,7 +113,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
 | **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
 | **T3** | Probe robustness | ✅ **DONE** | Neither escape works. full-dim linear **.541**, full-dim MLP **.507** — both far below the causal+anchors-masked TEXT baseline **.730**; the MLP is *worse* than the linear probe. 256-d consistency check reproduced **.2745** exactly. `results/gate2_probe_robustness.json` |
-| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🚫 **BLOCKED — owner decision + HF token** | Loader blocker RESOLVED and verified on real weights (028 Am.B; `results/xfam_loader_smoke.json`). But the pre-registered model **ships no HF chat_template**, so the collector cannot build a turn — supplying one would be the protocol tuning Am.A item 9 forbids. Also still needs an HF token for the destroyed docker images (401). [RUNBOOK_GPU_BOX.md](RUNBOOK_GPU_BOX.md), 028 Am.A item 9 + Am.B |
+| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🔄 **UNBLOCKED, restoring images** | All four blockers resolved (028 Am.B + Am.C; see "T7 on the box" below). Model is now `Mistral-Small-24B-Instruct-2501` — same family/size/depth as the original pick but ships a chat template. Task images restoring from the public bucket (no token needed). Smoke gate not yet run. |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
@@ -151,75 +151,63 @@ and **NOT** "nothing beats chance on the clean subset" (bge does, at
 .599 [.534, .673]). Over-claiming either way is the easiest way to lose a
 reviewer who reruns the bootstrap.
 
-## T7 blockers (found on the box, 2026-08-23) — one resolved, three open
+## T7 on the box (2026-08-23) — blockers found, and how they resolved
 
-T7 was handed over as "launch-ready". It is not. Neither blocker is visible
-from the laptop; both were found on the box before spending GPU time.
-**Blocker 1 is now fixed** (decisions/028 Amendment B); **blocker 2 is open
-and needs a credential only the owner has.**
+T7 was handed over as "launch-ready". It was not. None of this was visible
+from the laptop; all of it was found before spending GPU time. Recorded here
+because the failure modes recur on every VM stop.
 
-**1. ✅ RESOLVED — both pre-registered models are multimodal wrappers the
-collector could not load.** Fixed by 028 Amendment B (owner decision: extend
-the loader, keep the pre-registered model literal). `AutoModelForCausalLM`
-now falls back to `AutoModelForImageTextToText`, depth/width read through
-`config.text_config`, and hook capture accepts
-`model.model.language_model.layers` with the final norm taken from the same
-module. The flat Llama/Qwen path is untouched and still passes its
-bit-compatibility contract test. Pinned by
-`harness/contract/test_multimodal_loader.py` (8 tests, no weights, no GPU).
-The original diagnosis, kept for the record: `src/wta/hf_reader.py` uses `AutoModelForCausalLM` and then reads
-`config.num_hidden_layers` / `config.hidden_size` directly (lines 92-97).
+**The root cause was one event: the ephemeral NVMe was wiped.** That destroys
+`/opt/dlami/nvme/wta-venv` — which every launcher and runbook hard-codes — and
+the docker/containerd roots with it. The venv has been rebuilt (py3.12,
+torch 2.9.1+cu128, transformers 5.15.1, 4 GPUs visible), but **treat it as
+ephemeral: it will not survive the next stop.**
 
-- `mistralai/Mistral-Small-3.2-24B-Instruct-2506` is
-  `Mistral3ForConditionalGeneration`; **`mistral3` is not in the
-  `AutoModelForCausalLM` mapping at all**, so the load raises. Its real depth
-  (40 layers) and width (5120) live in `config.text_config`, so
-  `config.num_hidden_layers` is `None` and layer resolution would break even
-  if the load succeeded.
-- The fallback `google/gemma-3-27b-it` *is* in the CausalLM mapping, but it is
-  **`gated=manual` on the Hub** and no HF token is configured on this box, so
-  the pre-registered fallback path cannot be exercised either.
+**1. ✅ RESOLVED — the pre-registered models could not be loaded.**
+`hf_reader` used `AutoModelForCausalLM` and read `config.num_hidden_layers`
+directly. `Mistral-Small-3.2-24B` is `Mistral3ForConditionalGeneration`;
+`mistral3` is absent from the CausalLM mapping, its depth/width live in
+`config.text_config`, and its decoder blocks sit at
+`model.model.language_model.layers`. Fixed by **028 Amendment B** (loader +
+nested config + hook capture, flat Llama/Qwen path provably unchanged and
+still passing its bit-compatibility test). Verified on real weights:
+`loaded: Mistral3ForConditionalGeneration, n_layers=40 hidden=5120,
+layers=[8,12,16,20,24,28,32,34]` (`results/xfam_loader_smoke.json`).
 
-Supporting a nested `text_config` is a small compatibility fix, but it changes
-which layers get captured relative to R2, so it is a **pre-registration
-question, not a judgement call** — 028 Am.A item 9 says explicitly not to tune
-the protocol until a model complies. Cleanest alternative: pick a plain
-decoder-only 20-30B model from a genuinely different family (the collector
-already handles `mistral`, `llama`, `qwen3`, `gemma3_text`), which changes only
-the model, not the capture protocol.
+**2. ✅ RESOLVED — loading it was necessary but not sufficient.**
+`Mistral-Small-3.2-24B` **ships no HF `chat_template`**, so `generate_segment`
+could not build a single agent turn. Writing one would define what the model
+sees — the protocol tuning Amendment A item 9 forbids. Fixed by **028
+Amendment C**: swap to `mistralai/Mistral-Small-24B-Instruct-2501`, the
+text-only predecessor — same family, same size class, **same 40 x 5120**, and
+it ships its own template, so the prompt format is the vendor's exactly as R2
+used Qwen's. Only the model id moves.
 
-**1b. 🚫 OPEN (new, found after the loader fix) — the pre-registered model
-ships no chat template.** `Mistral-Small-3.2-24B-Instruct-2506` has
-`tokenizer.chat_template = None` (its template lives only in
-`mistral-common`). `generate_segment` builds every agent turn with
-`apply_chat_template`, so the collector cannot construct a single prompt.
-Loading the model was necessary but not sufficient. Supplying a template
-defines what the model sees and is squarely the protocol tuning Am.A item 9
-forbids, so it is an **owner decision**, not a fix to apply.
-`mistralai/Mistral-Small-24B-Instruct-2501` — same family, same size, same
-40 x 5120 — *does* ship one and needs no loader fix either.
+**3. ✅ RESOLVED — the hil-bench task images were gone.** `docker images`
+listed ~100 `hilbench-swe:*` rows at **0B** with `docker run` failing
+`blob not found` — phantom metadata, not images. The per-task Dockerfiles are
+`FROM hilbench-swe:<attempt_id>`, i.e. they wrap prebuilt bases and cannot be
+rebuilt from source.
 
-**1c. ⚠️ OPEN — Mistral tokenizer regex.** transformers warns on BOTH Mistral
-tokenizers that the shipped regex "will lead to incorrect tokenization" and
-asks for `fix_mistral_regex=True`. Read positions are token indices, so this
-bears on capture and must be settled before any Mistral collection,
-whichever model is chosen. (Unrelated to the R2-era tokenizer flag.)
+⚠️ **Correction to an earlier entry in this file:** this was recorded as
+needing an HF token because `ScaleAI/hil-bench-swe-images` returned 401.
+**That was wrong.** The 401 came from querying the *model/dataset* API for
+something that is an HF **bucket**; `hf buckets ls` / `cp` read it
+**anonymously**, which is the path `warmup_images.sh` already uses. **No HF
+token is required for T7.** The real fault was the wiped docker/containerd
+roots: recreate both, start containerd *then* docker, or `docker load` dies
+with `metadata.db: no such file or directory`. Restoration is scripted in
+`scripts/restore_hilbench_images.py` (60 tasks, 174 GB, sealed pool excluded
+by construction — the task list is derived exactly as `collect_v2` derives
+it).
 
-**2. 🚫 OPEN — the hil-bench task docker images are gone, and rebuilding
-them needs an HF token.** `third_party/hil-bench/harbor_swe/build_images.sh`
-pulls from `ScaleAI/hil-bench-swe-images`, which returns **401 Repository Not
-Found** unauthenticated. Until a token with access is on the box, no
-collection of any kind can run — T7 or otherwise. The ephemeral NVMe was wiped;
-`/opt/dlami/nvme/docker` no longer exists. `docker images` still lists ~100
-`hilbench-swe:*` entries, but every one reports **0B** and
-`docker run` fails with `blob not found` — they are phantom metadata rows.
-`DockerTaskEnv` starts one container per run, so **no collection of any kind
-can run until the images are rebuilt** via
-`third_party/hil-bench/harbor_swe/build_images.sh`.
-
-The same wipe destroyed `/opt/dlami/nvme/wta-venv`, which every launcher and
-runbook hard-codes. It has been rebuilt (py3.12, torch 2.9.1+cu128, CUDA sees
-4 GPUs) — but treat it as ephemeral: **it will not survive the next VM stop.**
+**4. ⚠️ NOTED, as-run — Mistral tokenizer regex.** transformers warns that
+both Mistral tokenizers "will lead to incorrect tokenization" without
+`fix_mistral_regex=True`. Reads are indexed by token position, so the flag is
+now passed unconditionally (Amendment C.2); Qwen3 is byte-identical with and
+without it, so R2 is untouched. Honest caveat: on 13 varied probe strings the
+flag changed **nothing** on 2501 either — it silences a warned-about defect
+rather than a demonstrated one.
 
 ## Known gaps a reviewer will attack
 

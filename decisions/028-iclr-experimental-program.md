@@ -350,3 +350,78 @@ Two further facts recorded for whoever picks this up:
 
 **Status: T7 remains NOT launchable.** No protocol tuning was performed. The
 model choice is back with the owner.
+
+## Amendment C (2026-08-23 — T7 model swap + tokenizer flag, frozen BEFORE the run)
+
+Supersedes the model choice in Amendment A item 9 and closes out Amendment B.
+Two owner decisions and one correction of the record.
+
+### C.1 Model: 3.2-24B -> Mistral-Small-24B-Instruct-2501
+
+Amendment B verified that the Amendment B loader genuinely loads
+`Mistral-Small-3.2-24B-Instruct-2506` on real weights, and then found that the
+model **ships no HF `chat_template`**, so `generate_segment` cannot build a
+single agent turn for it. Supplying a template would define what the model
+sees — the one thing the loader fix did not touch — and is the protocol
+tuning Amendment A item 9 forbids.
+
+**Decision (owner, 2026-08-23): use
+`mistralai/Mistral-Small-24B-Instruct-2501`.** Verified on the box before
+adopting:
+
+| | 3.2-24B-2506 (was) | 24B-2501 (now) |
+|---|---|---|
+| architecture | `Mistral3ForConditionalGeneration` | `MistralForCausalLM` |
+| depth x width | 40 x 5120 (in `text_config`) | **40 x 5120** |
+| `chat_template` | **absent** | **present** |
+| gated | no | no |
+
+Same family, same size class, same depth and width as the 3.2 text tower, and
+it brings its OWN chat template — so the prompt format is the model vendor's,
+exactly as R2 used Qwen's shipped template. **Nothing about the protocol is
+chosen by us; only the model id moves.** This keeps T7 answering the question
+it was pre-registered to answer (does the .54-.60 band survive a change of
+model FAMILY) with strictly fewer researcher degrees of freedom than the
+original pick would have required.
+
+The Amendment B loader support stays in the tree: it is tested, it does not
+fire for text-only models, and it is what any future wrapper model would need.
+
+### C.2 Tokenizer: pass `fix_mistral_regex=True`
+
+transformers warns on **both** Mistral tokenizers that the shipped regex
+"will lead to incorrect tokenization" and asks for this flag. Reads are
+recorded at token indices, so tokenization is not cosmetic here.
+
+**Decision: pass it unconditionally**, in one code path for every model
+rather than a per-family branch. Verified safe: Qwen3 (the R2 family) yields
+**byte-identical token ids** with and without the flag, so R2-era behaviour is
+untouched. Tokenizers that reject the kwarg fall back to the plain load.
+
+**Reported as-run, not overstated:** on 13 varied probe strings (digits,
+whitespace, tabs, camelCase, code) the flag produced **identical ids** on
+2501 too. So on the evidence it is currently a no-op that silences a warned-
+about defect, rather than a change that measurably moves read positions. It
+is set because the warning concerns exactly the quantity our reads are
+indexed by, not because a difference was observed.
+
+### C.3 Correction: the HF-token "blocker" in Amendment B was WRONG
+
+Amendment B and STATUS.md recorded that restoring the destroyed hil-bench
+images needs an HF token, because `ScaleAI/hil-bench-swe-images` returned
+401. **That was my error, and the owner was right to push back on it.** The
+401 came from querying the *model/dataset* API for something that is an HF
+**bucket** — a different namespace. The bucket is **publicly readable**:
+`hf buckets ls` and `hf buckets cp` both work anonymously, which is exactly
+the path `warmup_images.sh` uses.
+
+The real blocker was the wiped docker/containerd roots: both daemons come up
+"active" pointed at an empty volume, so `docker load` fails with
+`metadata.db: no such file or directory`. Fix is to stop docker+containerd,
+recreate both roots, start containerd then docker. Restoration is otherwise
+credential-free and is now scripted in
+`scripts/restore_hilbench_images.py` (60 tasks, 174 GB, sealed pool excluded
+by construction because the task list is derived exactly as collect_v2
+derives it).
+
+**No HF token is required for T7.**

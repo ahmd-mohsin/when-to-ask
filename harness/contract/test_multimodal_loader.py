@@ -149,3 +149,69 @@ def test_real_mistral3_layer_fractions_resolve():
     assert len(idxs) == 8
     assert idxs == sorted(set(idxs))
     assert all(0 <= i < n for i in idxs)
+
+
+# --- Amendment C: tokenizer flag + model swap ------------------------------
+
+MISTRAL_2501 = "mistralai/Mistral-Small-24B-Instruct-2501"
+
+
+def test_tokenizer_loader_passes_fix_mistral_regex(monkeypatch):
+    """The flag must be passed, and a tokenizer that rejects it must still
+    load (Amendment C.2)."""
+    import transformers
+
+    from wta import hf_reader
+
+    seen = {}
+
+    class _Fake:
+        @staticmethod
+        def from_pretrained(model_id, **kw):
+            seen.setdefault("calls", []).append(kw)
+            if kw.get("fix_mistral_regex") and model_id == "picky":
+                raise TypeError("unexpected kwarg")
+            return f"tok::{model_id}"
+
+    monkeypatch.setattr(transformers, "AutoTokenizer", _Fake)
+
+    assert hf_reader._load_tokenizer("normal") == "tok::normal"
+    assert seen["calls"][0] == {"fix_mistral_regex": True}
+
+    # a tokenizer that rejects the kwarg falls back rather than exploding
+    assert hf_reader._load_tokenizer("picky") == "tok::picky"
+    assert seen["calls"][-1] == {}
+
+
+def test_launcher_default_model_is_the_amendment_c_pick():
+    """The launcher must not silently drift back to a model the collector
+    cannot build a turn for (Amendment C.1)."""
+    from pathlib import Path
+    sh = Path(__file__).resolve().parents[2] / "scripts" / "launch_xfam.sh"
+    body = sh.read_text(encoding="utf-8")
+    assert f'MODEL="${{MODEL:-{MISTRAL_2501}}}"' in body
+    assert "Mistral-Small-3.2-24B-Instruct-2506" not in body.split("# decisions")[0]
+
+
+@pytest.mark.parametrize("model_id", [MISTRAL_2501])
+def test_amendment_c_model_is_collectable(model_id):
+    """The two properties 3.2 failed: plain CausalLM, and a chat template the
+    collector can actually apply. Tokenizer-only -- no weights, no GPU."""
+    transformers = pytest.importorskip("transformers")
+    try:
+        tok = transformers.AutoTokenizer.from_pretrained(
+            model_id, fix_mistral_regex=True)
+    except Exception as exc:
+        pytest.skip(f"cannot reach {model_id}: {type(exc).__name__}")
+    assert getattr(tok, "chat_template", None), "no chat template -> uncollectable"
+    rendered = tok.apply_chat_template(
+        [{"role": "user", "content": "hi"}], tokenize=False,
+        add_generation_prompt=True)
+    assert isinstance(rendered, str) and rendered.strip()
+
+    from transformers.models.auto.modeling_auto import (
+        MODEL_FOR_CAUSAL_LM_MAPPING_NAMES as M)
+    cfg = transformers.AutoConfig.from_pretrained(model_id)
+    assert cfg.model_type in M, f"{cfg.model_type} not in CausalLM mapping"
+    assert _text_config(cfg).num_hidden_layers == 40
+    assert _text_config(cfg).hidden_size == 5120
