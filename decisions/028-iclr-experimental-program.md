@@ -192,6 +192,48 @@ the implementation choices the entry left open, each settled pre-run:
    way. This is a subgroup analysis of existing cells, not a rerun; no
    pre-registered point estimate changes.
 
+9. **T7 — cross-family replication (added 2026-08-22, BEFORE any second-family
+   data exists).** The GPU box came free while the R6 LLM cells wait on
+   subscription budget. Reviewer gap #4 is "one model family"; T5 already
+   covers SCALE (7B/14B/32B) but every collection is Qwen. T7 re-runs the
+   collection protocol VERBATIM on the same 60 tasks with the same frozen
+   class artifact and the same labeler, changing ONLY the model family.
+   Because the artifact is per-TASK, this needs no new registry work and no
+   LLM budget.
+
+   - **Protocol frozen = R2's**: `--classes data/interpretation_classes.json`
+     (which also keeps the sealed pool untouched by construction),
+     `--n-tasks 60`, `--max-steps 50`, defaults elsewhere (cadence 8,
+     max_new_tokens 2048, temps 0.7/0.9/1.1/1.3, layers 0.2..0.85 fractional
+     so they map across any depth), thinking OFF, nudge ON.
+   - **Model**: primary `mistralai/Mistral-Small-3.2-24B-Instruct-2506`;
+     fallback `google/gemma-3-27b-it` if the smoke gate fails.
+   - **SMOKE GATE, frozen now** (3 tasks x 2 seeds -> a `_smoke` dir, before
+     any full run): (a) no chat-template or protocol breakage and no
+     reasoning-trace leakage into the transcript; (b) >=1 mutating action in
+     >=50% of smoke runs; (c) median reads/run >= 10. PASS -> full run.
+     FAIL on the primary -> try the fallback ONCE. FAIL on both -> record the
+     NO-GO here and drop T7; no third candidate, no protocol tuning to make a
+     model comply (that would make the families non-comparable).
+   - **Seeds staged**: `--n-runs 12` first (complete and balanced at every
+     point; the collector skips existing run JSONs so it resumes), then
+     re-launch with `--n-runs 24` to extend to R2 parity if the box stays
+     free.
+   - **Deliverable, as-run either way**: fork census + the T1 behavioral rows
+     (R3 hashed / R4 MiniLM / R5 bge) on the second family, each with the
+     task-clustered CI of item 7. Activations ARE collected (default layers)
+     so the internals rows remain possible, but replicating R1/R2 needs the
+     full A1/A2/A3 + gates pipeline and is a STRETCH goal, not a commitment.
+   - **Pre-declared reading**: if the second family lands in the same
+     .54-.60 band, the negative is not a Qwen artifact and gap #4 shrinks to
+     benchmark+scaffold. If it lands materially higher, that is a
+     family-dependence finding and MUST be reported as such — it would bound
+     the paper's claim rather than break it.
+   - **NOT in scope**: the sealed pool stays sealed; harbor_sql OOD still
+     needs its own class artifacts and is deferred; the 25 missing temp-1.3
+     R2 runs are NOT backfilled (adding runs to `data/a0_v3_32b` would change
+     the frozen universe every current number is computed on).
+
 ## Stop rules and reporting
 
 Every cell lands in the paper as-run. No cell is rerun with variations

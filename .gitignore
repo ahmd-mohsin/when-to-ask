@@ -66,3 +66,13 @@ multi trajectory disagreement about same idea/
 a0_sample_3task.tar.gz
 a0_v1.5_full_*.tar.gz
 wta-a0-*.tar.gz
+
+# Large collection artifacts that live beside the repo, never in it.
+# (2026-08-22: a `git add -A` swept the 45GB R2 tarball into a commit; the
+# commit was undone before pushing. These patterns make that unrepeatable.)
+*.tar.zst
+*.tar.zst.sha256
+*.tar.gz
+recovered_runs/
+results_r2_frozen/
+r2_missing_runs.txt
