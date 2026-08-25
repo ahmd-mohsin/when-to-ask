@@ -1,0 +1,110 @@
+[
+ {
+  "item_id": "r6a_076",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_007",
+  "ask": true,
+  "unresolved_decision": "The requirements both mandate enforcing a maximum nesting depth limit for structured inputs and forbid imposing nesting restrictions on deeply nested inputs, so it is unclear whether check_type_dict's parser should enforce a depth cap that rejects deep payloads or accept arbitrary nesting.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_191",
+  "ask": true,
+  "unresolved_decision": "The problem statement says each batch response entry should carry request identification, while the requirements say individual entries must not include separate request identifiers (only the batch-level response carries one), so it is unclear whether per-entry request ID fields should be added or omitted.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_237",
+  "ask": true,
+  "unresolved_decision": "The problem statement explicitly says do NOT include a disableCycleSelector property so users keep the ability to adjust their billing cycle, while the requirements mandate disableCycleSelector: true in all upsell configurations, so it is unclear whether the billing cycle selector should be locked or left enabled.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_069",
+  "ask": true,
+  "unresolved_decision": "The description requires all workflows including composition to be completable inside the modal without opening additional views or windows, while the expected behavior requires integrating with the application's standard compose pipeline (which opens the composer), so it is unclear whether to embed composition in the modal or delegate to the standard composer.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_113",
+  "ask": true,
+  "unresolved_decision": "The spec simultaneously requires the concatenated image_files string to use the system list separator and a single comma, and requires stored image paths to be both relative/portable and absolute/fully qualified, so the agent cannot settle which separator and which path form to persist.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_127",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_121",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says accessing ansible.utils.py3compat.environ must return a copy of os.environ without any other change, while the requirements say it must filter duplicates from the copy before returning it, so the shim's exact return semantics are unsettled.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_078",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_120",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says accessing ansible.utils.py3compat.environ must return a copy of os.environ without any other change, while the requirements say it must filter duplicates from the copy before returning it, so the shim's exact return semantics are unsettled.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_059",
+  "ask": true,
+  "unresolved_decision": "The problem statement says the virtualenv execution path prefix should be re-derived from the environment's executables directory via OS path-joining instead of manual path parsing, while the requirements say the existing path prefix derivation already handles the virtualenv case correctly, so it is unclear whether that logic should be changed or left alone.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_182",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_029",
+  "ask": true,
+  "unresolved_decision": "The requirements demand honoring the caller's cancellation and timeout signals during loading while also demanding each invocation construct a fresh internal context that does not inherit pre-existing cancellation signals or deadlines from parent operations, so the agent cannot settle whether Load's context derives from the caller's context or from a fresh background context.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_169",
+  "ask": true,
+  "unresolved_decision": "The spec defines DefaultTTL as the maximum lifetime of cached entries yet also says entries with an explicit per-entry TTL may specify a longer lifetime, so it is unclear whether an explicit TTL longer than DefaultTTL should be clamped or honored.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_184",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_033",
+  "ask": true,
+  "unresolved_decision": "The narrative says carrying manifest_version must not cause startup failures in processes that never create OCI bundles (failing clearly only before bundle creation), while a requirement says the schema-facing field must reject unsupported tokens at the field boundary, so the timing and location of validation for unsupported values is unsettled.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_207",
+  "ask": true,
+  "unresolved_decision": "One requirement says properties.uuid must persist across runs by reusing previously stored telemetry state, while another says telemetry identifiers must rotate on each process restart rather than reusing a persisted identifier, so the agent cannot settle whether the telemetry UUID is persistent or per-run.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_095",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ }
+]

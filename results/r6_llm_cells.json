@@ -1,0 +1,40 @@
+{
+ "r6a": {
+  "n_items": 238,
+  "n_judged": 238,
+  "completed_fraction": 1.0,
+  "missing_items": [],
+  "n_tasks_covered": 60,
+  "task_detection": {
+   "precision": 0.717948717948718,
+   "recall": 0.7,
+   "f1": 0.708860759493671,
+   "n_fired": 39,
+   "n_true": 40,
+   "n_tasks": 60
+  },
+  "run_level": {
+   "accuracy": 0.5798319327731093,
+   "ask_rate": 0.5042016806722689
+  },
+  "stage1_context": {
+   "divergence_detector_f1": 0.507,
+   "random_budget_matched_f1": 0.582,
+   "always_ask_style_f1": 0.8
+  }
+ },
+ "r6b": {
+  "n_items": 200,
+  "n_judged": 200,
+  "completed_fraction": 1.0,
+  "missing_items": [],
+  "auroc": 0.5786,
+  "accuracy": 0.585,
+  "n_same_judged": 100,
+  "n_diff_judged": 100,
+  "matrix_context": {
+   "r3_hashed_auroc": 0.555,
+   "r4_minilm_auroc": 0.58
+  }
+ }
+}

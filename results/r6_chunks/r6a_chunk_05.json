@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_099",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_122",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_087",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_018",
+  "ask": true,
+  "unresolved_decision": "Whether the configuration loader must fail when the referenced data directory does not exist or must accept the config and create directories at runtime \u2014 the requirements mandate both mutually exclusive validation behaviors.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_037",
+  "ask": true,
+  "unresolved_decision": "Whether UnsafeProxy should be deleted outright or kept as a deprecated shim is unresolved, since removing the class and giving existing UnsafeProxy users deprecation notices for backward compatibility cannot both hold.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_155",
+  "ask": true,
+  "unresolved_decision": "Whether hasReachedAliasesCountLimit should compare the plan quota against the total vault alias count including trashed aliases (as the reported backend enforcement does) or against only active non-trashed aliases (as the requirement states) is unresolved.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_167",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_124",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_016",
+  "ask": true,
+  "unresolved_decision": "Whether the configuration loader must fail when the referenced data directory does not exist or must accept the config and create directories at runtime \u2014 the requirements mandate both mutually exclusive validation behaviors.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_047",
+  "ask": true,
+  "unresolved_decision": "When both a ReplayGain-style tag and an r128 tag are present for the same gain field, one requirement says to prefer the r128 value and another says to prefer the ReplayGain value, so the precedence rule is unresolved.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_105",
+  "ask": true,
+  "unresolved_decision": "Whether PlayCount normalization in PostScan must apply uniformly to every album or must skip albums with Compilation=true is unresolved, since the spec mandates both behaviors.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_043",
+  "ask": true,
+  "unresolved_decision": "The concrete policy values are withheld \u2014 which overflow sentinel to emit for out-of-int32-range values, what base offset the synthetic playerId generator applies, and which responseWidthMode tokens (e.g. hybrid32) enable narrowing \u2014 so the serialized outputs cannot be determined from the task alone.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_132",
+  "ask": true,
+  "unresolved_decision": "The spec conflicts on whether visit metrics update only under ShareLinkUpdatePolicy FAST or only under BALANCED, and on whether the boolean load option must be named UpdateVisitOnLoad or TrackVisitOnLoad.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_008",
+  "ask": true,
+  "unresolved_decision": "It is unresolved whether the feature-flag visibility logic (useSpotlightOnFeature/useSpotlightShow) belongs inside the shared useSpotlight provider or must be called directly in SearchField, since the requirements assign the same responsibility to both places with different visibility conditions.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_211",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 2
+ },
+ {
+  "item_id": "r6a_064",
+  "ask": true,
+  "unresolved_decision": "Whether sanitization must strip event-handler attributes like onclick to prevent code execution or must retain them so element-level actions keep working is unresolved, since the spec requires both.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_219",
+  "ask": true,
+  "unresolved_decision": "Whether HostState.__str__ must render bare enum labels (e.g. 'TASKS', 'RESCUE|ALWAYS') or keep the legacy 'ITERATING_*'/'FAILED_*' prefixed labels is unresolved, as the description and requirements demand opposite formats.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_110",
+  "ask": true,
+  "unresolved_decision": "The requirements conflict on whether hashes must incorporate the identifier (different ids with the same seed never collide) or must be identical for the same seed and input across identifiers, and on whether persisted auto-generated seeds use decimal or hexadecimal text.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_082",
+  "ask": true,
+  "unresolved_decision": "It is unresolved whether the warning surface must keep the legacy modal contract or be rebuilt on the newer structured modal primitives, and the policy-defined copy (channel naming tokens, account-navigation wording, minimum delegated-admin body content) is explicitly withheld.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_225",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ }
+]

@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_067",
+  "ask": true,
+  "unresolved_decision": "Whether event-handler attributes like onclick must be stripped by sanitization so no executable code reaches the user (per the problem statement) or must be whitelisted via ADD_ATTR and remain functional in the rendered notification (per the requirements) \u2014 the two demand opposite treatment of the same attributes.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_231",
+  "ask": true,
+  "unresolved_decision": "Whether the URL input should be normalized before storing (a requirement) or stored exactly as provided with no preprocessing or transformation (the stated expected behavior), a direct contradiction that also leaves the actual CALENDAR_URL maximum-length value unspecified.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_024",
+  "ask": true,
+  "unresolved_decision": "Whether UserPropsRepository operations must derive the active user from the request context at the repository boundary so callers never supply identity (per the description) or must be explicitly directed at a specific user supplied to each operation (per the requirements), which dictate opposite API shapes.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_230",
+  "ask": true,
+  "unresolved_decision": "Whether the URL input should be normalized before storing (a requirement) or stored exactly as provided with no preprocessing or transformation (the stated expected behavior), a direct contradiction that also leaves the actual CALENDAR_URL maximum-length value unspecified.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_021",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 2
+ },
+ {
+  "item_id": "r6a_188",
+  "ask": true,
+  "unresolved_decision": "How legacy 'Flags' inputs are handled \u2014 including which representation wins when 'flags' and 'Flags' coexist and disagree \u2014 and what the updated fixed generated-password length is: the task says these policies must be defined and 'do not assume a default' but never defines them, while also both ordering and forbidding normalization of the flags value.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_175",
+  "ask": true,
+  "unresolved_decision": "Whether the plugin should stop applying connection-related inputs outside its documented option surface or continue to accept and apply them (the expected behavior states both), and which input takes precedence when multiple inputs influence the same setting \u2014 the precedence rule is never defined.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_128",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_062",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_045",
+  "ask": true,
+  "unresolved_decision": "Which gain format wins when both are present for the same field: one requirement says the scanner must prefer the alternative (R128) format while the next says it must prefer the ReplayGain-style value \u2014 a direct contradiction.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_086",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_063",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_125",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_026",
+  "ask": true,
+  "unresolved_decision": "Whether the user is derived from request context at the repository boundary or explicitly passed to every operation (the description and requirements mandate opposites), and the maximum scrobble batch size the agent must now enforce (and the sort key) are never specified.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_051",
+  "ask": true,
+  "unresolved_decision": "Whether the kinit timeout default should be 30 seconds to preserve the standard budget (per the requirements) or larger to accommodate KDCs that regularly exceed the 30-second budget (per the additional context), and the maximum allowed kinit_args length N is never given.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_101",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_049",
+  "ask": true,
+  "unresolved_decision": "Whether the kinit timeout default should be 30 seconds to preserve the standard budget (per the requirements) or larger to accommodate KDCs that regularly exceed the 30-second budget (per the additional context), and the maximum allowed kinit_args length N is never given.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_208",
+  "ask": true,
+  "unresolved_decision": "Whether the telemetry identifier (properties.uuid) must persist across runs by reusing previously stored state or must rotate on every process restart \u2014 the requirements mandate both mutually exclusive behaviors.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_187",
+  "ask": true,
+  "unresolved_decision": "How legacy 'Flags' inputs are handled \u2014 including which representation wins when 'flags' and 'Flags' coexist and disagree \u2014 and what the updated fixed generated-password length is: the task says these policies must be defined and 'do not assume a default' but never defines them, while also both ordering and forbidding normalization of the flags value.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_233",
+  "ask": true,
+  "unresolved_decision": "Whether the URL input should be normalized before storing (a requirement) or stored exactly as provided with no preprocessing or transformation (the stated expected behavior), a direct contradiction that also leaves the actual CALENDAR_URL maximum-length value unspecified.",
+  "confidence": 4
+ }
+]

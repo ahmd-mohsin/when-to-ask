@@ -1,0 +1,48 @@
+{
+ "tag": "32b",
+ "rep": "r6b_llm_ensemble",
+ "auroc": 0.5786,
+ "n_pairs": 200,
+ "n_diff": 100,
+ "n_same": 100,
+ "n_tasks": 46,
+ "reproduces_recorded_cell": 0.5786,
+ "task_clustered_bootstrap": {
+  "ci95": [
+   0.4814942401202905,
+   0.6701997404008694
+  ],
+  "sd": 0.04818737453816338,
+  "draws": 2000
+ },
+ "naive_pair_bootstrap_for_contrast": {
+  "ci95": [
+   0.500091254120908,
+   0.6562585232959663
+  ],
+  "sd": 0.040190795395845455
+ },
+ "matrix_context": {
+  "r3_hashed": [
+   0.555,
+   [
+    0.492,
+    0.631
+   ]
+  ],
+  "r4_minilm": [
+   0.58,
+   [
+    0.535,
+    0.628
+   ]
+  ],
+  "r5_bge": [
+   0.573,
+   [
+    0.525,
+    0.627
+   ]
+  ]
+ }
+}

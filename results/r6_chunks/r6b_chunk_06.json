@@ -1,0 +1,102 @@
+[
+ {
+  "item_id": "r6b_055",
+  "different": true,
+  "confidence": 3
+ },
+ {
+  "item_id": "r6b_020",
+  "different": false,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_009",
+  "different": true,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_034",
+  "different": true,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_074",
+  "different": true,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_027",
+  "different": false,
+  "confidence": 2
+ },
+ {
+  "item_id": "r6b_114",
+  "different": false,
+  "confidence": 3
+ },
+ {
+  "item_id": "r6b_137",
+  "different": true,
+  "confidence": 3
+ },
+ {
+  "item_id": "r6b_057",
+  "different": true,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_040",
+  "different": false,
+  "confidence": 2
+ },
+ {
+  "item_id": "r6b_148",
+  "different": false,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_175",
+  "different": true,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_022",
+  "different": true,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_019",
+  "different": false,
+  "confidence": 3
+ },
+ {
+  "item_id": "r6b_108",
+  "different": true,
+  "confidence": 4
+ },
+ {
+  "item_id": "r6b_143",
+  "different": true,
+  "confidence": 3
+ },
+ {
+  "item_id": "r6b_004",
+  "different": true,
+  "confidence": 2
+ },
+ {
+  "item_id": "r6b_194",
+  "different": true,
+  "confidence": 3
+ },
+ {
+  "item_id": "r6b_081",
+  "different": true,
+  "confidence": 3
+ },
+ {
+  "item_id": "r6b_079",
+  "different": true,
+  "confidence": 2
+ }
+]

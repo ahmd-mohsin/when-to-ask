@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_168",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_096",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_217",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_061",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_012",
+  "ask": true,
+  "unresolved_decision": "The task never defines which files cache='selective' should cache versus re-read (e.g., only vaulted/expensive files vs. everything), and the requirement that host_group_vars cache every loaded file regardless of encryption conflicts with the guidance to use 'selective' for variable loading.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_032",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_056",
+  "ask": true,
+  "unresolved_decision": "When no executable or virtualenv is given and both a PATH pip binary and the interpreter's pip library exist, the problem statement says to prefer the PATH binary while the requirements say to construct the python -m launcher, and it is also contradictory whether the virtualenv path-prefix derivation must be reworked or is already correct.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_046",
+  "ask": true,
+  "unresolved_decision": "The requirements state both that the alternative R128 format must be preferred and that the ReplayGain-style value must be preferred when both formats are present for the same logical field, so the precedence order cannot be settled from the task.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_058",
+  "ask": true,
+  "unresolved_decision": "When no executable or virtualenv is given and both a PATH pip binary and the interpreter's pip library exist, the problem statement says to prefer the PATH binary while the requirements say to construct the python -m launcher, and it is also contradictory whether the virtualenv path-prefix derivation must be reworked or is already correct.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_014",
+  "ask": true,
+  "unresolved_decision": "The task never defines which files cache='selective' should cache versus re-read (e.g., only vaulted/expensive files vs. everything), and the requirement that host_group_vars cache every loaded file regardless of encryption conflicts with the guidance to use 'selective' for variable loading.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_073",
+  "ask": true,
+  "unresolved_decision": "The problem statement requires sending the password to kinit as raw bytes with no modifications or extra characters while the requirements mandate including proper line termination, so whether to append a trailing newline to kinit's stdin is contradictory.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_166",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_221",
+  "ask": true,
+  "unresolved_decision": "The description requires HostState.__str__ to render bare enum labels (e.g. 'TASKS', 'RESCUE|ALWAYS') without legacy prefixes while the requirements mandate keeping legacy 'ITERATING_*'/'FAILED_*' prefixed labels, so the string output format cannot be settled.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_227",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_115",
+  "ask": true,
+  "unresolved_decision": "It is contradictory whether WriteInitialMetrics collects database model counts only when DetailLevel is 'full' (requirements) or whenever the detail level records timestamp data, which would include 'timestamps_only' (problem statement).",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_031",
+  "ask": true,
+  "unresolved_decision": "The requirements demand both that Load honor the caller's cancellation and timeout signals and that each invocation construct a fresh internal context that does not inherit deadlines or pre-existing cancellation from parent operations, leaving unresolved whether the internal context derives from the caller's context or is detached.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_222",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_104",
+  "ask": true,
+  "unresolved_decision": "It is contradictory whether PostScan PlayCount normalization applies uniformly to all albums regardless of type or metadata flags (requirements) or must exclude Compilation=true albums (expected behavior and public interfaces).",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_176",
+  "ask": true,
+  "unresolved_decision": "It is unresolved whether the plugin should keep accepting and applying undocumented extra connection inputs (and with what precedence against documented options) or restrict the effective configuration to the documented surface, since the expected behavior asserts both positions.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_077",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ }
+]

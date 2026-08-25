@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_212",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says every fixed address entry must be assigned a `name` while the requirements insist `name` be optional and never enforced, and the bullets requiring the module to configure 'initial address provisioning' and the 'DHCP client identification method' never say which WAPI parameters or defaults that means.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_103",
+  "ask": true,
+  "unresolved_decision": "The requirements demand PlayCount normalization be applied uniformly to all albums regardless of type or metadata flags, while the expected behavior and public interfaces require compilation albums (Compilation=true) to be excluded from normalization, so the agent cannot know which rule PostScan should implement.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_084",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_214",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_118",
+  "ask": true,
+  "unresolved_decision": "The requirements say database model counts are collected in WriteInitialMetrics only when DetailLevel is 'full', but the expected behavior says counts are included whenever the detail level records timestamp data (which would also cover 'timestamps_only'), so the gating condition is undecidable from the task.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_228",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_189",
+  "ask": true,
+  "unresolved_decision": "The task explicitly leaves undefined both the updated fixed generated-password length and the policy when legacy `Flags` and canonical `flags` coexist or disagree ('must be defined', 'do not assume a default'), and it simultaneously orders and forbids normalizing the flags value, so the helpers and splitGeneratedAndCustomPassword cannot be implemented without answers.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_213",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says every fixed address entry must be assigned a `name` while the requirements insist `name` be optional and never enforced, and the bullets requiring the module to configure 'initial address provisioning' and the 'DHCP client identification method' never say which WAPI parameters or defaults that means.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_025",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_195",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_054",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says resumeSession's localID must come from auth.getLocalID() when authentication state is available, while the requirements say localID must be sourced from persistedSession.localID \u2014 two conflicting sources the agent cannot reconcile from the task alone.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_036",
+  "ask": true,
+  "unresolved_decision": "The requirements simultaneously order removing the UnsafeProxy class outright and ensuring code still using UnsafeProxy receives runtime deprecation notices for backward compatibility \u2014 the agent cannot both delete the class and keep a warning-emitting entry point without knowing which is intended.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_068",
+  "ask": true,
+  "unresolved_decision": "The description requires composition to be completable inside the modal without opening additional views or windows, while the expected behavior requires integrating with the application's standard compose pipeline (which opens the composer), and the per-compose recipient ceiling value is never specified.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_074",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says the password must be sent to kinit as raw bytes without any modifications or extra characters, while the requirements say the password input must include proper line termination for the prompt \u2014 the agent cannot know whether to append a newline (and the 'appropriate' timeout value is unspecified).",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_229",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_116",
+  "ask": true,
+  "unresolved_decision": "The requirements say database model counts are collected in WriteInitialMetrics only when DetailLevel is 'full', but the expected behavior says counts are included whenever the detail level records timestamp data (which would also cover 'timestamps_only'), so the gating condition is undecidable from the task.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_005",
+  "ask": true,
+  "unresolved_decision": "The requirements both forbid imposing nesting restrictions on deeply nested inputs and mandate enforcing a maximum nesting depth limit, and the concrete input-size/depth limit values are never given, so the agent cannot determine what parsing limits check_type_dict should enforce.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_065",
+  "ask": true,
+  "unresolved_decision": "The problem statement says sanitization must address script tags and event-handler attributes to prevent code execution, while the requirements mandate configuring dompurify to retain onclick/onchange/onsubmit and keep them functional in the rendered output \u2014 the agent cannot know whether event handlers are stripped or preserved.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_119",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says accessing py3compat.environ must return a copy of os.environ 'without any other change', while the requirements say it must filter duplicates from the copy before returning it, so the agent cannot know which environ semantics to implement.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_147",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says terminal payment-token failures must surface without launching verification UI, while the requirements say every non-STATUS_CHARGEABLE outcome including terminal failures must be forwarded to the injected verify callback (whose payload carries no status to branch on), so the failure-path handling is undecidable.",
+  "confidence": 4
+ }
+]

@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_100",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_199",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_117",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 2
+ },
+ {
+  "item_id": "r6a_235",
+  "ask": true,
+  "unresolved_decision": "The problem statement explicitly says do NOT include disableCycleSelector so users can adjust their billing cycle, while the requirements mandate disableCycleSelector: true in all upsell configurations, and the agent cannot determine which directive to follow.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_153",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_186",
+  "ask": true,
+  "unresolved_decision": "The task explicitly leaves undefined, and forbids defaulting, the policy for legacy/conflicting Flags-vs-flags representations, and never states the updated fixed generated-password segment length, so the agent cannot implement flag detection or password splitting without those decisions.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_164",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_197",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_041",
+  "ask": true,
+  "unresolved_decision": "The task never specifies the overflow sentinel value, the playerId base offset, or whether hybrid32 enables narrowing, and itself states internal notes disagree on how folderEmitMode combines with multi-value folder params, leaving the required wire behavior undecidable.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_224",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_000",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_072",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_071",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 2
+ },
+ {
+  "item_id": "r6a_138",
+  "ask": true,
+  "unresolved_decision": "When max_idle_conn exceeds max_open_conn, the problem statement orders raising MaxOpenConn up to MaxIdleConn while the requirements order capping MaxIdleConn down to MaxOpenConn, and the agent cannot tell which opposite adjustment is intended.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_039",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_216",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_142",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_006",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_203",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_017",
+  "ask": true,
+  "unresolved_decision": "One requirement says the loader must verify referenced directories exist before accepting the configuration while another says directories must not be required at load time and should instead be created at runtime, so the agent cannot decide whether Load validates or defers the data-path directory.",
+  "confidence": 4
+ }
+]

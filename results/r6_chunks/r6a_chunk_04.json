@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_140",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_098",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_092",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_015",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_133",
+  "ask": true,
+  "unresolved_decision": "The requirements mandate both that the share-load boolean option be named UpdateVisitOnLoad and that it be named TrackVisitOnLoad, and both that visit metrics update only under ShareLinkUpdatePolicy FAST and only under BALANCED, so the agent cannot settle the option name or the policy gate.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_080",
+  "ask": true,
+  "unresolved_decision": "The task simultaneously requires preserving the legacy modal contract and implementing the surface with the new structured modal primitives, while the exact policy-approved copy tokens and minimum delegated-account body content are explicitly withheld, so the agent cannot choose which modal contract or wording to implement.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_042",
+  "ask": true,
+  "unresolved_decision": "The task never defines the behavior of the hybrid32 responseWidthMode token, the concrete overflow sentinel value, or the playerId base offset (all deferred to unstated platform policy), and explicitly notes internal notes disagree on how multi-value folder parameters combine with folderEmitMode, so the agent cannot settle these policy values before writing migration_policy.go.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_209",
+  "ask": true,
+  "unresolved_decision": "One requirement says the telemetry uuid must persist across runs by reusing previously stored state while another says identifiers must rotate on each process restart rather than reusing a persisted identifier, so the agent cannot decide between persistence and rotation.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_177",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_162",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_190",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_053",
+  "ask": true,
+  "unresolved_decision": "The problem statement and requirements conflict on whether resumeSession's localID is sourced from persistedSession.localID or from auth.getLocalID(), and on whether auth.setUID after resume uses persistedSession.UID or resumedSession.UID, so the agent cannot settle the data-flow for the session resume it is now implementing.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_157",
+  "ask": true,
+  "unresolved_decision": "The problem statement says the backend enforces the alias quota against the total vault count including trashed aliases, while the requirement says the limit counts only active non-trashed aliases, so the agent cannot decide which count drives hasReachedAliasesCountLimit.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_050",
+  "ask": true,
+  "unresolved_decision": "The context says the default kinit timeout must exceed the 30-second baseline because operations regularly take longer, while the requirement fixes the default at 30 seconds, and the maximum allowed kinit_args length N that must appear in the validation error is never specified, so the agent cannot settle the timeout default or the length cap.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_198",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_205",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_009",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_102",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_028",
+  "ask": true,
+  "unresolved_decision": "One requirement says caller cancellation and timeout signals must be honored during loading while another says each invocation must construct a fresh internal context that does not inherit pre-existing cancellation signals or deadlines from parent operations, prescribing opposite behavior for an already-canceled caller context.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_090",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ }
+]

@@ -63,12 +63,12 @@ Return judgments for ALL items, in the same order as the file, via structured ou
 
 phase('R6a')
 const r6aResults = await parallel((args.r6a ?? []).map(f => () =>
-  agent(chunkPrompt(f, 'r6a'), { label: f, phase: 'R6a', schema: R6A_SCHEMA })
+  agent(chunkPrompt(f, 'r6a'), { label: f, phase: 'R6a', model: 'fable', schema: R6A_SCHEMA })
     .then(r => ({ file: f, judgments: r?.judgments ?? null }))))
 
 phase('R6b')
 const r6bResults = await parallel((args.r6b ?? []).map(f => () =>
-  agent(chunkPrompt(f, 'r6b'), { label: f, phase: 'R6b', schema: R6B_SCHEMA })
+  agent(chunkPrompt(f, 'r6b'), { label: f, phase: 'R6b', model: 'fable', schema: R6B_SCHEMA })
     .then(r => ({ file: f, judgments: r?.judgments ?? null }))))
 
 const ok = r => r && r.judgments

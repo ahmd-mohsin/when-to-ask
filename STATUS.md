@@ -1,6 +1,6 @@
 # STATUS — what every code name means, and what is done vs left
 
-**Living document. Last updated: 2026-08-23.**
+**Living document. Last updated: 2026-08-25.**
 Update rule at the bottom: this file is edited in the SAME commit as any
 experiment that lands. If it disagrees with reality, reality wins and this
 file is stale — fix it.
@@ -13,7 +13,9 @@ We are executing [decisions/028](decisions/028-iclr-experimental-program.md),
 the frozen experimental program for the ICLR paper
 ([paper/OUTLINE.md](paper/OUTLINE.md)). The paper is a MEASUREMENT paper:
 "where does an agent's need-to-ask signal live?" Answer so far: not in
-single-run internals, not in surface behavior, not in generic embeddings.
+single-run internals, not in surface behavior, not in generic embeddings,
+and — as of 2026-08-25 — not in full-context LLM judgment either, whether
+it reads one run (R6a) or compares two (R6b).
 The mechanism (a working ask-trigger) was **dropped** at a pre-registered
 gate in 027 and is future work. Nothing in this cycle claims a mechanism.
 
@@ -110,12 +112,12 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R3** | Surface hashes | ✅ done (027) | AUROC .555 — clustered CI **[0.492, 0.631], contains chance** |
 | **T1·R4** | MiniLM | ✅ done (027) | AUROC .580 — clustered CI **[0.535, 0.628], excludes chance** but far below the 0.75 bar |
 | **T1·R5** | bge-large | ✅ **DONE** | AUROC **0.573**, clustered CI [.525, .627] — no better than MiniLM's .580 despite 15× the parameters. v1/v2 reproduced exactly. `results/t1_r5_strong_embedder.json` |
-| **T1·R6a** | Single-run LLM introspection | ⏳ **STAGED, not run** | 238 items + 12 payload chunks ready. Waiting on Fable budget |
-| **T1·R6b** | Ensemble LLM comparison | ⏳ **STAGED, not run** | 200 pairs + 10 payload chunks ready. **The load-bearing experiment** |
+| **T1·R6a** | Single-run LLM introspection | ✅ **DONE** | 238/238 judged, 60/60 tasks. Task-detection **F1 0.709** (P .718/R .700) — beats the fitted detectors (.507/.582) but **below always-ask .800**; run-level acc .580 vs a .664 always-ask base rate. `results/r6_llm_cells.json` |
+| **T1·R6b** | Ensemble LLM comparison | ✅ **DONE — the hoped-for ceiling did NOT appear** | 200/200 pairs, 46 tasks. AUROC **0.5786**, clustered CI **[0.481, 0.670] contains chance** — indistinguishable from MiniLM's .580. Judge said "different" 129/200 on a 100/100 pool (diff 73% / same 44% correct). `results/r6_llm_cells.json`, `results/r6b_auroc_ci.json` (028 Am.E) |
 | **T3** | Probe robustness | ✅ **DONE** | Neither escape works. full-dim linear **.541**, full-dim MLP **.507** — both far below the causal+anchors-masked TEXT baseline **.730**; the MLP is *worse* than the linear probe. 256-d consistency check reproduced **.2745** exactly. `results/gate2_probe_robustness.json` |
 | **T7** | Cross-family replication (2nd model, same 60 tasks) | 🔄 **FULL COLLECTION RUNNING** | 60 tasks x **24 seeds** on `Mistral-Small-24B-Instruct-2501`. Restarted 2026-08-23 17:17Z on the **028 Amendment D** fix (a `grep -r -` dumped 723 MB and wedged a shard >1h at 97% CPU with its GPU idle; `error_signature` now fingerprints the truncated observation the model actually saw — trajectories bit-identical, window untouched). 55 pre-fix runs KEPT. Measured rate ~9-12 runs/h -> **~5-6 days**; ~272 GB projected on `/ssd3` (490 GB free). Amendment D **confirmed on the real failure**: `swe_1-s10`, which previously hung >1h, now completes normally. Relaunched 2026-08-23 17:50Z with `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` (allocator only) after 3 of 4 cards were observed at 3.2-3.7 GiB free — R2's documented OOM band. |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
-| — | AUROC clustered CIs (028 Am.A item 7) | 🔄 partial | 32B hashed done. Remaining reps after R5. `scripts/t1_auroc_ci.py` |
+| — | AUROC clustered CIs (028 Am.A item 7) | ✅ **DONE** for every 32B separation AUROC | R3/R4/R5 via `scripts/t1_auroc_ci.py`; R6b via `scripts/r6b_auroc_ci.py` (same estimator and constants, guard-checked to reproduce the cell). T5/T7 rows get theirs when those land |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
 | — | Train-fold vs eval-fold check | ✅ **DONE** | Stage-1 detection train F1 **0.517** vs eval **0.507** — fails equally on data it was tuned on → signal absence, not overfitting |
 
@@ -123,9 +125,10 @@ Legend: ✅ done · 🔄 in progress · ⏳ not started
 
 ---
 
-## The T1 generic-representation rows, with honest CIs
+## The T1 separation rows, with honest CIs
 
-Task-clustered bootstrap, 2000 draws, seed 0 (`scripts/t1_auroc_ci.py`).
+Task-clustered bootstrap, 2000 draws, seed 0 (`scripts/t1_auroc_ci.py`;
+R6b via `scripts/r6b_auroc_ci.py`, same estimator and constants).
 The pooled point estimates are the pre-registered as-run numbers.
 
 | Row | Params | Pooled AUROC | Clustered 95% CI | vs chance |
@@ -133,6 +136,12 @@ The pooled point estimates are the pre-registered as-run numbers.
 | R3 hashed char-3grams | — | .555 | [.492, .631] | contains .50 |
 | R4 MiniLM-L6 | 22M | .580 | [.535, .628] | excludes |
 | R5 bge-large | 335M | .573 | [.525, .627] | excludes |
+| **R6b LLM ensemble comparison** | frontier | **.579** | **[.481, .670]** | **contains .50** |
+
+R6b is scored on 200 stratified pairs (46 tasks), not the full 8,567-pair
+pool, so its interval is the widest — that width is sample size, not
+instability. The point estimate lands **on top of MiniLM's .580**: the row
+that was supposed to establish a ceiling instead joined the band.
 
 Split by registry provenance (`scripts/blind_vs_informed_split.py`):
 
@@ -215,13 +224,23 @@ rather than a demonstrated one.
    validation scored **0.765 against a pre-registered 0.90 bar and was
    stopped**. The "noise biases toward null" defense does NOT apply (the
    noise is instance-dependent and fork-erasing). **Fix: T6 + a ~50-item
-   owner hand-label.** Highest leverage remaining item.
+   owner hand-label.** Highest leverage remaining item — and **R6b raised
+   its priority (2026-08-25)**: an LLM judge reading the same excerpts the
+   labeler used agrees with the labels at only **0.585**, which is equally
+   consistent with a weak signal and with noisy ground truth. That cell
+   cannot separate the two; the hand-label can.
 2. **Underpowered-vs-negative.** F2 itself shows 0 testable decisions at
    N≤4. Defense = lead with the global Stouffer test and the relative
    text-vs-activation comparison, not per-decision counts.
-3. **"You didn't try hard enough."** Only R6b can answer this, by showing a
-   ceiling: if an LLM CAN separate them, the generic failures are
-   informative rather than lack of effort.
+3. **"You didn't try hard enough." STILL OPEN — and R6b did not close it
+   (2026-08-25).** R6b was the designated answer: show a ceiling, and the
+   generic failures become informative rather than lack of effort. It ran at
+   full coverage and produced **no ceiling** (.579 [.481, .670]). So the
+   negative now extends from generic representations to full-context LLM
+   judgment *with* cross-run comparison — a stronger claim in one direction
+   — but we still cannot separate "the signal is not there" from "nothing we
+   tried recovers it." **Report both halves; do not let the extra coverage
+   read as a proof of absence.** See 028 Amendment E.
 4. **No OOD — the missing collection-R3.** One model family, one benchmark,
    one scaffold. **The sealed pool was never *collected*, not merely never
    tested** — there is no data for swe_60+. Partially mitigated by the
@@ -241,16 +260,20 @@ rather than a demonstrated one.
    chance, MiniLM .580 [.535,.628] **excludes** it. The defensible claim is
    *detectable but useless* — a whisper of signal nowhere near the 0.75 a
    detector needs — not "no signal at all." Say it that way before a
-   reviewer says it for us.
+   reviewer says it for us. **R6b is in the same position (2026-08-25):**
+   .579 [.481, .670] contains chance while R4's does not, so report the
+   interval and let the band speak — do not call R6b "chance" and do not
+   call it "signal."
 
 ## What defends the negatives (say these out loud in the paper)
 
 - **Train ≈ eval.** Stage-1 detection scores F1 0.517 on the folds it was
   tuned on vs 0.507 held out. The failure is not generalization — the
   signal cannot be fit even with the answers in view.
-- **Nothing is fitted in T1 rows R3–R5.** Those AUROCs use a fixed
-  representation and Euclidean distance; there is no capacity to overfit,
-  so no train/test split applies.
+- **Nothing is fitted in T1 rows R3–R5 or R6b.** R3–R5 use a fixed
+  representation and Euclidean distance; R6b is a zero-shot judgment against
+  a frozen prompt. Nothing is trained, so there is no capacity to overfit and
+  no train/test split applies.
 - **Registry construction is not the cause.** The informed-vs-blind gap
   flips sign across representations (blind higher for hashed and bge,
   informed higher for MiniLM) with heavily overlapping CIs — noise, not a
@@ -261,6 +284,12 @@ rather than a demonstrated one.
 - **Encoder capacity is not the bottleneck.** bge-large (335M, 1024-d)
   scores .573 vs MiniLM (22M, 384-d) at .580 — 15× the parameters buys
   nothing. "Use a better embedder" is answered empirically, not by assertion.
+- **Neither is judgment capacity, or single-run framing (NEW, 2026-08-25).**
+  A frontier LLM shown BOTH runs' excerpts and asked the question directly
+  scores .579 [.481, .670] — the same band. "Just ask a good model" and "your
+  representations were too dumb" are now answered empirically too. The
+  registry-blindness audit backs this: 70 judge Reads, every one a payload
+  chunk, zero stray reads (028 Am.E.3).
 
 ## Sealed / untouched resources
 
@@ -276,7 +305,7 @@ rather than a demonstrated one.
   `results/` files, never overwriting prior artifacts.
 - Numbers are reported **as-run**. No rerun with variations without
   amending [decisions/028](decisions/028-iclr-experimental-program.md) FIRST.
-- Test suite must stay green (currently **245**).
+- Test suite must stay green (currently **254 passed, 2 skipped**).
 - Commit each completed experiment with its results; push to BOTH
   `master:master` and `master:main`. Use Git Bash for git (PowerShell git
   stalls on this machine).

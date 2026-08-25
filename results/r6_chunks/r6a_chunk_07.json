@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_023",
+  "ask": true,
+  "unresolved_decision": "The task requires truncating authentication IDs to a fixed prefix length 'per the organization's audit display policy' without ever stating that length (or the exact auth-method representation), so the agent cannot know what truncation length and format BuildTokenDeleteAuditPayload must produce.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_152",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_165",
+  "ask": true,
+  "unresolved_decision": "The task explicitly leaves open which route-line token (the destination prefix/host early in the line vs the later src address) should be reported as the locally reachable value, and it simultaneously demands normalized/de-duplicated values while the public interface says values are taken as-is.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_038",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_055",
+  "ask": true,
+  "unresolved_decision": "The task contradicts itself on whether auth.setUID must use persistedSession.UID or resumedSession.UID after resume, and on whether resumeSession's localID comes from auth.getLocalID() or from persistedSession.localID.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_020",
+  "ask": true,
+  "unresolved_decision": "The task requires truncating authentication IDs to a fixed prefix length 'per the organization's audit display policy' without stating the length (or the exact auth-method format for the payload), so the agent cannot determine what BuildTokenDeleteAuditPayload must emit.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_137",
+  "ask": true,
+  "unresolved_decision": "When max_idle_conn exceeds max_open_conn, the Expected Behavior says to raise MaxOpenConn up to MaxIdleConn while the Requirements say to cap MaxIdleConn down to MaxOpenConn \u2014 opposite adjustments that cannot both be implemented.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_034",
+  "ask": true,
+  "unresolved_decision": "The task never enumerates which manifest_version selector tokens are supported nor which compatibility behavior is the default when the setting is omitted, so the agent cannot implement the required token validation and rejection logic.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_027",
+  "ask": true,
+  "unresolved_decision": "The task conflicts on whether UserPropsRepository derives the user implicitly from request context (callers never pass identity) or whether every operation must be explicitly directed at a specific user via the API, and it never specifies the scrobble batch cap or the sort key for deterministic ordering.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_114",
+  "ask": true,
+  "unresolved_decision": "The requirements state both that stored image paths must be relative/portable and that they must be absolute/fully qualified, and both that the join separator is the system list separator and that it is a comma, so the agent cannot know which representation to persist in image_files.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_057",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_136",
+  "ask": true,
+  "unresolved_decision": "When max_idle_conn exceeds max_open_conn, the Expected Behavior demands raising MaxOpenConn up to MaxIdleConn while the Requirements demand capping MaxIdleConn down to MaxOpenConn \u2014 mutually exclusive behaviors the agent cannot both satisfy.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_040",
+  "ask": true,
+  "unresolved_decision": "The task itself states that internal compatibility notes disagree on how multi-value folder parameters combine with folderEmitMode when populating User.folder, and it never defines the overflow sentinel value, the playerId base offset, or the behavior of the hybrid32/legacy_int/audit_only modes.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_159",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_210",
+  "ask": true,
+  "unresolved_decision": "The requirements to configure 'how the DHCP server handles initial address provisioning' and 'the DHCP client identification method' name no concrete WAPI fields, values, or module parameters, so the agent cannot tell what to implement for them (new options vs fixed defaults, and which fields).",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_022",
+  "ask": true,
+  "unresolved_decision": "The task requires authentication IDs in token deletion events to be truncated to a fixed prefix length per an organizational policy that is never provided, so the agent cannot know the truncation length (or exact auth-method format) required for BuildTokenDeleteAuditPayload.",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_019",
+  "ask": true,
+  "unresolved_decision": "One requirement says the loader must verify referenced directories exist before accepting the configuration while another says directories must not be required at load time and should instead be created at runtime \u2014 the agent cannot satisfy both validation policies.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_179",
+  "ask": true,
+  "unresolved_decision": "The task never defines the 'supported runtime timeout set' that _play_ds must enforce (while also promising all previously accepted positive integers keep working), nor which mechanism determines the effective timeout when both --task-timeout and async_val/poll are provided.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_178",
+  "ask": true,
+  "unresolved_decision": "The task never specifies the 'supported runtime timeout set' whose violations _play_ds must reject (while simultaneously requiring all previously accepted positive integers to keep working), nor how the task timeout and async_val/poll combine into the effective timeout.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_108",
+  "ask": true,
+  "unresolved_decision": "The requirements demand both that two identifiers sharing the same seed produce identical hashes and that the digest incorporate the identifier so two identifiers never match, and both that persisted auto-generated seeds be ordinary decimal digits and compact hexadecimal \u2014 irreconcilable pairs the agent cannot settle.",
+  "confidence": 5
+ }
+]

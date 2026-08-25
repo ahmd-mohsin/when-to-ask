@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_223",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_131",
+  "ask": true,
+  "unresolved_decision": "The task contradicts itself on whether the share-load visit-tracking option is named UpdateVisitOnLoad or TrackVisitOnLoad, and whether visit metrics update only under the FAST or only under the BALANCED ShareLinkUpdatePolicy.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_106",
+  "ask": true,
+  "unresolved_decision": "Whether PlayCount normalization in PostScan must apply uniformly to all albums regardless of type or metadata flags (per REQUIREMENTS) or must exclude Compilation=true albums (per the problem statement and public-interface notes).",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_126",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_200",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_154",
+  "ask": true,
+  "unresolved_decision": "Whether hasReachedAliasesCountLimit should be computed against the total vault alias count including trashed aliases (the backend-enforced count per the problem statement) or against only active non-trashed aliases (per the requirements).",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_234",
+  "ask": true,
+  "unresolved_decision": "Whether the upsell configurations must include disableCycleSelector: true to lock the billing cycle (per REQUIREMENTS) or must omit the disableCycleSelector property entirely so users can adjust their cycle (per the problem statement's explicit note).",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_013",
+  "ask": true,
+  "unresolved_decision": "Whether host_group_vars must store every loaded variable file in the internal cache regardless of encryption (per REQUIREMENTS) or should use the 'selective' cache mode that deliberately caches only some results to balance cache footprint (per the expected results).",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_089",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_215",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 2
+ },
+ {
+  "item_id": "r6a_129",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_091",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_075",
+  "ask": true,
+  "unresolved_decision": "Whether the password piped to kinit's stdin must be sent as raw bytes with no modifications or extra characters (per the problem statement) or must include appended line termination for the prompt (per the requirements).",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_161",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_052",
+  "ask": true,
+  "unresolved_decision": "Whether resumeSession's localID comes from persistedSession.localID or auth.getLocalID(), and whether auth.setUID after resume uses persistedSession.UID or resumedSession.UID \u2014 the problem statement and requirements specify conflicting sources.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_206",
+  "ask": true,
+  "unresolved_decision": "Whether the telemetry uuid/AnonymousId must persist across runs by reusing previously stored telemetry state or must rotate on every process restart for privacy \u2014 the requirements mandate both behaviors.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_151",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_094",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_170",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_174",
+  "ask": true,
+  "unresolved_decision": "Whether the fix should restrict the PSRP plugin's effective configuration to its documented/supported inputs or continue accepting and applying undocumented extra connection inputs, since the expected behavior asserts both positions.",
+  "confidence": 3
+ }
+]

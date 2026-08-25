@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_141",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_196",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_060",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_083",
+  "ask": true,
+  "unresolved_decision": "The spec simultaneously requires preserving the legacy Prompt modal contract and reimplementing the warning surface with the newer structured modal primitives, while the policy-defined copy tokens and delegated-account body content are explicitly withheld, so the agent cannot know which modal contract or wording to implement.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_149",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_070",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_185",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_236",
+  "ask": true,
+  "unresolved_decision": "The problem statement explicitly forbids including disableCycleSelector so users keep billing-cycle choice, while the requirements mandate disableCycleSelector: true in all upsell configurations, so the agent cannot know whether to lock the billing cycle.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_150",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_144",
+  "ask": true,
+  "unresolved_decision": "The problem statement says ingestion should ignore non-Flipt auxiliary layers and continue processing supported layers, while the requirements say fetchFiles must return an error on any layer with an unsupported media type, so the agent cannot know whether to skip or fail on non-Flipt layers.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_093",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_010",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_183",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_109",
+  "ask": true,
+  "unresolved_decision": "The requirements contradict each other on whether persisted auto-generated seeds use ordinary decimal digits or unprefixed hexadecimal text, and on whether the digest must incorporate the identifier (making same-seed identifiers differ) or must yield identical hashes for two identifiers sharing the same seed and input.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_139",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_035",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_148",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_181",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_111",
+  "ask": true,
+  "unresolved_decision": "The spec demands both absolute/fully-qualified and relative/portable stored image paths, and both the system list separator and a single comma as the concatenation separator, so the agent cannot know which path form and separator the image_files field should use.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_097",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ }
+]

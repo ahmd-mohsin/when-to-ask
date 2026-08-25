@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_030",
+  "ask": true,
+  "unresolved_decision": "The requirements demand both honoring the caller's cancellation/timeout signals during source access and constructing a fresh internal context that does not inherit pre-existing cancellation or deadlines from parent operations, so it is unresolved whether Load's internal context should be derived from the caller's context or created fresh from context.Background().",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_123",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_160",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_226",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_232",
+  "ask": true,
+  "unresolved_decision": "The expected behavior says the URL field must store the value exactly as the user provided it with no preprocessing, while the requirements mandate normalizing input changes before storing them, so it is unresolved whether the stored URL should be the raw input or a normalized value.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_044",
+  "ask": true,
+  "unresolved_decision": "Two adjacent requirements conflict on precedence when both gain formats are present for the same logical field - one says prefer the alternative (R128) format and the other says prefer the ReplayGain-style value - so which format wins is unresolved.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_130",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_001",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_180",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_002",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_202",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_204",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_192",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_112",
+  "ask": true,
+  "unresolved_decision": "The task requires stored image paths to be relative/portable in one requirement and absolute/fully qualified in others, and to join them with the system list separator in one sentence but with a comma in another, so the path form and separator to persist are unresolved.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_011",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_171",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_048",
+  "ask": true,
+  "unresolved_decision": "The additional context says the default kinit timeout must account for operations that regularly exceed the standard 30-second baseline rather than using that baseline, while the requirements mandate a 30-second default to preserve that same baseline, so the default value of ansible_winrm_kinit_timeout is unresolved.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_194",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_088",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_135",
+  "ask": true,
+  "unresolved_decision": "When max_idle_conn exceeds max_open_conn, the expected behavior says to raise MaxOpenConn up to MaxIdleConn while the requirements say to cap MaxIdleConn down to MaxOpenConn, so which field should be adjusted is unresolved.",
+  "confidence": 5
+ }
+]

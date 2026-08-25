@@ -1,0 +1,122 @@
+[
+ {
+  "item_id": "r6a_172",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_004",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_201",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_081",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether to build the in-app purchase warning surface on the legacy modal contract or on the newer structured modal primitives (the requirements mandate both mutually exclusive approaches), and the policy-defined copy tokens and minimum delegated-account body content are explicitly withheld.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_079",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_145",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether fetchFiles should ignore non-Flipt layers and continue processing supported feature layers (per the problem statement) or return an error on any layer whose media type is not a supported Flipt media type (per the requirements).",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_085",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_003",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_173",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_193",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_143",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether fetchFiles should ignore non-Flipt layers and continue processing supported feature layers (per the problem statement) or return an error on any layer whose media type is not a supported Flipt media type (per the requirements).",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_158",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_066",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_163",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_218",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether HostState.__str__ should render bare enum member labels like 'TASKS' or 'RESCUE|ALWAYS' without prefixes (per the expected behavior) or must keep the legacy ITERATING_*/FAILED_* prefixed labels (per the requirements), which directly contradict each other.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_107",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether persisted auto-generated seed values must be serialized as human-readable ordinary decimal digits or as compact hexadecimal text without a radix prefix, since the requirements mandate both incompatible interchange formats.",
+  "confidence": 5
+ },
+ {
+  "item_id": "r6a_220",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether HostState.__str__ should render bare enum member labels like 'TASKS' or 'RESCUE|ALWAYS' without prefixes (per the expected behavior) or must keep the legacy ITERATING_*/FAILED_* prefixed labels (per the requirements), which directly contradict each other.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_156",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether hasReachedAliasesCountLimit should compare the plan quota against the total vault alias count including trashed aliases (per the described server-side enforcement) or against only active non-trashed aliases (per the requirement), which yield different limit states.",
+  "confidence": 4
+ },
+ {
+  "item_id": "r6a_146",
+  "ask": false,
+  "unresolved_decision": "",
+  "confidence": 3
+ },
+ {
+  "item_id": "r6a_134",
+  "ask": true,
+  "unresolved_decision": "The agent cannot settle whether the share-load visit-tracking option must be named UpdateVisitOnLoad or TrackVisitOnLoad, nor whether visit metrics update only under the FAST or only under the BALANCED ShareLinkUpdatePolicy, since the requirements mandate conflicting names and policies.",
+  "confidence": 5
+ }
+]

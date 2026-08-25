@@ -509,3 +509,110 @@ identifiable (collected before 2026-08-23 17:17Z) and can be dropped at
 analysis time if `error_signature` ever proves load-bearing for a T7 number.
 All four shards were restarted at 17:17Z so every subsequent run uses one code
 path.
+## Amendment E (2026-08-25 — R6a/R6b as-run outcome, including the NO-GO)
+
+Both LLM cells are complete at 100% coverage. Recorded here as-run, whichever
+way they landed. **Nothing in the protocol was tuned, and no cell was rerun
+with variations** — the only re-runs were whole chunks that the transport
+rejected before any judgment of theirs was stored (D.3).
+
+### E.1 The numbers
+
+`results/r6_llm_cells.json`, `results/r6b_auroc_ci.json`.
+
+| cell | coverage | headline | context |
+|---|---|---|---|
+| R6a single-run introspection | 238/238 items, 60/60 tasks | task-detection **F1 0.709** (P 0.718 / R 0.700; 39 fired / 40 true) | divergence detector 0.507 · random budget-matched 0.582 · **always-ask 0.800** |
+| R6b ensemble comparison | 200/200 pairs, 46 tasks | **AUROC 0.5786**, task-clustered 95% CI **[0.481, 0.670]** | R3 hashed .555 · R4 MiniLM .580 · R5 bge .573 |
+
+R6a run-level: accuracy 0.580, ask rate 0.504 — **below the 66.4% (158/238)
+always-ask base rate**, i.e. worse than trivial at the run level even though
+it beats the fitted detectors at the task level.
+
+R6b decision accuracy 0.585. The judge answered "different" on **129 of 200**
+pairs against a pool that is 100/100 by construction, and its per-arm
+accuracy is lopsided: **73/100 correct on diff, 44/100 on same**. The AUROC
+is computed on the confidence-signed score, so this yes-bias moves accuracy
+without by itself moving AUROC; it is reported because it characterises HOW
+the judge fails, not to discount the number.
+
+### E.2 The pre-declared reading, and the NO-GO
+
+The 028 entry pre-declared: *"Expected shape of the story if the negatives
+hold and R6b succeeds: the signal exists, is invisible to every generic
+representation and to single-run judgment, and becomes visible only under
+decision-aware comparison ACROSS runs."*
+
+**R6b did not succeed.** 0.5786 sits inside the same .54–.60 band as every
+generic representation — statistically indistinguishable from MiniLM's .580
+— and its clustered interval **contains chance**. The pre-declared story
+shape is therefore NOT available and must not be written. This is recorded
+as a NO-GO on that framing.
+
+What it does to the reviewer gaps in STATUS.md:
+- **Gap #3 ("you didn't try hard enough") is NOT closed by a ceiling.** R6b
+  was the designated way to show one, and there is no ceiling to show. The
+  honest statement is stronger in one direction and weaker in another: the
+  negative now extends from generic representations to full-context LLM
+  judgment with cross-run comparison, but we still cannot distinguish "the
+  signal is not there" from "nothing we tried recovers it." Say both.
+- **Gap #1 (label validity) gains weight, not loses it.** An LLM judge
+  reading the same excerpts the labeler used agrees with the labels at
+  0.585. That is consistent with a weak signal AND with noisy ground truth,
+  and this cell cannot separate the two. **T6 plus the ~50-item owner
+  hand-label is now the highest-leverage remaining item, more so than before
+  this run.**
+- **Gap #7 (do not over-claim "zero signal") applies to R6b too.** Its CI
+  contains chance; R4's does not. Do not report R6b as "chance" or as
+  "signal" — report .579 [.481, .670] and let the band speak.
+
+Scope boundary holds: this is measurement. No mechanism claim is made or
+implied by either cell.
+
+### E.3 Transport, as-run (the 028 STOP rule in action)
+
+The STOP rule ("if session limits bite, report the completed fraction — no
+silent truncation") was exercised for real:
+
+- **First launch**: all 12 R6a chunks ran; **all 10 R6b chunks died on a
+  session limit** before judging anything. Zero R6b judgments existed, so
+  nothing was contaminated.
+- **Two chunks were silently truncated by their judge** — `r6a_chunk_01`
+  returned 16 of 20 items, `r6b_chunk_02` returned 19 of 20.
+  `r6_store_chunks.py`'s all-or-nothing id check rejected both and left them
+  pending. Each was re-judged WHOLE. **No partial chunk was ever stored, and
+  no item was kept from a rejected chunk** — that check is what stops
+  "re-run the missing items" from becoming selection on the outcome.
+- **One chunk failed on a network error** (ENOTFOUND) with no judgment
+  produced; re-run.
+- Final coverage is 100% on both cells, so the completed-fraction clause did
+  not have to be invoked in the paper.
+
+**Registry-blindness audit (Am.A item 3 obligation, discharged).** Across all
+14 workflow runs the judge transcripts contain **70 `Read` calls and 24
+`StructuredOutput` calls and no other tool use whatsoever** — no Bash, Grep,
+or Glob. Every one of the 23 distinct Read targets is a payload chunk file
+under `results/r6_chunks/`. No judge opened the registry, the item files with
+their truth fields, or `blind_id_map.json`.
+
+### E.4 Item 7 extended to R6b (additive, no cell changed)
+
+Amendment A item 7 requires a task-clustered bootstrap CI on every T1/T5
+separation AUROC; R6b is one, so it gets the same treatment on the same
+terms. `scripts/r6b_auroc_ci.py` reuses `t1_auroc_ci.py`'s estimator and
+constants verbatim (exact Mann-Whitney U with ties 0.5, 2000 draws, seed 0,
+clustering on task), substituting the confidence-signed judgment score for
+the representation distance. It carries a hard guard that aborts unless the
+recomputed point estimate reproduces the recorded cell exactly; it does.
+Naive pair CI [0.500, 0.656] is reported alongside only to show the
+inflation, per item 7.
+
+### E.5 One deviation from the committed runner, recorded
+
+`scripts/r6_runner_workflow.js` as committed did not pin a judge model, so
+its subagents would have inherited whatever model the driving session ran.
+The frozen protocol says the transport is **Fable subagents**, so
+`model: 'fable'` was set explicitly on both agent calls before the first
+judgment was collected. This makes the runner match the pre-registration
+rather than depart from it; it is recorded because it is a change to a
+committed file made during an experiment.
