@@ -267,11 +267,17 @@ def build_labels(a0_dir: str | Path, classes_path: str | Path,
 
     Coordinates (v3.1, decisions/026): text IS the raw segment join; all char
     offsets are raw; windows are sliced raw and their CONTENT normalized."""
-    from transformers import AutoTokenizer
+    # decisions/028 Amendment F: load through the SAME path the collector
+    # used. token_idx in the logs is in the collector's tokenizer units
+    # (see the invariant in resolve_tokenizer above), so a bare
+    # AutoTokenizer.from_pretrained here silently drifts the token->char map
+    # whenever the collector passed a flag that changes tokenization --
+    # measured at 23/40 real Mistral transcripts, 0/40 real Qwen ones.
+    from wta.hf_reader import _load_tokenizer
 
     a0_dir = Path(a0_dir)
     art = load_class_artifact(classes_path)
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    tokenizer = _load_tokenizer(tokenizer_name)
     dbg = open(debug_path, "w", encoding="utf-8") if debug_path else None
 
     def dwrite(**kw):

@@ -616,3 +616,66 @@ The frozen protocol says the transport is **Fable subagents**, so
 judgment was collected. This makes the runner match the pre-registration
 rather than depart from it; it is recorded because it is a change to a
 committed file made during an experiment.
+
+
+## Amendment F (2026-08-27 — labeler/collector tokenizer agreement, frozen BEFORE T7 labels)
+
+Found while attempting the first interim analysis of the T7 collection, at
+803/1440 runs. Recorded before any fix was applied, per rule 2.
+
+**The defect.** `wta.labeling.build_labels` loaded its tokenizer with a bare
+`AutoTokenizer.from_pretrained(tokenizer_name)` (labeling.py:274), while the
+collector loads it through `hf_reader._load_tokenizer` with
+`fix_mistral_regex=True` (Amendment C.2). The file itself states the invariant
+that this breaks (labeling.py:133):
+
+> Token->char maps must be built with the COLLECTION model's tokenizer
+> (token_idx in the logs is in its units).
+
+`token_char_positions` builds the token->char map via
+`return_offsets_mapping`, and line 386 indexes it with the action's
+`token_idx`. If labeler and collector tokenize differently, every action's
+character offset is wrong, and with it the commitment anchoring the whole
+label depends on. `resolve_tokenizer` already exists to stop the coarse
+version of this bug ("a Qwen3 collection labeled with a Qwen2.5 tokenizer
+drifts"); this is the same bug one level finer -- right model, wrong flag.
+
+**Measured on REAL traces, not synthetic strings:**
+
+| collection | transcripts compared | tokenizations differing |
+|---|---|---|
+| T7 (Mistral-Small-24B-2501) | 40 (3.7M chars) | **23 / 40** |
+| R2 (Qwen3) | 40 (0.5M chars) | **0 / 40** |
+
+On T7 the divergence starts as early as token 92 and accumulates to 265
+tokens on long transcripts -- i.e. exactly the long agent traces the analysis
+cares about.
+
+**Decision (owner, 2026-08-27): make the labeler load the tokenizer through
+the same path as the collector.** This is not a choice between tokenizations.
+`token_idx` in the logs is recorded in the collector's units, so matching the
+collector is the only self-consistent option; it restores the invariant the
+file already documents rather than introducing a new one.
+
+**Blast radius, measured rather than assumed.** The flag is a verified no-op
+on real Qwen traces (0/40), so **no existing number moves**: R2's 32B T1 rows,
+T5's 14B/7B rows, T3, F2 and F4 are all computed on Qwen collections and are
+untouched. Only Mistral labeling changes, and it changes from wrong to right.
+
+**Contract test** (rule 4) pins collector and labeler to the same tokenizer
+loader, so the two paths cannot drift apart again silently.
+
+### Correction to Amendment C.2
+
+C.2 recorded, of `fix_mistral_regex`: *"on 13 varied probe strings the flag
+produced identical ids on 2501 too. So on the evidence it is currently a
+no-op that silences a warned-about defect, rather than a change that
+measurably moves read positions."*
+
+**That statement is false and is withdrawn.** It generalised from 13 short
+synthetic strings to real data. On real agent transcripts the flag changes
+tokenization in **23 of 40** cases. The flag is doing substantive work, and
+C.2's decision to set it was right for a better reason than the one recorded:
+not "harmless hygiene" but a genuine correction to how reads are indexed.
+The lesson, logged so it is not repeated: **synthetic probes are not evidence
+about real traces.**

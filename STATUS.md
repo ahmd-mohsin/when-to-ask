@@ -214,9 +214,18 @@ it).
 both Mistral tokenizers "will lead to incorrect tokenization" without
 `fix_mistral_regex=True`. Reads are indexed by token position, so the flag is
 now passed unconditionally (Amendment C.2); Qwen3 is byte-identical with and
-without it, so R2 is untouched. Honest caveat: on 13 varied probe strings the
-flag changed **nothing** on 2501 either — it silences a warned-about defect
-rather than a demonstrated one.
+without it, so R2 is untouched.
+
+⚠️ **Correction (2026-08-27, Amendment F).** This entry previously claimed the
+flag was "a no-op that silences a warned-about defect rather than a
+demonstrated one", based on 13 synthetic probe strings. **That was wrong.** On
+REAL agent transcripts the flag changes tokenization in **23 of 40** Mistral
+traces (0 of 40 Qwen), diverging from as early as token 92. It also exposed a
+genuine bug: the labeler loaded its tokenizer WITHOUT the flag while the
+collector used it, drifting the token→char map that `token_idx` indexes.
+Fixed in Amendment F; pinned by
+`harness/contract/test_tokenizer_agreement.py`. Lesson logged: synthetic
+probes are not evidence about real traces.
 
 ## Known gaps a reviewer will attack
 
