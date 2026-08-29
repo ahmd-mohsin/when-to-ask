@@ -1,0 +1,58 @@
+{
+ "DIAGNOSTIC": true,
+ "question": "on the items where both a lexicon and an accepted Fable judge label exist, does relabelling change the T1 same-vs-diff separation? Windows/vectors identical (lexicon commit rounds); only pair labels differ.",
+ "item_set": {
+  "cells": 31,
+  "items": 80,
+  "fable_lexicon_agreement": 0.7875
+ },
+ "hashed_r3": {
+  "lexicon": {
+   "auroc": 0.7442922374429224,
+   "ci95": [
+    0.4639171052631579,
+    0.9138223140495868
+   ],
+   "n_same": 73,
+   "n_diff": 6,
+   "n_boot_valid": 1983
+  },
+  "fable": {
+   "auroc": 0.5583333333333333,
+   "ci95": [
+    0.3681912878787879,
+    0.7412675606641125
+   ],
+   "n_same": 64,
+   "n_diff": 15,
+   "n_boot_valid": 1968
+  }
+ },
+ "minilm_r4": {
+  "lexicon": {
+   "auroc": 0.6278538812785388,
+   "ci95": [
+    0.25654485049833886,
+    0.857315668202765
+   ],
+   "n_same": 73,
+   "n_diff": 6,
+   "n_boot_valid": 1983
+  },
+  "fable": {
+   "auroc": 0.578125,
+   "ci95": [
+    0.2779371584699454,
+    0.8122616525423729
+   ],
+   "n_same": 64,
+   "n_diff": 15,
+   "n_boot_valid": 1968
+  }
+ },
+ "forked_cells": {
+  "lexicon": 4,
+  "fable": 5
+ },
+ "disclosed_bias": "validation items were sampled from lexicon-LABELABLE commitments (60% trace stratum); not representative of production items; small n"
+}

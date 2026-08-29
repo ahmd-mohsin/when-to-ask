@@ -238,6 +238,25 @@ probes are not evidence about real traces.
    labeler used agrees with the labels at only **0.585**, which is equally
    consistent with a weak signal and with noisy ground truth. That cell
    cannot separate the two; the hand-label can.
+
+   Two diagnostics (NOT pre-registered cells) now bracket this gap:
+   - **Label learnability (2026-08-27, VM session):** a FITTED TF-IDF+LR
+     cannot recover the lexicon label from the window text (+0.001 over
+     majority) or the whole transcript (+0.002); underpowered at ~12
+     runs/cell, but consistent across window/full/fitted/unfitted/LLM.
+     `results/diag_label_learnability.json`.
+   - **Fable-vs-lexicon relabelling (2026-08-29, laptop):** on the 80
+     intersection items where the 025 validation produced accepted Fable
+     judgments (31 cells, 79% agreement with lexicon), swapping the answer
+     key from lexicon to Fable does NOT surface signal — hashed .558
+     [.37,.74], MiniLM .578 [.28,.81], the same band; the lexicon-keyed
+     .744 on this sliver rests on 6 diff pairs and its CI contains chance.
+     Severely underpowered and sampled from lexicon-labelable items only.
+     `results/diag_fable_label_signal.json`,
+     `scripts/diagnose_fable_label_signal.py`. The full-pool version
+     requires executing the prepared-but-never-run production judge pass
+     (`models/v3_32b_judge/`, 306 work files) — which the 025 STOP gates and
+     only a new 028 amendment can authorize.
 2. **Underpowered-vs-negative.** F2 itself shows 0 testable decisions at
    N≤4. Defense = lead with the global Stouffer test and the relative
    text-vs-activation comparison, not per-decision counts.
