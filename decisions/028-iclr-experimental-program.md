@@ -679,3 +679,73 @@ C.2's decision to set it was right for a better reason than the one recorded:
 not "harmless hygiene" but a genuine correction to how reads are indexed.
 The lesson, logged so it is not repeated: **synthetic probes are not evidence
 about real traces.**
+
+
+## Amendment G (2026-08-29 — the judge-labelled arm runs; independence replaces the lexicon yardstick)
+
+**Owner decision, given in-session 2026-08-29: run the full production
+judge-labelling pass with Claude Fable 5.** This supersedes the operational
+consequence of the 025 STOP (no production labelling) by owner authority; it
+does NOT retro-score the 025 validation, whose numbers stand as recorded.
+
+**Why now, on the record.** (1) R6b produced no ceiling; the "you never
+established your ground truth" objection is the paper's weakest point.
+(2) The 025 STOP measured the judge against the lexicon's own labels and
+counted disagreement as judge error; blind adjudication went 46–0 for the
+judge — the bar was pre-registered, but the yardstick was bent (025 Am.A
+(iv) records this). (3) Two diagnostics (2026-08-27, 2026-08-29) show the
+lexicon label is not recoverable by fitted text models and that relabelling
+the tiny existing Fable-labelled slice does not move the T1 band — both
+underpowered, which is exactly why a full label set is needed.
+(4) The owner cannot expert-hand-label traces; the T6 plan's "owner
+hand-label" step is replaced by the adjudication design below, and that
+substitution is disclosed in the paper as a limitation.
+
+**What runs (phase 1).** The frozen 3,361-item pool in
+`models/v3_32b_judge/` (built by `judge_label_commitments.py --build` from
+`models/v3_32b_1415/labels_debug.jsonl`: every commitment where the lexicon
+scored "no signature hits"; ties excluded per 025 §4). Transport per 025
+Amendment A: Claude Fable 5 subagents in the owner's session consume the 306
+frozen work files exactly as built (system+user prompts pre-rendered, class
+order pre-permuted, blind to lexicon output and registry resolutions by
+construction). One work file -> one subagent -> one
+`session_results_NNN.jsonl`, raw responses on disk before any scoring;
+chunked and resumable across sessions. Subagents are instructed to read
+NOTHING but their work file.
+
+**Acceptance gate (unchanged, mechanical).** `freeze_results`: the class
+must be in the item's schema and the verbatim evidence span must be located
+in the raw trace (`locate_evidence`), else the label is discarded
+(`bad_class` / `evidence_not_found`). Primary arm = all accepted labels;
+sensitivity at conf>=0.7 and conf>=0.9 reported as-run (mirrors 025 spec §7).
+
+**Independence design (replaces agreement-with-lexicon as the validity
+measure).** The lexicon is no longer the yardstick anywhere:
+1. **Second rater, subsample.** A stratified ~300-item subsample is
+   re-judged by a DIFFERENT model (Claude Opus, different family
+   unavailable — same-lab correlation disclosed) with the same blind
+   protocol. Validity is reported as inter-rater agreement (kappa), not
+   agreement with the lexicon.
+2. **Owner adjudication of disagreements.** Rater disagreements go to the
+   owner as side-by-side evidence-span reviews (class definitions in plain
+   English + each rater's verbatim quote). The owner verifies which quoted
+   evidence supports which class — verification, not expert labelling.
+3. Items where BOTH raters abstain stay unlabeled; abstention is reported,
+   never forced.
+
+**Phase 2 (authorized, runs after phase 1 lands).** Re-judge the 1,595
+lexicon-labelled commitments under the same protocol, giving a fully
+judge-labelled arm that nowhere depends on lexicon output. Budgeted for a
+follow-up session (~5M tokens); its work files are built with the same
+builder and frozen before judging.
+
+**What is pre-registered to be computed once phase 1 freezes, as-run,
+whichever way it lands:** (a) label census under the judge arm (coverage,
+fork fraction, per-cell class counts) vs the lexicon arm; (b) T1 R3/R4
+separation AUROC on the judge-labelled pool with task-clustered bootstrap
+CIs (t1_auroc_ci constants). Judge-arm numbers are a SEPARATE arm (025 §4b/c
+stands): no lexicon-labelled as-run number is replaced or re-scored.
+
+**Cost disclosure.** Manifest estimate ~10.6M input / ~2.0M output tokens;
+paid in subscription session usage; the pass may span sessions and partial
+progress is committed as it lands.
