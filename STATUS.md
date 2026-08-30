@@ -1,6 +1,6 @@
 # STATUS — what every code name means, and what is done vs left
 
-**Living document. Last updated: 2026-08-25.**
+**Living document. Last updated: 2026-08-30.**
 Update rule at the bottom: this file is edited in the SAME commit as any
 experiment that lands. If it disagrees with reality, reality wins and this
 file is stale — fix it.
@@ -16,6 +16,18 @@ the frozen experimental program for the ICLR paper
 single-run internals, not in surface behavior, not in generic embeddings,
 and — as of 2026-08-25 — not in full-context LLM judgment either, whether
 it reads one run (R6a) or compares two (R6b).
+
+⚠️ **READ THIS BEFORE QUOTING ANY T1 NUMBER (2026-08-30).** The
+pair-separation statistic that produces rows R3/R4/R5 has now been run
+against targets that MUST be recoverable, and it does not recover them:
+it scores **.788 / .849** on "are these two runs even on different
+repositories," **.685** on "did they edit different files," and
+**.589 / .474** on a *planted* fork whose answer is known by construction.
+So .555/.580 was never comparable to the 0.75 bar — it must be read
+against this instrument's own ~.85 ceiling, and it sits near the
+machinery's noise floor. **R3/R4/R5 do not currently license "the signal
+is not there."** R1/R2 use permutation tests, different machinery, and are
+untouched. See `results/diag_positive_control.json` and gap 8.
 The mechanism (a working ask-trigger) was **dropped** at a pre-registered
 gate in 027 and is future work. Nothing in this cycle claims a mechanism.
 
@@ -121,6 +133,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | — | AUROC clustered CIs (028 Am.A item 7) | ✅ **DONE** for every 32B separation AUROC | R3/R4/R5 via `scripts/t1_auroc_ci.py`; R6b via `scripts/r6b_auroc_ci.py` (same estimator and constants, guard-checked to reproduce the cell). T5/T7 rows get theirs when those land |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
 | — | Train-fold vs eval-fold check | ✅ **DONE** | Stage-1 detection train F1 **0.517** vs eval **0.507** — fails equally on data it was tuned on → signal absence, not overfitting |
+| — | **Positive control for the T1 pair-separation machinery** (diagnostic, NOT a pre-registered cell) | ✅ **DONE 2026-08-30 — the instrument does not resolve** | Same `auroc` + Euclidean-on-`r_vec` statistic as R3/R4/R5, run against must-be-recoverable targets. **A** same-vs-diff TASK (different repos entirely): hashed **.788**, MiniLM **.849** — should be ~1.0. **B** same-vs-diff FILE SET within task: **.685 / .684**. **C** planted 2×2 fork (`return None` vs `raise ValueError` × 4 shell idioms): nuisance distance is ~2× signal (ratio **.60 / .49**); AUROC with idiom varying **.589 / .474** — MiniLM below chance on a fork known by construction. **D** real label stratified by lexicon decision margin: hashed .484/.637/.581, MiniLM .556/.601/.640 — not monotonic, so label confidence does not buy separation. Incidental: `_is_mutating` misses Python-mediated writes. `results/diag_positive_control.json`, `scripts/diagnose_positive_control.py` |
 
 Legend: ✅ done · 🔄 in progress · ⏳ not started
 
@@ -160,6 +173,21 @@ claim is *detectable but useless, and flat* — **NOT** "no signal at all,"
 and **NOT** "nothing beats chance on the clean subset" (bge does, at
 .599 [.534, .673]). Over-claiming either way is the easiest way to lose a
 reviewer who reruns the bootstrap.
+
+⚠️ **REVISED 2026-08-30 — the band must now be read against the
+instrument's own ceiling, not against 0.75.** The positive control
+(`results/diag_positive_control.json`) shows this statistic reaches only
+**.788/.849** when asked whether two runs are on *different repositories*,
+**.685** on *different files*, and **.589/.474** on a *planted* fork. Its
+usable dynamic range is therefore ~0.29, and the interpretation label sits
+about 0.055 into it. The honest sentence is now: **"on an instrument whose
+empirical ceiling is .85 for cross-repository discrimination,
+interpretation separation is .58; the gap between planted-fork performance
+with idiom held constant versus varying shows the statistic is dominated by
+shell-idiom variance, so we cannot yet distinguish absent signal from an
+unresolving instrument."** Do NOT write "the signal is not in surface
+behavior or embeddings" from these rows until the instrument is fixed or
+the ceiling is reported alongside.
 
 ## T7 on the box (2026-08-23) — blockers found, and how they resolved
 
@@ -298,6 +326,41 @@ probes are not evidence about real traces.
    interval and let the band speak — do not call R6b "chance" and do not
    call it "signal."
 
+8. **The instrument never had a positive control — and now that it has one,
+   it fails (NEW, 2026-08-30). Highest-priority item in the repo.**
+   `scripts/diagnose_positive_control.py` runs the *identical* statistic
+   behind R3/R4/R5 against targets that must be recoverable:
+
+   | target | hashed | MiniLM |
+   |---|---|---|
+   | same-vs-diff TASK (different repos) | .788 | .849 |
+   | same-vs-diff FILE SET (within task) | .685 | .684 |
+   | planted fork, idiom varying | .589 | **.474** |
+   | *the real interpretation label* | .555 | .580 |
+
+   A planted fork (`return None` vs `raise ValueError`) is recovered when
+   idiom is held constant and lost when it varies; nuisance distance is
+   ~2× signal distance (ratio .60 / .49). **Consequence:** R3/R4/R5 do not
+   license a claim about interpretation signal in either direction, and any
+   paper text asserting "not in surface behavior / not in embeddings" from
+   those rows must be rewritten or must report the ceiling next to it.
+   This subsumes part of gap 3: the "you didn't try hard enough" escape is
+   now answered — the trying was fine, the ruler was not.
+   Two consequences queued, both CPU-only:
+   (a) **re-anchor `r_vec` per blocker** (44.2% of the 1,595 labeled
+   commitments share a `commit_char` with another blocker in the same run,
+   so those blockers currently get byte-identical vectors under different
+   labels — verified 2026-08-30);
+   (b) **replay-and-diff** (`DockerTaskEnv.execute`, images restorable via
+   `scripts/restore_hilbench_images.py`, ~38.5k execs): two runs decided the
+   same thing iff their final normalized `git diff` matches — removes idiom
+   by construction and yields an LLM-free second ground truth for gap 1.
+   Incidental defect found in passing: `wta.labeling._is_mutating` matches
+   only `("sed -i", ">", ">>", "tee ", "patch ", "git apply", "perl -i")`,
+   so a Python-mediated write (`python -c "...open(f,'w').write(s)"`)
+   mutates the repo invisibly — it can neither anchor a commitment nor
+   contribute to `r_vec`.
+
 ## What defends the negatives (say these out loud in the paper)
 
 - **Train ≈ eval.** Stage-1 detection scores F1 0.517 on the folds it was
@@ -338,7 +401,7 @@ probes are not evidence about real traces.
   `results/` files, never overwriting prior artifacts.
 - Numbers are reported **as-run**. No rerun with variations without
   amending [decisions/028](decisions/028-iclr-experimental-program.md) FIRST.
-- Test suite must stay green (currently **254 passed, 2 skipped**).
+- Test suite must stay green (currently **257 passed, 2 skipped**).
 - Commit each completed experiment with its results; push to BOTH
   `master:master` and `master:main`. Use Git Bash for git (PowerShell git
   stalls on this machine).

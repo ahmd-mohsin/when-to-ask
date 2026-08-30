@@ -22,7 +22,7 @@ Then, as needed:
    `decisions/028` FIRST.
 3. Every experiment ships a script in `scripts/` and writes to a fresh file
    in `results/` — never overwrite prior artifacts.
-4. The test suite stays green (currently 254 passed, 2 skipped). New frozen protocol choices
+4. The test suite stays green (currently 257 passed, 2 skipped). New frozen protocol choices
    get a contract test.
 5. The **sealed pool (swe_60+) stays sealed.**
 6. Commit each completed experiment with its results; push to BOTH

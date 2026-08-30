@@ -1,0 +1,138 @@
+{
+  "note": "DIAGNOSTIC, not a pre-registered 028 cell. Validates the T1 pair-separation machinery against targets that must be recoverable.",
+  "labeler_blind_spot": {
+    "finding": "wta.labeling._is_mutating matches only ('sed -i', '>', '>>', 'tee ', 'patch ', 'git apply', 'perl -i'). A Python-mediated write such as python -c \"...open(f,'w').write(s)\" mutates the repo but is NOT counted as a mutating action, so it can neither anchor a commitment nor contribute to r_vec.",
+    "incidental": true
+  },
+  "arms": {
+    "A_ceiling_task": {
+      "hashed": {
+        "auroc": 0.7877564649599168,
+        "n_same": 11601,
+        "n_diff": 200000,
+        "same_mean": 1.1148537423279279,
+        "diff_mean": 1.3328866352071589,
+        "n_runs": 1196,
+        "n_tasks": 60
+      },
+      "minilm": {
+        "auroc": 0.8491982906645973,
+        "n_same": 11601,
+        "n_diff": 200000,
+        "same_mean": 0.9884260412318523,
+        "diff_mean": 1.2683282410534593,
+        "n_runs": 1196,
+        "n_tasks": 60
+      }
+    },
+    "B_ceiling_files": {
+      "hashed": {
+        "auroc": 0.6848531789917709,
+        "n_same": 917,
+        "n_diff": 8490,
+        "same_mean": 0.9187223449817392,
+        "diff_mean": 1.107404337064649,
+        "n_tasks_contributing": 55
+      },
+      "minilm": {
+        "auroc": 0.6841952749594432,
+        "n_same": 917,
+        "n_diff": 8490,
+        "same_mean": 0.8132213434176392,
+        "diff_mean": 0.9741305573019123,
+        "n_tasks_contributing": 55
+      }
+    },
+    "C_planted_2x2": {
+      "hashed": {
+        "diff_choice__diff_idiom": {
+          "mean": 1.1412262501041204,
+          "n": 12
+        },
+        "diff_choice__same_idiom": {
+          "mean": 0.5936915090814151,
+          "n": 4
+        },
+        "same_choice__diff_idiom": {
+          "mean": 0.9947540861059602,
+          "n": 12
+        },
+        "signal_to_nuisance": 0.5968223879385761,
+        "auroc_choice_idiom_varying": 0.5885416666666666,
+        "dist_choice_within_idiom_0": 0.6789746051102437,
+        "dist_choice_within_idiom_1": 0.41887907918974315,
+        "dist_choice_within_idiom_2": 0.654994359274421,
+        "dist_choice_within_idiom_3": 0.6219179927512527
+      },
+      "minilm": {
+        "diff_choice__diff_idiom": {
+          "mean": 0.6591067367668366,
+          "n": 12
+        },
+        "diff_choice__same_idiom": {
+          "mean": 0.2912463818464085,
+          "n": 4
+        },
+        "same_choice__diff_idiom": {
+          "mean": 0.5973952185586672,
+          "n": 12
+        },
+        "signal_to_nuisance": 0.4875271391510253,
+        "auroc_choice_idiom_varying": 0.4739583333333333,
+        "dist_choice_within_idiom_0": 0.2829728828717375,
+        "dist_choice_within_idiom_1": 0.20823851962620762,
+        "dist_choice_within_idiom_2": 0.35735538036098735,
+        "dist_choice_within_idiom_3": 0.3164187445267015
+      }
+    },
+    "D_label_margin_ladder": {
+      "hashed": {
+        "margin_hi": {
+          "auroc": 0.581334339116587,
+          "n_same": 1455,
+          "n_diff": 82,
+          "same_mean": 0.8684430297006669,
+          "diff_mean": 0.9461168618850926
+        },
+        "margin_lo": {
+          "auroc": 0.48393698222696513,
+          "n_same": 1722,
+          "n_diff": 542,
+          "same_mean": 0.7726078410854196,
+          "diff_mean": 0.7539735538291474
+        },
+        "margin_mid": {
+          "auroc": 0.6372157785943959,
+          "n_same": 4144,
+          "n_diff": 622,
+          "same_mean": 0.7565919999309721,
+          "diff_mean": 0.8886254378604083
+        }
+      },
+      "minilm": {
+        "margin_hi": {
+          "auroc": 0.6404241052719806,
+          "n_same": 1455,
+          "n_diff": 82,
+          "same_mean": 0.7441092793377847,
+          "diff_mean": 0.8344583922094767
+        },
+        "margin_lo": {
+          "auroc": 0.5564498502127879,
+          "n_same": 1722,
+          "n_diff": 542,
+          "same_mean": 0.7199518253205144,
+          "diff_mean": 0.755934172976322
+        },
+        "margin_mid": {
+          "auroc": 0.600901702690288,
+          "n_same": 4144,
+          "n_diff": 622,
+          "same_mean": 0.704504362278729,
+          "diff_mean": 0.7738058388739055
+        }
+      }
+    }
+  },
+  "elapsed_s": 437.1
+}
