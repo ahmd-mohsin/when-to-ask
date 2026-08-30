@@ -117,6 +117,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T3** | Probe robustness | ✅ **DONE** | Neither escape works. full-dim linear **.541**, full-dim MLP **.507** — both far below the causal+anchors-masked TEXT baseline **.730**; the MLP is *worse* than the linear probe. 256-d consistency check reproduced **.2745** exactly. `results/gate2_probe_robustness.json` |
 | **T7** | Cross-family replication (2nd model, same 60 tasks) | 🔄 **FULL COLLECTION RUNNING** | 60 tasks x **24 seeds** on `Mistral-Small-24B-Instruct-2501`. Restarted 2026-08-23 17:17Z on the **028 Amendment D** fix (a `grep -r -` dumped 723 MB and wedged a shard >1h at 97% CPU with its GPU idle; `error_signature` now fingerprints the truncated observation the model actually saw — trajectories bit-identical, window untouched). 55 pre-fix runs KEPT. Measured rate ~9-12 runs/h -> **~5-6 days**; ~272 GB projected on `/ssd3` (490 GB free). Amendment D **confirmed on the real failure**: `swe_1-s10`, which previously hung >1h, now completes normally. Relaunched 2026-08-23 17:50Z with `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` (allocator only) after 3 of 4 cards were observed at 3.2-3.7 GiB free — R2's documented OOM band. |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
+| **Judge arm** (028 Am.G) | Fable relabels the 3,361 lexicon-unlabelable commitments | ⏸️ **PAUSED at 32.4%** — interim read taken | **1,089/3,361 judged** over 4 usage-limit cycles; 767 abstained (70.4%), **321 accepted**, 1 rejected for unlocatable evidence. Coverage gain is REAL (45 new multi-run cells, **44.4% forked** ≈ the lexicon's own 43%); separation is NOT: judge_only hashed **.520** [.387,.643] / MiniLM **.497** [.355,.668]; union **.586** / **.575** — the same .54–.60 band. Anchor validated at 70.7% same-turn (028 G.1). `results/interim_judge_arm.json`, `results/diag_anchor_validity.json` |
 | — | AUROC clustered CIs (028 Am.A item 7) | ✅ **DONE** for every 32B separation AUROC | R3/R4/R5 via `scripts/t1_auroc_ci.py`; R6b via `scripts/r6b_auroc_ci.py` (same estimator and constants, guard-checked to reproduce the cell). T5/T7 rows get theirs when those land |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
 | — | Train-fold vs eval-fold check | ✅ **DONE** | Stage-1 detection train F1 **0.517** vs eval **0.507** — fails equally on data it was tuned on → signal absence, not overfitting |
@@ -253,10 +254,14 @@ probes are not evidence about real traces.
      .744 on this sliver rests on 6 diff pairs and its CI contains chance.
      Severely underpowered and sampled from lexicon-labelable items only.
      `results/diag_fable_label_signal.json`,
-     `scripts/diagnose_fable_label_signal.py`. The full-pool version
-     requires executing the prepared-but-never-run production judge pass
-     (`models/v3_32b_judge/`, 306 work files) — which the 025 STOP gates and
-     only a new 028 amendment can authorize.
+     `scripts/diagnose_fable_label_signal.py`.
+   - **The production judge arm, at 32.4% (2026-08-30, 028 Am.G/G.1):** the
+     full pass was authorized and started; on the third of the pool judged
+     so far it buys **real coverage** (321 labels where the lexicon had
+     none, 44.4% of new cells forked) and **no separation** (judge_only
+     MiniLM .497, union .575). Underpowered and anchor-attenuated — see the
+     judge-arm row above. This is the strongest available evidence that the
+     lexicon is not the sole cause of the null, but it is not yet proof.
 2. **Underpowered-vs-negative.** F2 itself shows 0 testable decisions at
    N≤4. Defense = lead with the global Stouffer test and the relative
    text-vs-activation comparison, not per-decision counts.

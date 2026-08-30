@@ -1,0 +1,78 @@
+{
+ "INTERIM": true,
+ "PARTIAL_PHASE1": true,
+ "question": "census + T1 separation under the Fable judge labels produced so far (phase 1 incomplete)",
+ "protocol_choices_made_here": {
+  "judge_window_anchor": "evidence span -> segment -> last action at/before it (028 G.1(1)); commit_rounds is undefined for judge items by construction",
+  "arms": "judge_only (headline) and union (mixed anchors, weaker)"
+ },
+ "census": {
+  "items_judged": 1089,
+  "items_in_pool": 3361,
+  "status_counts": {
+   "abstained": 767,
+   "accepted": 321,
+   "evidence_not_found": 1
+  },
+  "accepted_labels": 321,
+  "abstention_rate_of_judged": 0.7043,
+  "cells_with_ge2_judge_runs": 45,
+  "forked_cells_judge": 20,
+  "forked_fraction_judge": 0.4444
+ },
+ "hashed_r3": {
+  "judge_only": {
+   "auroc": 0.5204984610123119,
+   "ci95": [
+    0.3865867682691901,
+    0.6429528692072878
+   ],
+   "n_same": 1032,
+   "n_diff": 272,
+   "n_tasks": 20,
+   "n_boot_valid": 2000
+  },
+  "union": {
+   "auroc": 0.5855165546693198,
+   "ci95": [
+    0.526663132111402,
+    0.64766944793088
+   ],
+   "n_same": 8854,
+   "n_diff": 2372,
+   "n_tasks": 57,
+   "n_boot_valid": 2000
+  }
+ },
+ "minilm_r4": {
+  "judge_only": {
+   "auroc": 0.49651590287277697,
+   "ci95": [
+    0.3546900191676836,
+    0.6677591957070392
+   ],
+   "n_same": 1032,
+   "n_diff": 272,
+   "n_tasks": 20,
+   "n_boot_valid": 2000
+  },
+  "union": {
+   "auroc": 0.5751681960040546,
+   "ci95": [
+    0.5366363362459561,
+    0.6151792937482312
+   ],
+   "n_same": 8854,
+   "n_diff": 2372,
+   "n_tasks": 57,
+   "n_boot_valid": 2000
+  }
+ },
+ "reference_lexicon_T1_rows": {
+  "r3_hashed": 0.555,
+  "r4_minilm": 0.58,
+  "r5_bge": 0.573,
+  "r6b_llm_judge": 0.5786
+ },
+ "caveat": "PARTIAL: phase 1 stopped at the Fable usage limit, so this is a prefix of the pool in work-file order, not a random sample. Numbers are interim and are superseded by the frozen full-pool cell."
+}

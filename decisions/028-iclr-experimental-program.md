@@ -749,3 +749,62 @@ stands): no lexicon-labelled as-run number is replaced or re-scored.
 **Cost disclosure.** Manifest estimate ~10.6M input / ~2.0M output tokens;
 paid in subscription session usage; the pass may span sessions and partial
 progress is committed as it lands.
+
+
+## Amendment G.1 (2026-08-30 — phase-1 protocol choices, and the INTERIM result)
+
+Phase 1 ran 2026-08-29/30 and is **incomplete**: the Fable usage limit
+stopped it at **1,089 of 3,361 items (32.4%)** across four resume cycles.
+Owner asked for an interim read before spending further usage. Recorded here
+as-run, per rule 2, together with two protocol choices Amendment G did not
+specify and this analysis had to make.
+
+### The two choices (frozen by `scripts/interim_judge_arm.py`)
+
+**(1) Window anchor for judge labels.** The lexicon arm anchors the r_vec at
+the first mutating action carrying a signature of the committed class
+(`commit_rounds`). Judge-labelled items have **no such action by
+construction** — the absence of a signature hit is precisely why the lexicon
+abstained — so `commit_rounds` returns None for every judge item and the T1
+machinery would silently drop all of them. The judge window is therefore
+anchored at the judge's own verbatim **evidence span**: commit_char ->
+containing segment -> the last action at or before that segment, reading the
+same "latest mutating action's vector" quantity the lexicon arm reads.
+
+**Validated, not assumed** (`scripts/diagnose_anchor_validity.py`,
+`results/diag_anchor_validity.json`). The 025 validation items are the one
+place both anchors are defined (lexicon-labelable AND judge-evidenced):
+on 116 comparable items the evidence anchor picks the **same turn 70.7%** of
+the time, **within one turn 77.6%**, median delta 0 (tail -11..+17). So the
+anchor is broadly faithful with a real noise tail; it attenuates signal
+rather than manufacturing or destroying it.
+
+**(2) Two arms, scored separately.** `judge_only` = judge labels and judge
+anchors on both sides of every pair (headline). `union` = lexicon-labelled
+runs added to the same cells with their own anchors — the coverage gain the
+judge arm exists for, but it mixes two anchor methods inside one pair and is
+therefore reported as a separate, weaker-evidence arm, never as the headline.
+
+### Interim result (partial pool; `results/interim_judge_arm.json`)
+
+Acceptance gate behaved: of 1,089 judged, **767 abstained (70.4%)**, **321
+accepted**, and only **1** label was rejected for unlocatable evidence — the
+judge's verbatim spans are real spans.
+
+    census      45 cells with >=2 judge-labelled runs;  20 forked = 44.4%
+                (lexicon's own forked rate where IT can label: 43%, 025 §3)
+
+    arm          representation   AUROC   clustered 95% CI     same/diff
+    judge_only   hashed           0.520   [0.387, 0.643]       1032 / 272
+    judge_only   MiniLM           0.497   [0.355, 0.668]       1032 / 272
+    union        hashed           0.586   [0.527, 0.648]       8854 / 2372
+    union        MiniLM           0.575   [0.537, 0.615]       8854 / 2372
+
+**Reading, stated conservatively.** The judge arm delivers the *coverage*
+025 predicted — 321 labels on commitments the lexicon could not touch at
+all, forking at 44%, essentially the lexicon's own rate — and delivers **no
+separation**: judge_only sits on chance (MiniLM 0.497) and union rejoins the
+familiar .54–.60 band. Underpowered (272 differing pairs, 20 tasks) and
+anchor-attenuated per (1), so this is not yet "the null survives an
+independent labeler"; it is "on a third of the pool, with an anchor validated
+at 71%, nothing moved." The frozen full-pool cell supersedes these numbers.

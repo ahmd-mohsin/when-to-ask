@@ -1,0 +1,22 @@
+{
+ "DIAGNOSTIC": true,
+ "question": "does the judge evidence-span anchor (028 G.1(1)) land on the same turn the lexicon signature anchor picks, on the 025 validation items where both are defined",
+ "validation_freeze_status": {
+  "abstained": 96,
+  "accepted": 196
+ },
+ "n_comparable": 116,
+ "same_turn": 82,
+ "same_turn_rate": 0.7068965517241379,
+ "within_1_turn_rate": 0.7758620689655172,
+ "delta_turns": {
+  "mean": 0.7068965517241379,
+  "median": 0.0,
+  "p10": 0.0,
+  "p90": 2.0,
+  "min": -11,
+  "max": 17
+ },
+ "class_agreement_with_lexicon": 0.7758620689655172,
+ "note": "class agreement here is the 025 disagreement rate, NOT an error rate -- blind adjudication of those disagreements went 46-0 for the judge (025 Am.A (ii))"
+}
