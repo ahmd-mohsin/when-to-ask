@@ -917,3 +917,44 @@ the data exists; neither is allowed to retro-select the headline.**
 **Cost.** Manifest estimate ~6.3M input / ~1.0M output tokens; paid in
 subscription usage, chunked and resumable across limit cycles exactly as
 phase 1 was.
+
+
+### Amendment G.3(a) (2026-08-30 — how the agreement read-out must be computed; frozen BEFORE phase-2 data exists)
+
+Phase 2 was launched and **did not run**: every one of the 163 subagents
+returned "You've reached your Fable 5 limit" immediately, consuming **0
+tokens**. Nothing was judged, nothing lost; the work files and G.3 stand and
+the pass waits on the limit. Recorded because a launch attempt is part of the
+audit trail.
+
+While blocked, the read-out itself was checked against the only existing
+judge/lexicon overlap — the 196 accepted labels in the 025 validation freeze
+(`scripts/judge_arm_agreement.py`, `results/diag_agreement_metric_check.json`).
+It reproduces 025's gate exactly (raw agreement **0.7653**, **46**
+disagreements), which validates the plumbing, and it exposes a trap that would
+have produced a misleading phase-2 headline:
+
+    kappa, pooled over all items          0.762
+    kappa, macro-averaged over blockers   0.000   (3 blockers computable)
+
+**Pooled kappa is not interpretable here.** It computes expected-by-chance
+agreement over the UNION of every class across all blockers, but blockers have
+**disjoint class inventories** — a random pairing across two different blockers
+can essentially never match, so `pe` collapses and kappa inflates. Pooled
+kappa is therefore mostly measuring *"both labellers are labelling the same
+blocker"*, not *"they agree on which interpretation the run committed to."*
+Within a blocker, where the comparison is actually meaningful, chance-corrected
+agreement is 0.0 or undefined (both labellers unanimous).
+
+**Refinement to G.3 read-out (1), frozen now, before the data:** the primary
+agreement statistic is **raw agreement plus macro-averaged per-blocker kappa,
+each reported with its n and the count of blockers entering the macro**. A
+pooled kappa may be shown only alongside this explanation, never as the
+headline. Power warning carried forward: in the 196-item sample, 51 of 92
+blockers have n=1 and only 3 support a computable kappa, so per-blocker chance
+correction will stay thin even at phase-2 scale.
+
+**This also re-reads 025.** Its 0.765 "accuracy" carries the same structure:
+a large share is both labellers picking the same blocker-canonical class,
+not informative agreement. That is a further reason the 025 STOP rested on a
+number that was never the right one — consistent with Am.A(iv)'s own verdict.

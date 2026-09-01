@@ -1,0 +1,478 @@
+{
+ "DIAGNOSTIC": true,
+ "question": "how must the Am.G.3 agreement read-out be computed? Run on the ONLY existing judge/lexicon overlap (the 025 validation freeze, 196 accepted labels) to check the metric's behaviour BEFORE phase 2 data exists",
+ "reproduces_025": {
+  "raw_agreement": 0.7653061224489796,
+  "n_disagreements": 46,
+  "recorded_in_025": 0.765,
+  "note": "matches the 025 Am.A gate value and its 46 disagreements"
+ },
+ "the_trap": "kappa_pooled 0.762 vs kappa_macro_over_blockers 0.000. Pooled kappa computes chance agreement over the UNION of all classes across 92 blockers, whose class inventories are disjoint, so random pairing almost never matches, pe collapses and kappa inflates. Pooled kappa here mostly measures 'both labellers are labelling the same blocker', not 'they agree on which interpretation'. Within blockers it is 0.0 or undefined.",
+ "kappa_pooled": 0.7616517302455917,
+ "kappa_macro_over_blockers": 0.0,
+ "n_blockers_in_macro": 3,
+ "n_both_commit": 196,
+ "power_warning": "92 blockers in this sample: 51 have n=1, only 3 have n>=5 AND a computable kappa. Per-blocker chance correction is thin even at full phase-2 size; report n alongside every kappa and never a bare pooled figure.",
+ "per_blocker": {
+  "abort_rule": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_checkbox_toggle_behavior": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_contact_display_mode": {
+   "n": 4,
+   "raw_agreement": 0.75,
+   "kappa": 0.0
+  },
+  "ambiguous_eviction_strategy": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "ambiguous_exception_preservation_mechanism": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_feature_toggle_token": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_gain_processing_stage": {
+   "n": 2,
+   "raw_agreement": 0.5,
+   "kappa": 0.3333333333333333
+  },
+  "ambiguous_ics_extension_detection": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_minutes_ago_rounding_policy": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_redirect_metadata_ownership_boundary": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_resume_success_predicate_for_auth_updates": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_route_line_acceptance_and_field_extraction_contract": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "ambiguous_selective_caching_criteria": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "ambiguous_which_timestamp_fields_nullable": {
+   "n": 3,
+   "raw_agreement": 0.6666666666666666,
+   "kappa": 0.0
+  },
+  "analytics_storage_backend_string_value": {
+   "n": 5,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "cancellation_context_parameter": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "compilation_album_normalization": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "conflicting_compatibility_vs_new_format_support": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "conflicting_context_freshness_policy": {
+   "n": 7,
+   "raw_agreement": 0.7142857142857143,
+   "kappa": 0.0
+  },
+  "conflicting_folder_emit_mode_list_rules": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "conflicting_internal_vs_external_compose": {
+   "n": 2,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "conflicting_jxl_ios_support_directive": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "conflicting_normalized_value_contract_vs_verbatim_route_token_contract": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "conflicting_path_normalization": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradiction_non_positive_lifetime_write_policy": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradictory_auto_seed_serialization_and_digest_scope": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradictory_cache_versus_freshness": {
+   "n": 4,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "contradictory_delete_gate_scope": {
+   "n": 6,
+   "raw_agreement": 0.8333333333333334,
+   "kappa": 0.0
+  },
+  "contradictory_duplicate_versus_unique_values": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradictory_enum_definition_location": {
+   "n": 4,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "contradictory_genre_dedup_equality": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "contradictory_localid_source_for_resume_call": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradictory_parse_parameters_scope": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": 1.0
+  },
+  "contradictory_password_input_format": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradictory_path_argument_type": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradictory_remove_vs_deprecate_unsafeproxy": {
+   "n": 6,
+   "raw_agreement": 0.16666666666666666,
+   "kappa": 0.0
+  },
+  "contradictory_role_reference_assignment": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "contradictory_spotlight_ownership_boundary": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "contradictory_unset_vs_vcard_fallback": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "controller_replacement_import_path": {
+   "n": 3,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "data_path_format_validation": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "default_manifest_pack_mode": {
+   "n": 3,
+   "raw_agreement": 0.3333333333333333,
+   "kappa": 0.0
+  },
+  "disable_cycle_selector_conflict": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "entry_id": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "flag_primary_key_composition": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "forced_renewal_flags_when_cancelled": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "hoststate_str_state_label_prefix_convention": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "invalid_request_precedence_in_read_only_mode": {
+   "n": 5,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "max_input_length_unspecified": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "max_nesting_depth_policy_conflict": {
+   "n": 4,
+   "raw_agreement": 0.75,
+   "kappa": 0.42857142857142855
+  },
+  "missing_auth_id_audit_display_length": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_bytearray_handling": {
+   "n": 2,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "missing_cache_parameter_default": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_calendar_url_max_length": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_commerce_copy_tokens": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_deprecation_call_parameters": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_detection_api_parameters": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": 1.0
+  },
+  "missing_hasher_digest_and_auto_seed_rules": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": {
+   "n": 5,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_loudness_normalization_definition": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_modal_startup_contract": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_persisted_session_staleness_ttl_ms": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_pip_module_target": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_player_id_base_offset": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_referral_sender_eligibility_scope": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_return_property_names": {
+   "n": 2,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "missing_share_default_expiration_duration": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": 1.0
+  },
+  "missing_spotlight_eligibility_cutoff": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_tuple_wrapping": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "missing_unsafe_attribute_check": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "missing_yaml_key_name_for_database_connection_lifetime": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "module_public_api_exposure": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "mp_validate_cleanup_rejects_non_db_methods": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "name_required_vs_optional": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "non_linux_distribution_normalization": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "non_linux_distribution_source_precedence_on_conflict": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "non_linux_distribution_version_source": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "operational_time_bound_policy": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "playcount_rounding_strategy": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "runtime_replacement_import_path": {
+   "n": 3,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "safe_versus_interactive_rendering": {
+   "n": 4,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "sanitization_tag_allowlist": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "scrobble_ordering": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "shim_transition_signal_mode": {
+   "n": 14,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "songcount_zero_behavior": {
+   "n": 3,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "state_value": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "unspecified_mime_detection_precedence_and_fallback_chain": {
+   "n": 1,
+   "raw_agreement": 0.0,
+   "kappa": 0.0
+  },
+  "unsupported_manifest_value_policy": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "update_interval_zero_handling": {
+   "n": 2,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "upgrade_deps_depth_limit": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "userid_source": {
+   "n": 6,
+   "raw_agreement": 1.0,
+   "kappa": null
+  },
+  "uuid_rotation_vs_persistence_policy": {
+   "n": 1,
+   "raw_agreement": 1.0,
+   "kappa": null
+  }
+ }
+}
