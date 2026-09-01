@@ -378,14 +378,25 @@ probes are not evidence about real traces.
    MiniLM's span CI [.497, .601] contains .50. Any claim resting on R4
    being the one row above chance is anchor-dependent and must say so.
 
-   **(b) STILL QUEUED — replay-and-diff**, now the only remaining
-   construction that could yield a working instrument AND independent ground
-   truth (`DockerTaskEnv.execute`, images restorable via
-   `scripts/restore_hilbench_images.py`, 60 tasks / 174 GB, ~38.5k execs,
-   box work not laptop work): two runs decided the same thing iff their
-   final normalized `git diff` matches — removes idiom, anchor, lexicon and
-   judge by construction, and yields an LLM-free second ground truth for
-   gap 1. If it also lands at .58, that is the escape-proof negative.
+   **(b) NEXT — replay-and-diff. Pilot written 2026-09-01, awaiting the box.**
+   The only remaining construction that could yield a working instrument AND
+   independent ground truth: two runs decided the same thing iff their final
+   normalized `git diff` matches — removes idiom, anchor, lexicon and judge
+   by construction. Full run is 60 tasks / 174 GB / ~38.5k execs, so it is
+   gated behind `scripts/replay_diff_pilot.py` (5 tasks, 115 runs, **3,385
+   execs**, resumable, sealed pool excluded by construction via
+   `eligible_tasks`). The pilot answers two questions in order:
+   **Q1 replay fidelity** — does replaying `action_text` in `segment_idx`
+   order reproduce the recorded `exit N` codes? Below the 0.80 gate the
+   diffs describe runs that never happened and the approach is void
+   regardless of how its separation looks. **Q2** — the same three positive
+   control arms (cross-task / file-set / interpretation), scored by
+   1 − Jaccard over normalized changed-line sets so the AUROC is directly
+   comparable to the published .555/.580. GO requires fidelity ≥ .80 **and**
+   cross-task AUROC ≥ .95. If replay-and-diff also lands at ~.58 *with* a
+   clean ceiling, that is the escape-proof negative the paper lacks; if it
+   cannot clear the ceiling either, no instrument in this repo resolves and
+   the paper says exactly that.
    Incidental defect found in passing: `wta.labeling._is_mutating` matches
    only `("sed -i", ">", ">>", "tee ", "patch ", "git apply", "perl -i")`,
    so a Python-mediated write (`python -c "...open(f,'w').write(s)"`)
