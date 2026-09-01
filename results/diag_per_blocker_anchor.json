@@ -1,0 +1,151 @@
+{
+  "note": "DIAGNOSTIC, not a pre-registered 028 cell. Re-anchors r_vec per blocker; 44.2% of labelled commitments share a commit_char with another blocker in the same run, so under the published run-level anchor those blockers carry byte-identical vectors under different labels.",
+  "anchor_rule": "among mutating actions at/before the commit round, argmax _hits against that blocker's anchors + all class signatures; ties -> earliest; zero hits -> fall back to the published run-level vector",
+  "reference_published": {
+    "r3_hashed": 0.555,
+    "r4_minilm": 0.58
+  },
+  "arms": {
+    "run_anchor": {
+      "hashed": {
+        "auroc": 0.5545283768871754,
+        "ci95": [
+          0.4912727102435132,
+          0.6318247318543138
+        ],
+        "n_same": 7321,
+        "n_diff": 1246,
+        "n_tasks": 56,
+        "n_boot_valid": 2000,
+        "aliasing": {
+          "aliased": 710,
+          "total": 1424,
+          "rate": 0.49859550561797755
+        },
+        "meta": {
+          "n_cells": 159
+        }
+      },
+      "minilm": {
+        "auroc": 0.580045847572771,
+        "ci95": [
+          0.5359587835360587,
+          0.6260577990692813
+        ],
+        "n_same": 7321,
+        "n_diff": 1246,
+        "n_tasks": 56,
+        "n_boot_valid": 2000,
+        "aliasing": {
+          "aliased": 710,
+          "total": 1424,
+          "rate": 0.49859550561797755
+        },
+        "meta": {
+          "n_cells": 159
+        }
+      }
+    },
+    "blocker_anchor": {
+      "hashed": {
+        "auroc": 0.5454872337827175,
+        "ci95": [
+          0.48367339445821567,
+          0.6234878281870497
+        ],
+        "n_same": 7321,
+        "n_diff": 1246,
+        "n_tasks": 56,
+        "n_boot_valid": 2000,
+        "aliasing": {
+          "aliased": 723,
+          "total": 1424,
+          "rate": 0.5077247191011236
+        },
+        "meta": {
+          "n_cells": 159,
+          "considered": 1424,
+          "fell_back_no_signature_hit": 0,
+          "fallback_rate": 0.0,
+          "anchor_moved_vs_run_anchor": 56,
+          "moved_rate": 0.03932584269662921
+        }
+      },
+      "minilm": {
+        "auroc": 0.5695094127735183,
+        "ci95": [
+          0.5236969668286604,
+          0.6152319820047091
+        ],
+        "n_same": 7321,
+        "n_diff": 1246,
+        "n_tasks": 56,
+        "n_boot_valid": 2000,
+        "aliasing": {
+          "aliased": 723,
+          "total": 1424,
+          "rate": 0.5077247191011236
+        },
+        "meta": {
+          "n_cells": 159,
+          "considered": 1424,
+          "fell_back_no_signature_hit": 0,
+          "fallback_rate": 0.0,
+          "anchor_moved_vs_run_anchor": 56,
+          "moved_rate": 0.03932584269662921
+        }
+      }
+    },
+    "span_anchor": {
+      "hashed": {
+        "auroc": 0.5318732825796544,
+        "ci95": [
+          0.476778690796537,
+          0.6000074925311373
+        ],
+        "n_same": 7321,
+        "n_diff": 1246,
+        "n_tasks": 56,
+        "n_boot_valid": 2000,
+        "aliasing": {
+          "aliased": 91,
+          "total": 1424,
+          "rate": 0.06390449438202248
+        },
+        "meta": {
+          "n_cells": 159,
+          "considered": 1424,
+          "fell_back_no_signature_hit": 0,
+          "fallback_rate": 0.0,
+          "anchor_moved_vs_run_anchor": 1068,
+          "moved_rate": 0.75
+        }
+      },
+      "minilm": {
+        "auroc": 0.5482138389904107,
+        "ci95": [
+          0.4972450522666704,
+          0.6012342422125783
+        ],
+        "n_same": 7321,
+        "n_diff": 1246,
+        "n_tasks": 56,
+        "n_boot_valid": 2000,
+        "aliasing": {
+          "aliased": 91,
+          "total": 1424,
+          "rate": 0.06390449438202248
+        },
+        "meta": {
+          "n_cells": 159,
+          "considered": 1424,
+          "fell_back_no_signature_hit": 0,
+          "fallback_rate": 0.0,
+          "anchor_moved_vs_run_anchor": 1043,
+          "moved_rate": 0.7324438202247191
+        }
+      }
+    }
+  },
+  "elapsed_s": 723.4
+}

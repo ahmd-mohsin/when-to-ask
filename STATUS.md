@@ -133,6 +133,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | — | AUROC clustered CIs (028 Am.A item 7) | ✅ **DONE** for every 32B separation AUROC | R3/R4/R5 via `scripts/t1_auroc_ci.py`; R6b via `scripts/r6b_auroc_ci.py` (same estimator and constants, guard-checked to reproduce the cell). T5/T7 rows get theirs when those land |
 | — | Trace-blind vs informed registry split (028 Am.A item 8) | ✅ **DONE** (all 3 reps) | Direction FLIPS across reps with overlapping CIs → no systematic registry-leak effect. Full 3×2 table above. **Census differs sharply: 85% vs 57.5% forked** → the 2/3 headline is a lower bound. `results/blind_vs_informed_split*.json` |
 | — | Train-fold vs eval-fold check | ✅ **DONE** | Stage-1 detection train F1 **0.517** vs eval **0.507** — fails equally on data it was tuned on → signal absence, not overfitting |
+| — | **Per-blocker / span re-anchor of `r_vec`** (diagnostic, NOT a pre-registered cell) | ✅ **DONE 2026-09-01 — aliasing is real, and is NOT the cause** | Guard reproduces the published rows exactly (.5545 / .5800). Aliasing is structural: one action resolves 2+ blockers **50.6%** of the time (max 5), so action-level anchoring cannot separate them. A sub-action `span_anchor` (±300 raw chars round that blocker's signature match, via `_norm_map`) cuts aliasing **0.499 → 0.064** and moves 75% of anchors — and AUROC **falls**: hashed .5545 → .5455 → **.5319**, MiniLM .5800 → .5695 → **.5482**. Defuses the 44%-aliasing attack on the published cell. ⚠️ **R4's chance-exclusion does not survive**: span CI [.497, .601] contains .50. `results/diag_per_blocker_anchor.json` |
 | — | **Positive control for the T1 pair-separation machinery** (diagnostic, NOT a pre-registered cell) | ✅ **DONE 2026-08-30 — the instrument does not resolve** | Same `auroc` + Euclidean-on-`r_vec` statistic as R3/R4/R5, run against must-be-recoverable targets. **A** same-vs-diff TASK (different repos entirely): hashed **.788**, MiniLM **.849** — should be ~1.0. **B** same-vs-diff FILE SET within task: **.685 / .684**. **C** planted 2×2 fork (`return None` vs `raise ValueError` × 4 shell idioms): nuisance distance is ~2× signal (ratio **.60 / .49**); AUROC with idiom varying **.589 / .474** — MiniLM below chance on a fork known by construction. **D** real label stratified by lexicon decision margin: hashed .484/.637/.581, MiniLM .556/.601/.640 — not monotonic, so label confidence does not buy separation. Incidental: `_is_mutating` misses Python-mediated writes. `results/diag_positive_control.json`, `scripts/diagnose_positive_control.py` |
 
 Legend: ✅ done · 🔄 in progress · ⏳ not started
@@ -283,13 +284,21 @@ probes are not evidence about real traces.
      Severely underpowered and sampled from lexicon-labelable items only.
      `results/diag_fable_label_signal.json`,
      `scripts/diagnose_fable_label_signal.py`.
-   - **The production judge arm, at 32.4% (2026-08-30, 028 Am.G/G.1):** the
-     full pass was authorized and started; on the third of the pool judged
-     so far it buys **real coverage** (321 labels where the lexicon had
-     none, 44.4% of new cells forked) and **no separation** (judge_only
-     MiniLM .497, union .575). Underpowered and anchor-attenuated — see the
-     judge-arm row above. This is the strongest available evidence that the
-     lexicon is not the sole cause of the null, but it is not yet proof.
+   - **The production judge arm, FROZEN at 99.0% (2026-09-01, 028 Am.G/G.1)
+     — this gap is now substantially CLOSED as an explanation of the null.**
+     3,326/3,361 judged; 907 accepted labels on a DISJOINT item set from the
+     lexicon's. Coverage is real and instrument-independent: 126 new
+     multi-run cells at **42.1% forked**, against the lexicon's own 43%.
+     Separation is not: judge_only hashed .523 [.438,.616] / MiniLM .550
+     [.473,.636]; union .575 / .569. **A fully independent labeler moves the
+     statistic by &lt;.03.** Combined with the span re-anchor (gap 8) also
+     failing to move it, the remaining live explanation of the .54–.60 band
+     is the instrument, not the labels. Note the agreement read-out trap
+     documented in `results/diag_agreement_metric_check.json`: pooled kappa
+     0.762 is inflated because chance agreement is computed over the union
+     of disjoint per-blocker class inventories; macro-over-blockers kappa is
+     **0.000**, and only 3 of 92 blockers support a computable kappa. Never
+     quote a bare pooled kappa.
 2. **Underpowered-vs-negative.** F2 itself shows 0 testable decisions at
    N≤4. Defense = lead with the global Stouffer test and the relative
    text-vs-activation comparison, not per-decision counts.
@@ -346,15 +355,37 @@ probes are not evidence about real traces.
    those rows must be rewritten or must report the ceiling next to it.
    This subsumes part of gap 3: the "you didn't try hard enough" escape is
    now answered — the trying was fine, the ruler was not.
-   Two consequences queued, both CPU-only:
-   (a) **re-anchor `r_vec` per blocker** (44.2% of the 1,595 labeled
-   commitments share a `commit_char` with another blocker in the same run,
-   so those blockers currently get byte-identical vectors under different
-   labels — verified 2026-08-30);
-   (b) **replay-and-diff** (`DockerTaskEnv.execute`, images restorable via
-   `scripts/restore_hilbench_images.py`, ~38.5k execs): two runs decided the
-   same thing iff their final normalized `git diff` matches — removes idiom
-   by construction and yields an LLM-free second ground truth for gap 1.
+
+   **(a) RE-ANCHORING IS NOT THE FIX — settled 2026-09-01**
+   (`scripts/diagnose_per_blocker_anchor.py`,
+   `results/diag_per_blocker_anchor.json`). The aliasing is real but
+   *structural*: one action resolves 2+ blockers **50.6%** of the time (up to
+   5; median 2), because the agent rewrites the whole file in a single
+   heredoc. So no action-level anchor can separate blockers, and a
+   sub-action `span_anchor` (±300 raw chars around that blocker's own
+   signature match, mapped back through `_norm_map`) was run instead:
+
+   | anchor | hashed | MiniLM | aliasing |
+   |---|---|---|---|
+   | run (published, guard) | .5545 [.491,.632] | .5800 [.536,.626] | .499 |
+   | blocker | .5455 [.484,.623] | .5695 [.524,.615] | .508 |
+   | **span** | **.5319 [.477,.600]** | **.5482 [.497,.601]** | **.064** |
+
+   De-aliasing works (0.499 → 0.064, 75% of anchors move) and AUROC
+   **decreases monotonically**. So the 44% aliasing does NOT explain the
+   band — which also defuses it as a reviewer attack on the published cell.
+   ⚠️ **But note: R4's "excludes chance" does not survive de-aliasing** —
+   MiniLM's span CI [.497, .601] contains .50. Any claim resting on R4
+   being the one row above chance is anchor-dependent and must say so.
+
+   **(b) STILL QUEUED — replay-and-diff**, now the only remaining
+   construction that could yield a working instrument AND independent ground
+   truth (`DockerTaskEnv.execute`, images restorable via
+   `scripts/restore_hilbench_images.py`, 60 tasks / 174 GB, ~38.5k execs,
+   box work not laptop work): two runs decided the same thing iff their
+   final normalized `git diff` matches — removes idiom, anchor, lexicon and
+   judge by construction, and yields an LLM-free second ground truth for
+   gap 1. If it also lands at .58, that is the escape-proof negative.
    Incidental defect found in passing: `wta.labeling._is_mutating` matches
    only `("sed -i", ">", ">>", "tee ", "patch ", "git apply", "perl -i")`,
    so a Python-mediated write (`python -c "...open(f,'w').write(s)"`)
