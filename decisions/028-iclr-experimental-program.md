@@ -808,3 +808,61 @@ familiar .54–.60 band. Underpowered (272 differing pairs, 20 tasks) and
 anchor-attenuated per (1), so this is not yet "the null survives an
 independent labeler"; it is "on a third of the pool, with an anchor validated
 at 71%, nothing moved." The frozen full-pool cell supersedes these numbers.
+
+
+## Amendment G.2 (2026-08-30 — phase 1 FROZEN at 99.0%, and what it may be read to mean)
+
+Phase 1 completed to **3,326 of 3,361 items (99.0%)** across nine usage-limit
+cycles. Five work files (35 items, 1.0%) were never reached and are recorded
+as unreached rather than retried; the rater was pinned to Fable 5 explicitly
+for every cycle after the session model changed, so the pool is single-rater
+as Amendment G froze it.
+
+**Frozen through the mechanical gate** (`--freeze`, evidence must be locatable
+verbatim in the raw trace): artifact `data/judge_labels_v3_32b.jsonl`, audit
+`models/v3_32b_judge/judge_labels_audit.md`.
+
+    abstained            2411   (72.5% of judged)
+    accepted              907
+    bad_class               1
+    evidence_not_found      7
+    missing                35   (the 5 unreached work files)
+
+**Result 1 — coverage. This is the durable finding and it is
+instrument-independent.** The judge produced **907 labels on commitments the
+lexicon could not label at all**, yielding **126 cells with >=2 judge-labelled
+runs, of which 53 (42.1%) are forked** — statistically the same fork rate the
+lexicon finds on the disjoint set it CAN label (43%, 025 §3). Two labelling
+methods that share no mechanism agree on how often runs diverge. The judge
+pool and the lexicon-labelled pool were verified **disjoint (overlap = 0)**,
+so this is not an artefact of double-counting.
+
+**Result 2 — separation, and the caveat that now governs it.**
+
+    arm          representation   AUROC   clustered 95% CI    same/diff   tasks
+    judge_only   hashed           0.523   [0.438, 0.616]      3245/642    54
+    judge_only   MiniLM           0.550   [0.473, 0.636]      3245/642    54
+    union        hashed           0.575   [0.526, 0.620]     11974/3240   60
+    union        MiniLM           0.569   [0.538, 0.596]     11974/3240   60
+
+These use the SAME `pair_distances`/`auroc` machinery that commit 7f1f274's
+positive control has since shown **does not resolve a fork planted by
+construction** (.589 hashed / .474 MiniLM) and tops out near **.85** on
+"different repository". Therefore, exactly as for R3/R4/R5, **these numbers do
+not license a claim that the interpretation signal is absent.** The earlier
+interim reading (Am.G.1, "coverage lands, separation does not") over-attributed
+its null to the labels and is corrected here.
+
+**What the judge arm does contribute, and it is not nothing.** It is the
+fourth independent way the label has been changed — new labeller, new model,
+new items (disjoint pool), new window anchor — and the statistic moves by
+**less than 0.03**. A number that is invariant to complete replacement of its
+target is a property of the measuring instrument, not of the target. The judge
+arm is therefore best reported as **corroboration of the positive control**,
+alongside the coverage result, rather than as a separation cell.
+
+**Consequence for phase 2.** Re-judging the 1,595 lexicon-labelled
+commitments was authorised to remove the last lexicon dependency. Its value is
+now lower for separation (the instrument gates that) and unchanged for
+census/agreement. Recommend running it only if the instrument question is
+addressed first; not started, not cancelled.
