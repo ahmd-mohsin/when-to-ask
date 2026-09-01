@@ -866,3 +866,54 @@ commitments was authorised to remove the last lexicon dependency. Its value is
 now lower for separation (the instrument gates that) and unchanged for
 census/agreement. Recommend running it only if the instrument question is
 addressed first; not started, not cancelled.
+
+
+## Amendment G.3 (2026-08-30 — phase 2 pre-registration, frozen BEFORE any phase-2 judgment)
+
+Owner directed phase 2 to run (in-session, 2026-08-30) after being told that
+the positive control (7f1f274) gates what its separation number can mean.
+Recorded plainly: **the owner's decision was made with that caveat in view.**
+Phase 2 is run for the census and agreement results, which the instrument
+question does not touch; its separation cell is computed and reported but
+carries the same standing caveat as R3/R4/R5 and G.2.
+
+**Scope.** The **1,595 (run, blocker) pairs the lexicon DID label** —
+the exact complement of phase 1's 3,361, enumerated from
+`models/v3_32b_fixed_debug/labels_debug.jsonl`, the trail the T1 rows use.
+Phase 1 + phase 2 therefore cover the whole T1 commitment pool with judge
+labels. Built by `scripts/build_phase2_judge_items.py` into
+`models/v3_32b_judge_phase2/` (163 work files, 1,478 full / 117 excerpt).
+
+**Blindness.** Items are built by the SAME `build_judge_items` phase 1 used.
+That builder passes only the class artifact, the registry description, the
+anchors and the trace excerpt; **the lexicon's chosen class is structurally
+absent from the prompt.** The judge cannot see what it is being compared to.
+
+**Rater.** Claude Fable 5, pinned explicitly per agent (G.2) so the session
+model cannot substitute a different rater mid-pass. Same frozen system prompt,
+same class-order permutation, same acceptance gate (schema-valid class +
+verbatim evidence locatable in the raw trace).
+
+**Pre-registered read-outs, computed as-run whichever way they land:**
+
+1. **Symmetric agreement** between the two labellers on these 1,595 items:
+   raw agreement and Cohen's kappa, on items where both commit. This is
+   reported as **agreement between two independent labellers, NOT as judge
+   error** — the correction 025 Am.A (iv) demanded ("a yardstick built from
+   lexicon labels cannot settle a dispute about lexicon labels"). Neither
+   labeller is privileged in the statistic.
+2. **Full judge census** over phase 1 + phase 2: coverage, fork fraction,
+   per-cell class counts, against the lexicon census.
+3. **T1 R3/R4 separation on the all-judge pool**, task-clustered CIs. Reported
+   under the standing positive-control caveat; it does not license a claim
+   about interpretation signal in either direction.
+
+**Pre-committed interpretation.** High agreement means the two labellers
+converge and the fork census is robust to labeller choice. Low agreement means
+the fork census is labeller-dependent and every downstream census number needs
+an error bar — including F2 and F4. **Both outcomes are recorded here before
+the data exists; neither is allowed to retro-select the headline.**
+
+**Cost.** Manifest estimate ~6.3M input / ~1.0M output tokens; paid in
+subscription usage, chunked and resumable across limit cycles exactly as
+phase 1 was.
