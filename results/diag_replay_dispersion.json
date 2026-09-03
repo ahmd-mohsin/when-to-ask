@@ -1,0 +1,156 @@
+{
+  "note": "DIAGNOSTIC on the replay-and-diff PILOT. Re-scores cached diffs; results/replay_diff_pilot.json stands as-run.",
+  "question": "Arm A is 0.817 once no-op runs are excluded, still under the 0.95 bar. Same-task pairs sit at mean distance 0.880. What holds them apart?",
+  "n_runs_non_empty": 89,
+  "diff_size": {
+    "min": 1,
+    "p25": 29,
+    "median": 110,
+    "p75": 202,
+    "max": 1797
+  },
+  "h1_metric": {
+    "arm_a_by_distance": {
+      "jaccard": 0.8169530746784648,
+      "containment": 0.8220289191936212,
+      "dice": 0.8169530746784648
+    },
+    "verdict": "RULED OUT: jaccard/containment/dice agree within 0.006, so size asymmetry is not what caps arm A."
+  },
+  "h2_noise": {
+    "per_task": {
+      "swe_0": {
+        "n_runs": 19,
+        "distinct_lines": 617,
+        "in_all_runs": 0,
+        "seen_once": 370,
+        "seen_once_frac": 0.6
+      },
+      "swe_1": {
+        "n_runs": 11,
+        "distinct_lines": 664,
+        "in_all_runs": 0,
+        "seen_once": 503,
+        "seen_once_frac": 0.758
+      },
+      "swe_10": {
+        "n_runs": 19,
+        "distinct_lines": 902,
+        "in_all_runs": 0,
+        "seen_once": 330,
+        "seen_once_frac": 0.366
+      },
+      "swe_11": {
+        "n_runs": 20,
+        "distinct_lines": 3054,
+        "in_all_runs": 0,
+        "seen_once": 2346,
+        "seen_once_frac": 0.768
+      },
+      "swe_12": {
+        "n_runs": 20,
+        "distinct_lines": 2398,
+        "in_all_runs": 0,
+        "seen_once": 2000,
+        "seen_once_frac": 0.834
+      }
+    },
+    "verdict": "RULED OUT: no line is common to all runs of any task (in_all_runs = 0 everywhere); the shared core is syntactic boilerplate plus deletions of the same original lines, and the unique remainder is real solution content."
+  },
+  "h3_mixture": {
+    "groups": {
+      "modifying_has_deletions": {
+        "auroc": 0.9670685009218553,
+        "n_same": 220,
+        "n_cross": 641,
+        "same_mean": 0.7469566442994865,
+        "cross_mean": 0.9967229367546143,
+        "same_disjoint_rate": 0.01818181818181818,
+        "n_runs": 42,
+        "clustered_ci95": [
+          0.7819442384281882,
+          0.9945250767577273
+        ],
+        "boot_draws_used": 1998,
+        "per_task_n": {
+          "swe_0": 14,
+          "swe_1": 4,
+          "swe_10": 3,
+          "swe_11": 15,
+          "swe_12": 6
+        }
+      },
+      "additive_only": {
+        "auroc": 0.820882876672985,
+        "n_same": 252,
+        "n_cross": 829,
+        "same_mean": 0.9175398762459207,
+        "cross_mean": 0.9965949521366003,
+        "same_disjoint_rate": 0.17063492063492064,
+        "n_runs": 47,
+        "clustered_ci95": [
+          0.6621576818513362,
+          0.971466748895056
+        ],
+        "boot_draws_used": 1998,
+        "per_task_n": {
+          "swe_0": 5,
+          "swe_1": 7,
+          "swe_10": 16,
+          "swe_11": 5,
+          "swe_12": 14
+        }
+      },
+      "all_non_empty": {
+        "auroc": 0.8169530746784648,
+        "n_same": 777,
+        "n_cross": 3139,
+        "same_mean": 0.8799793030674824,
+        "cross_mean": 0.9972051547636464,
+        "same_disjoint_rate": 0.1788931788931789,
+        "n_runs": 89,
+        "clustered_ci95": [
+          0.7343498022792657,
+          0.9448900604339678
+        ],
+        "boot_draws_used": 1998,
+        "per_task_n": {
+          "swe_0": 19,
+          "swe_1": 11,
+          "swe_10": 19,
+          "swe_11": 20,
+          "swe_12": 20
+        }
+      }
+    },
+    "channel_control_on_modifying_subgroup": {
+      "both": {
+        "auroc": 0.9670685009218553,
+        "n_same": 220,
+        "n_cross": 641,
+        "same_mean": 0.7469566442994865,
+        "cross_mean": 0.9967229367546143,
+        "same_disjoint_rate": 0.01818181818181818
+      },
+      "add_only": {
+        "auroc": 0.9365570422749856,
+        "n_same": 218,
+        "n_cross": 602,
+        "same_mean": 0.9317304390470179,
+        "cross_mean": 0.9958561319574399,
+        "same_disjoint_rate": 0.045871559633027525
+      },
+      "del_only": {
+        "auroc": 0.8801233867536522,
+        "n_same": 220,
+        "n_cross": 641,
+        "same_mean": 0.5791045067167178,
+        "cross_mean": 0.9976151873120152,
+        "same_disjoint_rate": 0.10909090909090909
+      }
+    },
+    "verdict": "THIS ONE, as a hypothesis only. 47 of 89 runs never modify existing code (no deletion lines). Splitting gives arm A 0.967 (modifying) vs 0.821 (additive- only). The channel is not the story: on those same 42 runs del-only scores 0.880 and add-only 0.937, both below the full 0.967."
+  },
+  "honest_reading": "The 0.967 does NOT convert the pilot into a GO. Its task-clustered CI95 is [0.7819442384281882, 0.9945250767577273] against additive-only [0.6621576818513362, 0.971466748895056] -- overlapping across nearly their whole range, so 5 tasks cannot distinguish the two populations. The subgroup is also chosen post hoc on a property of the outcome. This is a hypothesis to pre-register, not a result.",
+  "recommended_next_step": "Widen the pilot in TASKS, not runs: the cluster bootstrap has one independent unit per task, so 5 tasks is what makes the interval wide. 5 tasks cost 16.9 GB / 22 min, so ~20 tasks is ~68 GB / ~90 min -- far short of the 174 GB, 60-task commitment, and enough to separate 0.967 from 0.821 if the split is real. Pre-register the modifying/additive-only split BEFORE that run."
+}
