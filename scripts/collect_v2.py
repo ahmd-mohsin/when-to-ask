@@ -65,6 +65,13 @@ def main() -> int:
                          "which interleaves numbering (swe_60 before swe_7) "
                          "and would touch the sealed test pool.")
     ap.add_argument("--model-id", default="Qwen/Qwen2.5-Coder-7B-Instruct")
+    ap.add_argument("--only-tasks", default="",
+                    help="comma-separated task ids to restrict to, applied "
+                         "AFTER the normal eligibility walk so the sealed "
+                         "pool stays excluded by construction. Empty = no "
+                         "restriction (every landed collection). Used by 028 "
+                         "Amendment H to collect only the 3 python tasks the "
+                         "sweap_json parser can score.")
     ap.add_argument("--mode", default="baseline",
                     choices=("baseline", "full_info"),
                     help="which instruction file to collect against. "
@@ -174,6 +181,15 @@ def main() -> int:
         eligible.append(task_dir)
         if len(eligible) >= args.n_tasks:
             break
+    if args.only_tasks:
+        want = {t.strip() for t in args.only_tasks.split(",") if t.strip()}
+        missing = want - {d.name for d in eligible}
+        if missing:
+            print(f"FATAL: --only-tasks names tasks not in the eligible set: "
+                  f"{sorted(missing)}")
+            return 2
+        eligible = [d for d in eligible if d.name in want]
+        print(f"--only-tasks: restricted to {[d.name for d in eligible]}")
     my_tasks = eligible[args.shard::args.num_shards]
     print(f"shard {args.shard}/{args.num_shards}: {len(my_tasks)} of "
           f"{len(eligible)} eligible tasks")
