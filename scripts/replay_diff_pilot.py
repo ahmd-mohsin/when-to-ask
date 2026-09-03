@@ -39,8 +39,14 @@ could be mis-set.
 
 Resumable: per-run diffs are cached under --work-dir and reused.
 
-    python scripts/replay_diff_pilot.py --n-tasks 5
+HARDWARE: **no GPU.** Nothing here loads a model -- the pilot replays recorded
+shell commands in docker and diffs the result. It needs docker, CPU, and disk:
+5 pilot tasks are 5 distinct images at 16.9 GB compressed (all 60 are 174.4
+GB), so budget ~40-50 GB uncompressed for the pilot. Q1 (fidelity), the gate
+that actually matters, is answerable at --n-tasks 2-3 for ~7-10 GB.
+
     python scripts/replay_diff_pilot.py --n-tasks 5 --dry-run
+    python scripts/replay_diff_pilot.py --n-tasks 5
 """
 
 from __future__ import annotations
@@ -104,21 +110,42 @@ def recorded_exit(action) -> int | None:
     return int(m.group(1)) if m else None
 
 
-def replay_run(image: str, run_id: str, actions, exec_timeout: int) -> dict:
+def replay_run(image: str, run_id: str, actions, exec_timeout: int,
+               run_budget: float) -> dict:
     """Replay one run's commands in a fresh container; return its final diff
-    plus the per-action exit-code agreement that gates the whole approach."""
+    plus the per-action exit-code agreement that gates the whole approach.
+
+    Command stdout/stderr is discarded INSIDE the container. The pilot needs
+    only the exit code and the final diff, and `wta.agent_env._run` captures
+    output unbounded -- which is precisely the 028 Amendment D failure (a
+    recorded `grep -r -` dumped 723 MB and wedged a shard >1h at 97% CPU with
+    its GPU idle). Those commands are in the traces we are about to replay, so
+    the blow-up path is sealed at the source rather than survived. Discarding
+    output cannot change what a command does to the filesystem, and `{ ...; }`
+    preserves the command's own exit status where a pipe into `head` would
+    substitute the pipe's. The closing brace goes on its OWN line with no
+    leading `;` -- `{ cmd\n; }` is a POSIX syntax error, and recorded
+    action_text is routinely multi-line (heredocs), so the newline form is the
+    only one that survives them.
+    """
     ordered = sorted(actions, key=lambda a: a.segment_idx)
     matched = compared = 0
     exits = []
+    t_run = time.time()
+    abandoned = None
     with DockerTaskEnv(image, name=f"wta-replay-{run_id}",
                        exec_timeout=exec_timeout) as env:
-        code, _ = env.execute("git rev-parse --is-inside-work-tree")
+        code, _ = env.execute("git rev-parse --is-inside-work-tree >/dev/null 2>&1")
         is_git = code == 0
         if is_git:
-            env.execute("git config --global --add safe.directory /app; "
-                        "git add -A; git stash list >/dev/null 2>&1 || true")
-        for a in ordered:
-            code, _ = env.execute(a.action_text or "")
+            env.execute("{ git config --global --add safe.directory /app; "
+                        "git add -A; } >/dev/null 2>&1")
+        for i, a in enumerate(ordered):
+            if time.time() - t_run > run_budget:
+                abandoned = {"after_actions": i, "of": len(ordered),
+                             "budget_s": run_budget}
+                break
+            code, _ = env.execute("{ " + (a.action_text or "") + "\n} >/dev/null 2>&1")
             exits.append(code)
             rec = recorded_exit(a)
             if rec is not None:
@@ -137,6 +164,7 @@ def replay_run(image: str, run_id: str, actions, exec_timeout: int) -> dict:
     return {"run_id": run_id, "diff": diff, "mode": mode,
             "n_actions": len(ordered), "exit_codes": exits,
             "exit_matched": matched, "exit_compared": compared,
+            "abandoned": abandoned, "wall_s": round(time.time() - t_run, 1),
             "fidelity": (matched / compared) if compared else None}
 
 
@@ -170,7 +198,12 @@ def main() -> int:
                     default="models/v3_32b_fixed_debug/labels_debug.jsonl")
     ap.add_argument("--n-tasks", type=int, default=5,
                     help="pilot tasks, taken from the SAME 60 collect_v2 derives")
-    ap.add_argument("--exec-timeout", type=int, default=120)
+    ap.add_argument("--exec-timeout", type=int, default=120,
+                    help="per-command cap, matching the collection config")
+    ap.add_argument("--run-budget", type=float, default=300.0,
+                    help="wall-clock seconds per run; a run exceeding this is "
+                         "abandoned and recorded, so one pathological trace "
+                         "cannot wedge the pilot (028 Amendment D)")
     ap.add_argument("--work-dir", default="/opt/dlami/nvme/wta-replay")
     ap.add_argument("--fidelity-gate", type=float, default=0.80,
                     help="mean per-run exit-code agreement below which the "
@@ -212,7 +245,8 @@ def main() -> int:
                 replays[(task, rid)] = json.loads(cache.read_text(encoding="utf-8"))
                 continue
             try:
-                rec = replay_run(images[task], rid, acts, args.exec_timeout)
+                rec = replay_run(images[task], rid, acts,
+                                 args.exec_timeout, args.run_budget)
             except Exception as e:  # a dead image must not kill the pilot
                 rec = {"run_id": rid, "error": f"{type(e).__name__}: {e}"}
             cache.write_text(json.dumps(rec), encoding="utf-8")
