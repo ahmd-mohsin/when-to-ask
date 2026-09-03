@@ -958,3 +958,80 @@ correction will stay thin even at phase-2 scale.
 a large share is both labellers picking the same blocker-canonical class,
 not informative agreement. That is a further reason the 025 STOP rested on a
 number that was never the right one — consistent with Am.A(iv)'s own verdict.
+
+## Amendment H (2026-09-03 — the `full_info` arm, frozen BEFORE any run)
+
+Pre-registered because this is a NEW COLLECTION, not a re-scoring. Nothing in
+this amendment has been run at the time of writing.
+
+**Why.** `results/test_outcome_vector.json` measured, on 3 python tasks and 67
+runs, with the instrument validated in both directions (ground-truth patch ->
+all FAIL_TO_PASS pass; zero-action baseline -> all fail; 9/9 no-op runs
+reproduce the baseline exactly):
+
+- **0 of 67 runs solved any task.**
+- **32 of 67 (47.8%) produced non-importable code** (pytest collection error).
+- The F2P vector varies on only 1 of 3 tasks.
+
+And `results/diag_forks_on_importable.json` finds that on the same 3 tasks the
+fork census does not survive a working-code filter (2/11 -> 0/10 blockers;
+1/3 -> 0/3 tasks; 26/67 runs survive). That sample is far too small to restate
+the 60-task census, but it means one question now gates the interpretation of
+everything downstream:
+
+> Is the agent's failure driven by MISSING INFORMATION (the injected
+> ambiguity) or by COMPETENCE (it cannot implement these tasks at all)?
+
+The census, the fork anatomy and the ask-window all presuppose the first. An
+`IndentationError` is not caused by ambiguity.
+
+**The arm.** hil-bench ships `full_info/instruction.md` for every task: the
+same task with every blocker explicitly resolved in prose. Verified on swe_0 —
+it appends a `## BLOCKER DETAILS` section whose resolutions match the
+registry's canonical classes verbatim (`distro.id` authoritative,
+`distro.version` verbatim, capitalize-first, `platform.system`). Re-collect
+the SAME 3 python tasks with `full_info` instead of `baseline`, same model
+(Qwen3-32B), same protocol, same seeds, then score with the SAME
+`scripts/test_outcome_vector.py` pipeline.
+
+**Frozen protocol.** Identical to the R2/T7 collection except the instruction
+file: `--mode full_info` selects `full_info/instruction.md`; everything else
+(max_steps, temperature ladder 0.7/0.9/1.1/1.3 cycled by seed, nudge,
+`exec_timeout`, top_k clamp) is unchanged. Tasks: swe_0, swe_10, swe_11 —
+the three the `sweap_json` parser handles (the JS tasks swe_1/swe_12 are
+excluded for a parser defect, recorded in the test-outcome artifact).
+Seeds: 0..23, matching baseline, giving ~70 runs after the same eligibility
+walk. The sealed pool is untouched.
+
+**Pre-registered read-outs, reported as-run whichever way they land.**
+Baseline values are already fixed and are quoted here so they cannot move:
+
+| read-out | baseline (frozen) | full_info |
+|---|---|---|
+| import-failure rate | 32/67 = 47.8% | as-run |
+| solve rate (all F2P pass) | 0/67 | as-run |
+| swe_0 partial-pass runs | 9/21 | as-run |
+| distinct F2P vectors per task | 4 / 1 / 1 | as-run |
+
+**Pre-registered interpretation, fixed before the numbers exist:**
+
+1. Solve rate stays at or near 0 **and** import-failure stays near 48% ->
+   **competence is the bottleneck for this model on these tasks.** The paper
+   must state that Qwen3-32B does not meet the premise of its own hook (an
+   agent worth asking is one competent enough that asking is the marginal
+   improvement), and a frontier arm becomes a needed component rather than an
+   upgrade.
+2. Solve rate rises materially (swe_0 off zero is the sensitive cell, since
+   its 9 partial-pass runs are the population disambiguation can tip) ->
+   **information is a first-order factor even for this model**, and the census
+   gains a causal validation.
+3. Import-failure falls substantially while solve rate stays 0 -> the breakage
+   is itself partly downstream of not knowing what to build; report as such.
+
+**What this arm cannot settle.** 3 tasks. It is a bottleneck diagnostic, not a
+census replication, and no result here restates 40/60. A null result does not
+rule out that other tasks behave differently.
+
+**Sequenced after, not bundled:** replaying the T7 Mistral runs through the
+same pipeline (second model family, same 3 tasks, no new collection) and any
+decision about a frontier arm.

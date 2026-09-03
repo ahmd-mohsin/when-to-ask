@@ -65,6 +65,14 @@ def main() -> int:
                          "which interleaves numbering (swe_60 before swe_7) "
                          "and would touch the sealed test pool.")
     ap.add_argument("--model-id", default="Qwen/Qwen2.5-Coder-7B-Instruct")
+    ap.add_argument("--mode", default="baseline",
+                    choices=("baseline", "full_info"),
+                    help="which instruction file to collect against. "
+                         "'baseline' is the under-specified task (every "
+                         "landed collection to date). 'full_info' is the SAME "
+                         "task with each blocker explicitly resolved in prose "
+                         "-- 028 Amendment H. Only the instruction file "
+                         "changes; the protocol is untouched.")
     ap.add_argument("--n-tasks", type=int, default=20)
     ap.add_argument("--n-runs", type=int, default=8)
     ap.add_argument("--mid-layer", type=float, default=0.5)
@@ -159,7 +167,7 @@ def main() -> int:
     for task_dir in sorted(p for p in tasks_dir.iterdir() if p.is_dir()):
         if class_tasks is not None and task_dir.name not in class_tasks:
             continue
-        if not (task_dir / "baseline" / "instruction.md").exists():
+        if not (task_dir / args.mode / "instruction.md").exists():
             continue
         if not (task_dir / "shared" / "image_ref.txt").exists():
             continue
@@ -171,7 +179,7 @@ def main() -> int:
           f"{len(eligible)} eligible tasks")
 
     for task_dir in my_tasks:
-        instr_f = task_dir / "baseline" / "instruction.md"
+        instr_f = task_dir / args.mode / "instruction.md"
         ref_f = task_dir / "shared" / "image_ref.txt"
         task_id = task_dir.name
         image = ref_f.read_text(encoding="utf-8").strip()

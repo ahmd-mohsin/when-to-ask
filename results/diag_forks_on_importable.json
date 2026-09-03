@@ -1,0 +1,90 @@
+{
+  "note": "DIAGNOSTIC, not a pre-registered cell and NOT a restatement of the 60-task census. A screen on the 3 python tasks the test-outcome vector covers.",
+  "run_filter": {
+    "n_runs": 67,
+    "n_runs_importable_and_changed": 26,
+    "definition": "repo_changed AND pytest could collect (status != collection_error)"
+  },
+  "census_all_runs": {
+    "forked_blockers": 2,
+    "blockers_with_commitments": 11,
+    "forked_tasks": 1,
+    "tasks": 3,
+    "per_blocker_class_counts": {
+      "swe_0/non_linux_distribution_source_precedence_on_conflict": {
+        "platform_system_preferred": 18
+      },
+      "swe_0/non_linux_distribution_version_source": {
+        "platform_apis": 16
+      },
+      "swe_0/non_linux_distribution_normalization": {
+        "capitalize_first": 14
+      },
+      "swe_0/non_linux_distribution_detection_scope": {
+        "enumerated_whitelist": 21
+      },
+      "swe_10/missing_network_facts_dict_key_snr_scope_host_addrs": {
+        "descriptive_key_name": 21
+      },
+      "swe_10/conflicting_normalized_value_contract_vs_verbatim_route_token_contract": {
+        "normalize_ipaddress_dedupe_sort": 10
+      },
+      "swe_10/missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": {
+        "show_or_symbolic_local": 9
+      },
+      "swe_10/ambiguous_route_line_acceptance_and_field_extraction_contract": {
+        "positional_destination_token": 5
+      },
+      "swe_11/max_input_length_unspecified": {
+        "different_length_value": 13,
+        "wrong_exception_or_message": 1
+      },
+      "swe_11/max_fields_count_ambiguous": {
+        "limit_100_typeerror": 9
+      },
+      "swe_11/max_nesting_depth_policy_conflict": {
+        "different_depth_value": 9,
+        "depth_20_typeerror": 9
+      }
+    }
+  },
+  "census_importable_only": {
+    "forked_blockers": 0,
+    "blockers_with_commitments": 10,
+    "forked_tasks": 0,
+    "tasks": 3,
+    "per_blocker_class_counts": {
+      "swe_0/non_linux_distribution_source_precedence_on_conflict": {
+        "platform_system_preferred": 15
+      },
+      "swe_0/non_linux_distribution_version_source": {
+        "platform_apis": 13
+      },
+      "swe_0/non_linux_distribution_normalization": {
+        "capitalize_first": 12
+      },
+      "swe_0/non_linux_distribution_detection_scope": {
+        "enumerated_whitelist": 15
+      },
+      "swe_10/missing_network_facts_dict_key_snr_scope_host_addrs": {
+        "descriptive_key_name": 9
+      },
+      "swe_10/conflicting_normalized_value_contract_vs_verbatim_route_token_contract": {
+        "normalize_ipaddress_dedupe_sort": 6
+      },
+      "swe_10/missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": {
+        "show_or_symbolic_local": 4
+      },
+      "swe_10/ambiguous_route_line_acceptance_and_field_extraction_contract": {
+        "positional_destination_token": 2
+      },
+      "swe_11/max_input_length_unspecified": {
+        "different_length_value": 1
+      },
+      "swe_11/max_nesting_depth_policy_conflict": {
+        "different_depth_value": 1
+      }
+    }
+  },
+  "reading": "Forked blockers go 2/11 -> 0/10 and forked tasks 1/3 -> 0/3 when only runs that produced working code are counted; 26 of 67 runs survive the filter. On this sample every fork is carried by runs that broke the build or wrote nothing. With 11 blockers and 2 forks this CANNOT generalise to the 60-task census -- it is a reason to extend the test-outcome vector to more tasks (no GPU needed) before the census carries a causal claim."
+}
