@@ -1,0 +1,166 @@
+{
+  "note": "Consequence-grounded fork labels from the task's OWN tests. Owes nothing to the lexicon, anchors or a judge.",
+  "inputs": {
+    "a0": "/ssd/wta_data/a0_v3_32b",
+    "tasks_dir": "third_party/hil-bench/harbor_swe"
+  },
+  "deviations": {
+    "selected_tests_not_full_suite": "shipped test_cmd runs run_script.sh with no args (full suite); given the FAIL_TO_PASS files instead -- same runner, same parser",
+    "test_files_restored_from_HEAD": "files touched by test_patch are checked out from HEAD before applying it, so a run that edited tests cannot fake a pass"
+  },
+  "excluded_tasks": {
+    "swe_1": "sweap_json mis-parses jest output",
+    "swe_12": "sweap_json mis-parses jest output"
+  },
+  "js_parser_defect": "sweap_json mis-parses jest: on a pristine swe_1 container it emitted 5 concatenated test names under a src/app/... prefix (FAIL_TO_PASS uses applications/drive/src/app/...), 0 of 4 F2P names matched, and every test was reported PASSED although the captured lines carry jest's failure glyph.",
+  "no_op_control": {
+    "n_scored": 67,
+    "n_repo_unchanged": 9,
+    "n_repo_unchanged_matching_baseline": 9,
+    "interpretation": "a run that changed nothing should reproduce the zero-action baseline exactly; any that does not indicates test flakiness or replay nondeterminism, not a decision"
+  },
+  "ground_truth_control": {
+    "swe_0": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_10": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_11": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    }
+  },
+  "instrument_validated": true,
+  "per_task": {
+    "swe_0": {
+      "n_runs_scored": 21,
+      "n_runs_failed": 0,
+      "n_f2p": 6,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 4,
+      "vector_counts": {
+        "000000": 12,
+        "001000": 4,
+        "100000": 4,
+        "101000": 1
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 12,
+      "n_repo_unchanged": 2,
+      "n_collection_error": 4,
+      "distinct_vectors_consequential_only": 3,
+      "varies_consequential_only": true
+    },
+    "swe_10": {
+      "n_runs_scored": 22,
+      "n_runs_failed": 0,
+      "n_f2p": 7,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "0000000": 22
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 22,
+      "n_repo_unchanged": 3,
+      "n_collection_error": 10,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_11": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 5,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "00000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 4,
+      "n_collection_error": 18,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    }
+  },
+  "elapsed_s": 3.5
+}
