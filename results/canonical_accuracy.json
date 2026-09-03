@@ -1,0 +1,174 @@
+{
+  "note": "ABSOLUTE per-run read-out. Re-scores existing commitments; no collection, no GPU. NOT verified correctness -- this is agreement between the LEXICON's label and the registry's canonical class, and inherits all lexicon noise. Consequence-grounded correctness needs the test-outcome vector.",
+  "inputs": {
+    "classes": "data/interpretation_classes.json",
+    "labels_debug": "models/v3_32b_fixed/labels_debug.jsonl"
+  },
+  "coverage": {
+    "n_blockers_in_artifact": 214,
+    "n_blockers_with_canonical": 214,
+    "canonical_always_class_index_0": true,
+    "n_commitments_scored": 1595,
+    "n_commitments_dropped_no_blocker_match": 0
+  },
+  "headline": {
+    "canonical_accuracy": 0.3504702194357367,
+    "clustered_ci95": [
+      0.269800177284761,
+      0.4310384372034166
+    ],
+    "uniform_random_baseline": 0.3799373040752351,
+    "lift_over_random": -0.02946708463949843,
+    "n": 1595
+  },
+  "by_temperature": {
+    "0.7": {
+      "acc": 0.34684684684684686,
+      "n": 444
+    },
+    "0.9": {
+      "acc": 0.34838709677419355,
+      "n": 465
+    },
+    "1.1": {
+      "acc": 0.3554603854389722,
+      "n": 467
+    },
+    "1.3": {
+      "acc": 0.3515981735159817,
+      "n": 219
+    }
+  },
+  "forked_vs_unforked": {
+    "forked_blockers": {
+      "acc": 0.27994011976047906,
+      "n": 668,
+      "n_blockers": 63
+    },
+    "unforked_blockers": {
+      "acc": 0.40129449838187703,
+      "n": 927,
+      "n_blockers": 102
+    }
+  },
+  "per_blocker_accuracy_distribution": {
+    "n_blockers": 165,
+    "mean": 0.3453349501256965,
+    "frac_blockers_at_0": 0.5515151515151515,
+    "frac_blockers_at_1": 0.24848484848484848,
+    "deciles": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.25666666666666654,
+      0.7098901098901098,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "per_task_accuracy": {
+    "swe_0": 0.2028985507246377,
+    "swe_1": 0.3793103448275862,
+    "swe_10": 0.2222222222222222,
+    "swe_11": 0.43902439024390244,
+    "swe_12": 0.34,
+    "swe_13": 0.3684210526315789,
+    "swe_14": 0.2,
+    "swe_15": 0.0,
+    "swe_16": 0.42857142857142855,
+    "swe_17": 0.1276595744680851,
+    "swe_18": 0.02702702702702703,
+    "swe_19": 0.45,
+    "swe_2": 0.0,
+    "swe_20": 0.0,
+    "swe_21": 0.0,
+    "swe_22": 0.0,
+    "swe_23": 0.4375,
+    "swe_24": 0.11764705882352941,
+    "swe_25": 0.17647058823529413,
+    "swe_26": 0.0,
+    "swe_27": 0.15789473684210525,
+    "swe_28": 0.0,
+    "swe_29": 0.0,
+    "swe_3": 0.4375,
+    "swe_30": 0.0,
+    "swe_31": 0.75,
+    "swe_32": 0.0,
+    "swe_33": 0.9629629629629629,
+    "swe_34": 0.5454545454545454,
+    "swe_35": 0.5454545454545454,
+    "swe_36": 0.5081967213114754,
+    "swe_37": 0.8214285714285714,
+    "swe_38": 0.2,
+    "swe_39": 0.029411764705882353,
+    "swe_4": 0.5384615384615384,
+    "swe_41": 0.18181818181818182,
+    "swe_42": 0.05263157894736842,
+    "swe_43": 0.025,
+    "swe_44": 0.09090909090909091,
+    "swe_45": 0.7636363636363637,
+    "swe_46": 1.0,
+    "swe_47": 0.3448275862068966,
+    "swe_49": 0.4838709677419355,
+    "swe_5": 0.0,
+    "swe_50": 0.4482758620689655,
+    "swe_51": 0.72,
+    "swe_52": 0.0,
+    "swe_53": 0.9230769230769231,
+    "swe_54": 0.2222222222222222,
+    "swe_55": 1.0,
+    "swe_56": 0.0,
+    "swe_57": 0.25,
+    "swe_58": 0.9565217391304348,
+    "swe_59": 0.034482758620689655,
+    "swe_6": 0.9722222222222222,
+    "swe_7": 1.0,
+    "swe_8": 0.75,
+    "swe_9": 0.6984126984126984
+  },
+  "chosen_class_index_census": {
+    "0": 559,
+    "1": 762,
+    "2": 230,
+    "3": 44
+  },
+  "confound_check": {
+    "selection_rate_by_class_index": {
+      "0": {
+        "available": 1595,
+        "chosen": 559,
+        "selection_rate": 0.3504702194357367,
+        "mean_signatures": 3.9078369905956114
+      },
+      "1": {
+        "available": 1595,
+        "chosen": 762,
+        "selection_rate": 0.47774294670846396,
+        "mean_signatures": 4.154858934169279
+      },
+      "2": {
+        "available": 1026,
+        "chosen": 230,
+        "selection_rate": 0.22417153996101363,
+        "mean_signatures": 3.9200779727095516
+      },
+      "3": {
+        "available": 246,
+        "chosen": 44,
+        "selection_rate": 0.17886178861788618,
+        "mean_signatures": 5.073170731707317
+      }
+    },
+    "chosen_class_has_most_signatures": {
+      "n_commitments_where_counts_differ": 1100,
+      "rate": 0.5254545454545455,
+      "chance": 0.3799373040752351,
+      "lift": 0.14551724137931038
+    },
+    "verdict": "CONFOUNDED. The labeler selects whichever class carries the most signatures 52.5% of the time against a 38.0% chance rate, and canonical (always index 0) carries fewer signatures than index 1 (3.91 vs 4.15 commitment-weighted), which is also the index selected most often (0.3505 vs 0.4777). Canonical accuracy measured off lexicon labels therefore cannot be read as how often a run was RIGHT -- matching opportunity is mixed into it. A consequence-grounded target (test_patch + test_cmd + log_parser) does not have this problem."
+  }
+}
