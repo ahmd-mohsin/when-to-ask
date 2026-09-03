@@ -1,0 +1,61 @@
+{
+  "note": "PILOT, not a pre-registered 028 cell. Gates the full replay-and-diff run before spending box time.",
+  "inputs": {
+    "a0": "/ssd/wta_data/a0_v3_32b",
+    "labels_debug": "models/v3_32b_fixed/labels_debug.jsonl",
+    "classes": "data/interpretation_classes.json",
+    "tasks_dir": "third_party/hil-bench/harbor_swe",
+    "exec_timeout": 120,
+    "run_budget": 300.0
+  },
+  "pilot_tasks": [
+    "swe_0",
+    "swe_1",
+    "swe_10",
+    "swe_11",
+    "swe_12"
+  ],
+  "n_runs_attempted": 115,
+  "n_runs_replayed": 115,
+  "n_runs_failed": 0,
+  "Q1_replay_fidelity": {
+    "mean_exit_code_agreement": 0.99364697950056,
+    "median": 1.0,
+    "p25": 1.0,
+    "frac_runs_above_0.9": 0.991304347826087,
+    "gate": 0.8,
+    "verdict": "GO on fidelity"
+  },
+  "diff_modes": {
+    "git": 115
+  },
+  "diff_sizes": {
+    "median_changed_lines": 41.0,
+    "n_empty_diffs": 26
+  },
+  "Q2_positive_control": {
+    "A_cross_task": {
+      "auroc_jaccard": 0.5814899192508454,
+      "n_same": 1269,
+      "n_diff": 5286,
+      "same_mean": 0.8524380760310747,
+      "diff_mean": 0.9546399888011892,
+      "exact_match_rate_same": 0.07407407407407407,
+      "exact_match_rate_diff": 0.04370034052213394
+    },
+    "B_file_set": {
+      "n_tasks_contributing": 3,
+      "auroc_jaccard_mean": 0.44480962965483145
+    },
+    "C_interpretation": {
+      "n_cells": 4,
+      "auroc_jaccard_mean": 0.5322687791444468,
+      "reference_published_r3_r4": [
+        0.555,
+        0.58
+      ]
+    }
+  },
+  "verdict": "NO-GO on the ceiling: cross-task AUROC 0.581 < 0.95 \u2014 replay-and-diff does not resolve either",
+  "elapsed_s": 1340.2
+}

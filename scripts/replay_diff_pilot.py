@@ -260,6 +260,15 @@ def main() -> int:
     fidelity = float(np.mean(fids)) if fids else None
     res = {"note": "PILOT, not a pre-registered 028 cell. Gates the full "
                    "replay-and-diff run before spending box time.",
+           # provenance: the two defaults are WRONG on the box. `data/a0_v3_32b`
+           # symlinks to the 1,385-run snapshot while the fixed label trail is
+           # the 1,415-run universe, and `models/v3_32b_fixed_debug/` does not
+           # exist -- the fixed labeler's trail lives in `models/v3_32b_fixed/`.
+           # Record what was actually read so the numbers can be reproduced.
+           "inputs": {"a0": args.a0, "labels_debug": args.labels_debug,
+                      "classes": args.classes, "tasks_dir": args.tasks_dir,
+                      "exec_timeout": args.exec_timeout,
+                      "run_budget": args.run_budget},
            "pilot_tasks": [d.name for d in pilot],
            "n_runs_attempted": len(replays), "n_runs_replayed": len(ok),
            "n_runs_failed": len(replays) - len(ok),

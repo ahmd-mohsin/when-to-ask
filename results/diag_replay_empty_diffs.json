@@ -1,0 +1,44 @@
+{
+  "note": "DIAGNOSTIC on the replay-and-diff PILOT, not a pre-registered cell and not a rerun. Re-scores the pilot's own cached diffs; results/replay_diff_pilot.json stands as-run.",
+  "question": "Arm A (cross-task) must be ~1.0 for the approach to be an instrument at all. It landed at 0.581. Is that the representation failing, or the metric?",
+  "finding": "The metric. jaccard_distance(empty, empty) = 0.0 scores two runs that changed nothing as an EXACT match, so every pair of no-op runs lands on the 'same' end of the scale -- including the cross-task ones, which is why exact_match_rate_diff is non-zero at all.",
+  "n_runs": 115,
+  "n_empty_diffs": 26,
+  "empty_by_task": {
+    "swe_0": 2,
+    "swe_1": 13,
+    "swe_10": 3,
+    "swe_11": 4,
+    "swe_12": 4
+  },
+  "empty_diffs_are_real": {
+    "ran_no_write_command": 12,
+    "wrote_but_no_content": 14,
+    "median_fidelity_of_empty_runs": 1.0,
+    "mechanism": "dominant shape is `mkdir -p <dir> && touch <file>`; an empty new file contributes a `new file mode` header and zero +/- content lines, which normalize_diff drops by design",
+    "worked_example": "swe_12-s2: 15 write commands, all touch, fidelity 1.00, diff empty",
+    "cd_persistence": "`cd` does not carry between actions (wta.agent_env.execute prefixes every command with `cd /app`). NOT a replay artifact: collect_v2.py drove the original collection through the same DockerTaskEnv, so the recorded run had no cd persistence either. It does make exit-code fidelity blind here -- mkdir -p/touch exit 0 wherever they land."
+  },
+  "arm_A_cross_task": {
+    "as_run_all_runs": {
+      "auroc_jaccard": 0.5820881660433749,
+      "n_same": 1269,
+      "n_diff": 5286,
+      "same_mean": 0.8524380760310747,
+      "diff_mean": 0.9546399888011894,
+      "exact_match_rate_same": 0.07407407407407407,
+      "exact_match_rate_diff": 0.04370034052213394
+    },
+    "excluding_empty_diffs": {
+      "auroc_jaccard": 0.8169530746784648,
+      "n_same": 777,
+      "n_diff": 3139,
+      "same_mean": 0.8799793030674824,
+      "diff_mean": 0.9972051547636464,
+      "exact_match_rate_same": 0.0,
+      "exact_match_rate_diff": 0.0
+    },
+    "n_runs_scored_cleaned": 89
+  },
+  "reading": "Arm A goes 0.581 -> 0.817 once no-op runs are excluded, and cross-task exact matches go 0.0437 -> 0.0000, i.e. to zero: with the degenerate pairs gone, runs on different repositories are essentially disjoint (mean distance 0.997), which is what the positive control was asserting. The cleaned number is still below the pilot's 0.95 ceiling bar, so this does NOT convert the pilot into a GO -- it relocates the failure. What limits arm A is that same-task pairs are themselves far apart (mean 0.880): two runs on the SAME repo routinely touch disjoint line sets."
+}
