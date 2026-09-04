@@ -1,6 +1,6 @@
 # STATUS — what every code name means, and what is done vs left
 
-**Living document. Last updated: 2026-09-03.**
+**Living document. Last updated: 2026-09-04.**
 Update rule at the bottom: this file is edited in the SAME commit as any
 experiment that lands. If it disagrees with reality, reality wins and this
 file is stale — fix it.
@@ -127,7 +127,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | **T1·R6a** | Single-run LLM introspection | ✅ **DONE** | 238/238 judged, 60/60 tasks. Task-detection **F1 0.709** (P .718/R .700) — beats the fitted detectors (.507/.582) but **below always-ask .800**; run-level acc .580 vs a .664 always-ask base rate. `results/r6_llm_cells.json` |
 | **T1·R6b** | Ensemble LLM comparison | ✅ **DONE — the hoped-for ceiling did NOT appear** | 200/200 pairs, 46 tasks. AUROC **0.5786**, clustered CI **[0.481, 0.670] contains chance** — indistinguishable from MiniLM's .580. Judge said "different" 129/200 on a 100/100 pool (diff 73% / same 44% correct). `results/r6_llm_cells.json`, `results/r6b_auroc_ci.json` (028 Am.E) |
 | **T3** | Probe robustness | ✅ **DONE** | Neither escape works. full-dim linear **.541**, full-dim MLP **.507** — both far below the causal+anchors-masked TEXT baseline **.730**; the MLP is *worse* than the linear probe. 256-d consistency check reproduced **.2745** exactly. `results/gate2_probe_robustness.json` |
-| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🔄 **FULL COLLECTION RUNNING** | 60 tasks x **24 seeds** on `Mistral-Small-24B-Instruct-2501`. Restarted 2026-08-23 17:17Z on the **028 Amendment D** fix (a `grep -r -` dumped 723 MB and wedged a shard >1h at 97% CPU with its GPU idle; `error_signature` now fingerprints the truncated observation the model actually saw — trajectories bit-identical, window untouched). 55 pre-fix runs KEPT. Measured rate ~9-12 runs/h -> **~5-6 days**; ~272 GB projected on `/ssd3` (490 GB free). Amendment D **confirmed on the real failure**: `swe_1-s10`, which previously hung >1h, now completes normally. Relaunched 2026-08-23 17:50Z with `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` (allocator only) after 3 of 4 cards were observed at 3.2-3.7 GiB free — R2's documented OOM band. |
+| **T7** | Cross-family replication (2nd model, same 60 tasks) | 🔴 **STALLED — this row was wrong.** Verified 2026-09-04: no `collect_v2.py` process is running and hasn't been since **2026-08-27T16:38Z (8 days)** — last file write on disk. **885/1440 runs (61.5%)**, 58 task dirs present on `/ssd3/wta_data/xfam_mistralai-mistral-small-24b-instruct-2501` (194 GB). Cause of the stop not yet diagnosed — no crash log survives (`/opt/dlami/nvme/logs` is the ephemeral NVMe and was wiped by an intervening VM stop/start this session, see [[ephemeral-nvme-wipe]]); could be that wipe, an OOM the per-run handler didn't catch, or the box being stopped for cost. **Resume is by `<run>.json` existing**, so re-launching should pick up the missing ~555 runs without redoing the 885 — but verify the manifest/shard state before relaunching rather than assuming. Not yet actioned this session; flagged, not fixed. | 60 tasks x **24 seeds** on `Mistral-Small-24B-Instruct-2501`. Restarted 2026-08-23 17:17Z on the **028 Amendment D** fix (a `grep -r -` dumped 723 MB and wedged a shard >1h at 97% CPU with its GPU idle; `error_signature` now fingerprints the truncated observation the model actually saw — trajectories bit-identical, window untouched). 55 pre-fix runs KEPT. Measured rate ~9-12 runs/h -> ~5-6 days projected; ~272 GB projected on `/ssd3` (490 GB free) — actual 194 GB at 61.5% tracks close to that projection. Amendment D **confirmed on the real failure**: `swe_1-s10`, which previously hung >1h, now completes normally. Relaunched 2026-08-23 17:50Z with `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` (allocator only) after 3 of 4 cards were observed at 3.2-3.7 GiB free — R2's documented OOM band. |
 | **T6** | Ground-truth error bounds | ⏳ **not started** | Marked optional in 028; **recommend upgrading to mandatory** (see gaps) |
 | **Judge arm** (028 Am.G) | Fable relabels the 3,361 lexicon-unlabelable commitments | ✅ **DONE — 99.0% of pool, frozen** | **3,326/3,361 judged** over 9 usage-limit cycles (5 work files = 35 items unreached). Gate: 2,411 abstained (72.5%), **907 accepted**, 8 rejected (1 bad_class, 7 unlocatable evidence). **Coverage result (instrument-independent, stands): 907 labels where the lexicon had none, 126 new multi-run cells, 42.1% forked ≈ the lexicon's own 43%** — an independent labeler finds forks at the lexicon's rate. **Separation numbers (judge_only hashed .523 [.438,.616] / MiniLM .550 [.473,.636], 642 diff pairs, 54 tasks; union .575 / .569) must be read under the ⚠️ positive control** — same instrument, so the same ~.85 ceiling and planted-fork failure apply; they do NOT license a signal claim. What they DO add: a fully independent labeler on a DISJOINT item set moves the statistic by <.03, corroborating that the .54–.60 band is a property of the instrument, not the labels. `data/judge_labels_v3_32b.jsonl`, `results/judge_arm_phase1_full.json` |
 | — | AUROC clustered CIs (028 Am.A item 7) | ✅ **DONE** for every 32B separation AUROC | R3/R4/R5 via `scripts/t1_auroc_ci.py`; R6b via `scripts/r6b_auroc_ci.py` (same estimator and constants, guard-checked to reproduce the cell). T5/T7 rows get theirs when those land |
@@ -141,7 +141,7 @@ dataset; T1-row-R2 is a probe. They share no meaning.
 | — | **Canonical accuracy** — first ABSOLUTE (per-run) read-out, NOT a pre-registered cell | ✅ **DONE 2026-09-03 — no signal, and the lexicon version is confounded** | Every T1 cell asks a *relational* question (did A and B decide the same?). This asks a *per-run* one: did the run land on the resolution the registry marks canonical? Free re-scoring of the existing 1,595 commitments — no collection, no GPU. **214/214 blockers carry exactly one `canonical: true` class, always class index 0** (the artifact's `_provenance` says so outright). Scored **1,595 commitments / 165 blockers / 58 tasks**. **Accuracy .3505, task-clustered CI95 [.2698, .4310], against a uniform-random baseline of .3799 — lift −.0295, CI contains chance.** Flat across temperature (.347/.348/.356/.352); forked blockers .280 vs unforked .401. ⚠️ **CONFOUNDED, so .3505 must NOT be read as "runs are right 35% of the time"**: the labeler picks whichever class carries the most signatures **52.5%** of the time vs a **38.0%** chance rate (lift +.146), and canonical/index-0 carries *fewer* signatures than index 1 (3.91 vs 4.15) while index 1 is selected most (.478 vs .351). Per-blocker accuracy is **bimodal — 55% of blockers at exactly 0.0, 25% at exactly 1.0** — i.e. the label is largely a property of which signatures exist for that blocker, not of what the run decided. **Verdict: the absolute framing is not refuted, but the lexicon-based version of it is dead**; a consequence-grounded target (`test_patch` + `test_cmd` + `log_parser`, which every task ships) has none of this confound and is the next step. `results/canonical_accuracy.json`, `scripts/canonical_accuracy.py` |
 | — | **Test-outcome vector** — consequence-grounded fork labels, NOT a pre-registered cell | ✅ **DONE 2026-09-03 — instrument validated; the label barely varies, and 0/67 runs solve anything** | Replaces the lexicon entirely: replay the run, restore test files from HEAD, apply the task's own `test_patch`, run its `test_cmd` runner, read the **FAIL_TO_PASS** pass/fail vector. Owes nothing to lexicon, anchors or judge. **3 python tasks / 67 runs / 0 failed.** ✅ **Instrument validated by two controls**: ground-truth patch → **all F2P PASS on all 3 tasks**; zero-action baseline → all-fail; and **9/9 runs that changed nothing reproduced the baseline exactly** (the no-op control — replay is deterministic and the tests are not flaky). **Findings: 0 of 67 runs fully solved any task**; the vector **varies in only 1 of 3 tasks** (swe_0: 4 distinct vectors, `000000`×12 / `001000`×4 / `100000`×4 / `101000`×1 — swe_10 and swe_11 are constant all-zero across 22 and 24 runs). **48% of runs (32/67) produce non-importable code** (pytest collection error, e.g. swe_10-s10 leaves an `IndentationError` in `linux.py`), so the outcome is dominated by *did the run break the build*, not *which interpretation did it choose*. ⚠️ **JS tasks excluded** (swe_1, swe_12 = 48 runs): the shipped `sweap_json` parser mis-parses jest — 0/4 F2P names matched on a pristine container and every test reported PASSED despite jest failure glyphs. Deviations recorded: selected F2P test files instead of the full suite (shipped `test_cmd` runs everything), and test files restored from HEAD so a run that edited tests cannot fake a pass. `results/test_outcome_vector.json`, `scripts/test_outcome_vector.py` |
 | — | **Does the fork census survive a working-code filter?** (diagnostic screen, NOT a pre-registered cell) | ✅ **DONE 2026-09-03 — not on this sample** | Recomputes the fork census counting only runs that changed the repo **and** produced importable code, using `test_outcome_vector`'s per-run status. Forked blockers **2/11 → 0/10**; forked tasks **1/3 → 0/3**; **26/67** runs survive the filter. On these 3 tasks every fork is carried by runs that broke the build or wrote nothing. ⚠️ **11 blockers and 2 forks — this CANNOT restate the 40/60 census and is not evidence it is wrong.** It is a screen, and the reason to extend the test-outcome vector to more tasks (cheap, no GPU) before the census carries a causal claim. `results/diag_forks_on_importable.json`, `scripts/diagnose_forks_on_importable.py` |
-| — | **`full_info` arm — is the bottleneck information or competence?** (028 **Amendment H**, pre-registered) | 🔄 **RUNNING 2026-09-03** | New collection: same 3 python tasks, same Qwen3-32B, same protocol, **only the instruction file changes** — `full_info/instruction.md` resolves every blocker in prose (verified on swe_0: appends `## BLOCKER DETAILS` whose resolutions match the canonical classes verbatim). `collect_v2.py` gains `--mode {baseline,full_info}`. Frozen baseline to beat: import-failure **32/67 = 47.8%**, solve rate **0/67**, swe_0 partial-pass **9/21**, distinct vectors **4/1/1**. Pre-registered reading: solve≈0 and import-failure≈48% ⇒ **competence is the bottleneck** and the paper must say Qwen3-32B does not meet its own hook's premise; swe_0 off zero ⇒ **information is first-order** and the census gains causal support. Scored by the SAME validated `test_outcome_vector` pipeline. `decisions/028` Am.H |
+| — | **`full_info` arm — is the bottleneck information or competence?** (028 **Amendment H**) | ✅ **DONE 2026-09-04 — information is first-order on swe_0; competence still limits swe_10/swe_11** | 68/72 seeds succeeded (4 OOM, all temp-1.3, disclosed not backfilled — see gaps). **Solve rate 0/67 → 8/68 (11.8%)**, entirely from swe_0: **0/21 → 8/23 full solves (34.8%)**, vector perfectly bimodal (`000000`×15 / `111111`×8, nothing between) — exactly the population the amendment named (baseline's 9/21 *partial*-pass runs). **swe_10 and swe_11 replicate NEITHER effect**: 0 full solves either way. Import-failure fell 47.8%→36.8% overall, but **rose** on swe_0 (19.0%→30.4%) even as its solve rate jumped — more detail did not uniformly reduce breakage. Reading: interpretation 2 fires for swe_0 (**the census gains causal support** on the one task where the working-code-filtered census had any signal), but this is 1 of 3 tasks — does **not** restate the 40/60 census and does **not** by itself justify a frontier arm. `results/test_outcome_vector_full_info.json`, `decisions/028` Am.H.1 |
 
 Legend: ✅ done · 🔄 in progress · ⏳ not started
 
@@ -385,25 +385,34 @@ probes are not evidence about real traces.
    MiniLM's span CI [.497, .601] contains .50. Any claim resting on R4
    being the one row above chance is anchor-dependent and must say so.
 
-   **(b) NEXT — replay-and-diff. Pilot written 2026-09-01, awaiting the box.**
-   The only remaining construction that could yield a working instrument AND
-   independent ground truth: two runs decided the same thing iff their final
-   normalized `git diff` matches — removes idiom, anchor, lexicon and judge
-   by construction. Full run is 60 tasks / 174 GB / ~38.5k execs, so it is
-   gated behind `scripts/replay_diff_pilot.py` (5 tasks, 115 runs, **3,385
-   execs**, resumable, sealed pool excluded by construction via
-   `eligible_tasks`). The pilot answers two questions in order:
-   **Q1 replay fidelity** — does replaying `action_text` in `segment_idx`
-   order reproduce the recorded `exit N` codes? Below the 0.80 gate the
-   diffs describe runs that never happened and the approach is void
-   regardless of how its separation looks. **Q2** — the same three positive
-   control arms (cross-task / file-set / interpretation), scored by
-   1 − Jaccard over normalized changed-line sets so the AUROC is directly
-   comparable to the published .555/.580. GO requires fidelity ≥ .80 **and**
-   cross-task AUROC ≥ .95. If replay-and-diff also lands at ~.58 *with* a
-   clean ceiling, that is the escape-proof negative the paper lacks; if it
-   cannot clear the ceiling either, no instrument in this repo resolves and
-   the paper says exactly that.
+   **(b) replay-and-diff pilot, RUN 2026-09-03.** Q1 (replay fidelity) PASSED
+   decisively at **.9936** — the traces are faithfully replayable, a reusable
+   asset regardless of what follows. Q2 (positive control) reads .581 as-run
+   but that is a metric artifact (empty-diff pairs scored as exact matches by
+   construction); corrected it is **.817 non-empty / up to .967 on a
+   "modifying" subgroup**, still below the .95 ceiling and with a
+   task-clustered CI too wide (5 tasks) to resolve which. **Does not deliver
+   the escape-proof negative** — same-task pairs sit at mean distance .880,
+   i.e. two runs on the same repo share ~12% of their changed lines, which
+   the diagnostics below explain rather than the instrument being at fault.
+
+   **(c) the chain this opened, in order — see the individual STATUS rows for
+   full numbers.** Canonical accuracy (the absolute, per-run reframing):
+   .3505 vs a .3799 random baseline, CI contains chance, **confounded** (the
+   labeler favours whichever class has more signatures 52.5% of the time).
+   Test-outcome vector (consequence-grounded via the task's own tests,
+   instrument validated by ground-truth + no-op controls): **0/67 runs
+   solved anything**, **48% produced non-importable code**. Forks-on-
+   importable screen: the fork census does **not** survive a working-code
+   filter on this 3-task sample (2/11→0/10 blockers). **028 Amendment H/H.1**
+   then ran the causal test directly — same 3 tasks with `full_info`
+   (every blocker resolved in prose) instead of `baseline` — and got a
+   split result: **solve rate 0→8/68, entirely on swe_0 (0→8/23, a clean
+   bimodal 000000/111111 split)**, while swe_10/swe_11 replicate neither
+   effect. **Information is a first-order factor on swe_0; competence still
+   caps the other two.** No remaining construction in this repo delivers a
+   clean escape-proof negative — the honest state is a real, partial,
+   task-dependent causal effect, not a ceiling and not a clean null.
    Incidental defect found in passing: `wta.labeling._is_mutating` matches
    only `("sed -i", ">", ">>", "tee ", "patch ", "git apply", "perl -i")`,
    so a Python-mediated write (`python -c "...open(f,'w').write(s)"`)

@@ -1035,3 +1035,80 @@ rule out that other tasks behave differently.
 **Sequenced after, not bundled:** replaying the T7 Mistral runs through the
 same pipeline (second model family, same 3 tasks, no new collection) and any
 decision about a frontier arm.
+
+## Amendment H.1 (2026-09-04 — the `full_info` arm as-run outcome)
+
+Collected as pre-registered: same 3 python tasks (swe_0, swe_10, swe_11),
+same Qwen3-32B, same protocol, `--mode full_info`, seeds 0-23,
+`--out /ssd3/wta_data/a0_full_info_32b`. Scored by the same
+`scripts/test_outcome_vector.py` pipeline, same instrument-validation
+controls (ground truth -> all F2P pass on all 3 tasks, confirmed again;
+no-op control -> 15/15 unchanged runs reproduce the zero-action baseline
+exactly). `results/test_outcome_vector_full_info.json`.
+
+### H.1.1 Collection: 4 OOM losses, all temp-1.3, disclosed not backfilled
+
+68 of 72 seeds succeeded; 4 failed with a genuine `CUDA out of memory`
+(caught by `collect_v2`'s per-run handler, logged as `run_error`, collection
+continued automatically — no manual intervention). **All 4 failures are
+`seed % 4 == 3`, i.e. temp 1.3**: `swe_0-s23`, `swe_10-s19`, `swe_10-s23`,
+`swe_11-s23`. This is the same axis as R2's documented 55-run gap
+([[r2-oom-gap-temp13]]), but a different mechanism: this box is a single
+97 GB GPU (R2 sharded across 4), and each failure showed ~90 of ~95 GiB
+*genuinely* allocated with only ~0.5 GiB reserved-but-unallocated —
+real exhaustion from an unusually long context, not the fragmentation
+`PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` fixes (it was set, and
+did not prevent these). Not backfilled: 4/72 = 5.6%, same pattern as R2's
+disclosed gap, treated the same way rather than spending more box time.
+
+### H.1.2 The numbers, against the frozen baseline table
+
+| read-out | baseline (frozen) | full_info (as-run) |
+|---|---|---|
+| import-failure rate | 32/67 = 47.8% | **25/68 = 36.8%** |
+| solve rate (all F2P pass) | 0/67 | **8/68 = 11.8%** |
+| swe_0 fully-solved runs | 0/21 (9/21 partial) | **8/23 (34.8%)** |
+| distinct F2P vectors per task | 4 / 1 / 1 | **2 / 2 / 2** |
+
+Per-task detail:
+
+| task | solved | import-fail | vectors |
+|---|---|---|---|
+| swe_0 | 8/23 | 7/23 (30.4%, up from 19.0%) | `000000`×15, `111111`×8 — no partial states at all |
+| swe_10 | 0/22 | 6/22 (27.3%, down from 45.5%) | `0000000`×20, `1011111`×2 (6/7 tests) |
+| swe_11 | 0/23 | 12/23 (52.2%, down from 75.0%) | `00000`×21, `01000`×2 (1/5 tests) |
+
+### H.1.3 Reading, against the pre-declared interpretation
+
+**Interpretation 2 fires: information is a first-order factor for this
+model, on the sensitive cell.** swe_0 does not merely move off zero — it
+jumps to 8/23 fully-solved (34.8%), and the vector is perfectly bimodal
+(`000000` or `111111`, nothing between). That is the population the
+amendment named in advance: the 9 baseline runs that partially passed under
+`baseline` are consistent with "almost there, missing the resolution," and
+`full_info` converts a chunk of that population to full solves outright.
+**The census gains the causal support it did not have**: the same blocker
+information that the census infers from commitments is shown here to change
+what the run's code actually does, on the one task where the fork census
+(pre-`full_info`) had any signal at all.
+
+swe_10 and swe_11 do **not** replicate this. Zero full solves either way.
+swe_10 gets two runs to 6/7 (one blocker short); swe_11 gets two runs to
+1/5. Import-failure falls substantially on both (interpretation 3's
+signature) without the solve-rate rise interpretation 2 predicts — so for
+these two tasks the honest read is that `full_info` reduced *some* thrashing
+but did not supply the missing capability. **swe_0's import-failure rate
+rose** (19.0% -> 30.4%) even as its solve rate jumped, which is worth
+flagging rather than smoothing over: more detailed instructions did not
+uniformly reduce breakage, and on the task that improved most it went the
+other way. A plausible reading is longer prompts increasing the chance of a
+mis-edit on the way to a correct one, but this run cannot distinguish that
+from noise at n=23.
+
+**What this does NOT do:** it does not restate or validate the 40/60 census
+(3 tasks, and 2 of 3 show no full-solve effect at all); it does not by
+itself justify a frontier-model arm (only 1 of 3 tasks moved, and the
+diagnostic screen in H's motivation — forks not surviving a working-code
+filter — was itself only 3 tasks). The next cheap step named in H stands:
+extend `test_outcome_vector` (no GPU) before any causal claim generalises
+past swe_0.
