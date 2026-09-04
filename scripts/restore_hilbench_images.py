@@ -72,12 +72,28 @@ def main() -> int:
     ap.add_argument("--classes", default="data/interpretation_classes.json")
     ap.add_argument("--n-tasks", type=int, default=60)
     ap.add_argument("--work-dir", default="/opt/dlami/nvme/hilbench_images")
+    ap.add_argument("--only-tasks", default="",
+                    help="comma-separated task ids to restrict to, applied "
+                         "AFTER the normal eligibility walk so the sealed "
+                         "pool stays excluded by construction (mirrors "
+                         "collect_v2 --only-tasks). Empty = all eligible. "
+                         "Used to fetch only the python tasks for "
+                         "test_outcome_vector instead of all 174 GB.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
     tasks = eligible_tasks(Path(args.tasks_dir), Path(args.classes),
                            args.n_tasks)
     log(f"{len(tasks)} eligible tasks: {tasks[0].name} ... {tasks[-1].name}")
+    if args.only_tasks:
+        want = {t.strip() for t in args.only_tasks.split(",") if t.strip()}
+        missing = want - {d.name for d in tasks}
+        if missing:
+            log(f"FATAL: --only-tasks names tasks not in the eligible set: "
+                f"{sorted(missing)}")
+            return 2
+        tasks = [d for d in tasks if d.name in want]
+        log(f"--only-tasks: restricted to {len(tasks)} tasks")
 
     # sealed-pool assertion: cheap, and the one mistake that must never happen
     sealed = [d.name for d in tasks

@@ -35,16 +35,42 @@ Deviations from the shipped `test_cmd`, both deliberate and recorded:
   - Files touched by `test_patch` are restored from HEAD BEFORE the patch is
     applied, so a run that edited the tests cannot fake a pass.
 
-SCOPE: python tasks only. The `sweap_json` parser mis-parses jest output on
-the two JS tasks (swe_1, swe_12): it emits concatenated test names under a
-`src/app/...` prefix that never matches the `applications/drive/src/app/...`
-names in FAIL_TO_PASS, and marks tests PASSED whose lines carry jest's failure
-glyph. Verified against a pristine swe_1 container: 0 of 4 F2P names matched
-and all 5 reported tests were "PASSED" with failure markers in the text. The
-three python tasks matched 6/6, 7/7 and 5/5 F2P names, all FAILED at baseline
-as they must be pre-fix. The JS tasks are excluded and the defect recorded.
+SCOPE. JS is excluded outright: the `sweap_json` parser mis-parses jest output
+(swe_1, swe_12): it emits concatenated test names under a `src/app/...` prefix
+that never matches the `applications/drive/src/app/...` names in FAIL_TO_PASS,
+and marks tests PASSED whose lines carry jest's failure glyph. Verified against
+a pristine swe_1 container: 0 of 4 F2P names matched and all 5 reported tests
+were "PASSED" with failure markers in the text.
 
+EXTENSION (2026-09-04, the step named in 028 Am.H / STATUS gap 8(b)). The first
+run covered 3 python tasks by a hardcoded list. It now covers, by default,
+EVERY python task in the 60-task collection (21), selected by the same
+eligibility walk collect_v2 uses so the sealed pool is excluded by
+construction; `--include-go` admits the 22 Go tasks as well. Nothing is
+assumed scoreable: every admitted task must pass the GROUND-TRUTH CONTROL (its
+own reference patch makes all FAIL_TO_PASS pass through this exact pipeline)
+or it is marked `instrument_validated=false` and its runs are not scored --
+the falsification JS failed by hand, applied per task automatically.
+
+WHY EXTEND. This is a gate, not a search for signal. A structural-layer probe
+needs a per-run label; every label so far is dead (lexicon same/different
+fails its positive control, lexicon canonical-correctness is index-0
+confounded, judge sits in the same band, replay-diff has 0/777 exact matches),
+and this one -- the only label owing nothing to lexicon, anchor or judge -- was
+CONSTANT ZERO at baseline on 2 of the 3 tasks tried. Baseline is the only
+condition a detector would ever fire in. So the read-out that matters is:
+
+    fraction of admitted tasks whose BASELINE F2P vector varies at all
+    (over all runs, and over consequential runs only)
+
+If that fraction is near zero, no per-run label exists on Qwen3-32B and the
+activation question cannot be evaluated on this data; the next decision is the
+model, not the probe. Also read per task, as-run: solve rate, import-failure
+rate, distinct vectors. No GPU.
+
+    python scripts/test_outcome_vector.py --dry-run
     python scripts/test_outcome_vector.py --work-dir /ssd3/wta-testvec
+    python scripts/test_outcome_vector.py --only-tasks swe_0,swe_10,swe_11
 """
 
 from __future__ import annotations
@@ -66,9 +92,40 @@ from offline_ask_headtohead import load_task_actions  # noqa: E402
 from replay_diff_pilot import normalize_diff  # noqa: E402
 from wta.agent_env import DockerTaskEnv  # noqa: E402
 
-PY_TASKS = ["swe_0", "swe_10", "swe_11"]
 JS_EXCLUDED = {"swe_1": "sweap_json mis-parses jest output",
                "swe_12": "sweap_json mis-parses jest output"}
+# Languages the parser is known-bad for. Every other task is admitted and then
+# gated PER TASK by the ground-truth control below: a task whose own reference
+# patch cannot make its FAIL_TO_PASS tests pass through this pipeline is
+# marked instrument_validated=false and its runs are NOT scored. That is the
+# same falsification JS failed, applied automatically instead of by hand.
+BAD_LANGUAGES = {"js"}
+
+
+def select_tasks(tasks_dir: Path, classes: Path, only: str,
+                 include_go: bool) -> list[str]:
+    """Task ids to score. The SAME eligibility walk collect_v2 uses, so the
+    sealed pool is excluded by construction; then language filter; then an
+    optional --only-tasks restriction, fatal on unknown names (mirrors
+    collect_v2). Default = every python task in the 60-task collection."""
+    from restore_hilbench_images import eligible_tasks
+    eligible = eligible_tasks(tasks_dir, classes, 60)
+    chosen = []
+    for d in eligible:
+        lang = str(load_meta(tasks_dir, d.name).get("language") or "").lower()
+        if lang in BAD_LANGUAGES:
+            continue
+        if lang == "go" and not include_go:
+            continue
+        chosen.append(d.name)
+    if only:
+        want = {t.strip() for t in only.split(",") if t.strip()}
+        missing = want - set(chosen)
+        if missing:
+            raise SystemExit(f"FATAL: --only-tasks names tasks not in the "
+                             f"admitted set: {sorted(missing)}")
+        chosen = [t for t in chosen if t in want]
+    return chosen
 _TOUCHED = re.compile(r"^diff --git a/(\S+)", re.M)
 
 
@@ -147,6 +204,15 @@ def main() -> int:
     ap.add_argument("--run-budget", type=float, default=300.0)
     ap.add_argument("--test-timeout", type=int, default=900)
     ap.add_argument("--out", default="results/test_outcome_vector.json")
+    ap.add_argument("--classes", default="data/interpretation_classes.json")
+    ap.add_argument("--only-tasks", default="",
+                    help="comma-separated task ids, applied AFTER the "
+                         "eligibility walk and language filter; fatal on "
+                         "unknown names (mirrors collect_v2). Empty = every "
+                         "admitted task.")
+    ap.add_argument("--include-go", action="store_true",
+                    help="admit the 22 Go tasks as well as python. They are "
+                         "still gated per task by the ground-truth control.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -155,9 +221,13 @@ def main() -> int:
     work.mkdir(parents=True, exist_ok=True)
     tasks_dir = Path(args.tasks_dir)
     actions = load_task_actions(Path(args.a0), None)
+    task_ids = select_tasks(tasks_dir, Path(args.classes), args.only_tasks,
+                            args.include_go)
+    print(f"admitted {len(task_ids)} tasks "
+          f"({'python+go' if args.include_go else 'python'}): {task_ids}")
 
     plan = {}
-    for t in PY_TASKS:
+    for t in task_ids:
         meta = load_meta(tasks_dir, t)
         f2p, files = f2p_files(meta)
         touched = prep_patch(meta, work / f"{t}.patch")
@@ -216,6 +286,20 @@ def main() -> int:
         cache.write_text(json.dumps(rec), encoding="utf-8")
         gt[t] = rec
         print(f"  ground-truth {t}: {v} all_pass={rec['all_pass']}")
+
+    # ---- per-task instrument gate ----
+    # A task whose OWN reference patch cannot make its FAIL_TO_PASS tests pass
+    # through this pipeline is unscoreable here (parser, runner or patch
+    # mismatch -- the JS failure mode). Its runs are NOT scored; it is
+    # recorded, not silently dropped. Computed over the admitted set BEFORE
+    # the plan is narrowed, so instrument_validated cannot become trivially
+    # true by excluding the failures.
+    admitted = list(plan)
+    gt_failed = {t: gt[t] for t in admitted if not gt[t]["all_pass"]}
+    for t in gt_failed:
+        print(f"  INSTRUMENT FAILED {t}: ground-truth vector {gt[t]['vector']} "
+              f"status={gt[t]['status']} -- runs will not be scored")
+    plan = {t: p for t, p in plan.items() if t not in gt_failed}
 
     # ---- per-run replay + tests ----
     recs = {}
@@ -324,8 +408,45 @@ def main() -> int:
                 "or replay nondeterminism, not a decision",
         },
         "ground_truth_control": {
-            t: gt[t] for t in plan},
-        "instrument_validated": all(gt[t]["all_pass"] for t in plan),
+            t: gt[t] for t in admitted},
+        "instrument_validated": not gt_failed,
+        "instrument_validated_tasks": sorted(plan),
+        "instrument_failed_tasks": {
+            t: {"vector": r["vector"], "status": r["status"],
+                "apply_rc": r.get("apply_rc")}
+            for t, r in gt_failed.items()},
+        # THE GATE this extension exists to read (see module docstring):
+        # does a per-run label exist at BASELINE on this model at all?
+        "label_existence_gate": {
+            "n_tasks_admitted": len(admitted),
+            "n_tasks_scored": len(plan),
+            "n_tasks_baseline_vector_varies":
+                sum(1 for t in plan if per_task[t]["varies"]),
+            "n_tasks_varies_consequential_only":
+                sum(1 for t in plan
+                    if per_task[t]["varies_consequential_only"]),
+            "frac_tasks_varies":
+                (sum(1 for t in plan if per_task[t]["varies"]) / len(plan)
+                 if plan else None),
+            "frac_tasks_varies_consequential_only":
+                (sum(1 for t in plan
+                     if per_task[t]["varies_consequential_only"]) / len(plan)
+                 if plan else None),
+            "pooled_runs_scored": len(all_scored),
+            "pooled_fully_solved": sum(
+                per_task[t]["n_fully_solved"] for t in plan),
+            "pooled_collection_error": sum(
+                per_task[t]["n_collection_error"] for t in plan),
+            "pooled_repo_unchanged": sum(
+                per_task[t]["n_repo_unchanged"] for t in plan),
+            "reading": (
+                "near-zero frac_tasks_varies => no per-run label exists on "
+                "this model at baseline; the activation question cannot be "
+                "evaluated on this data and the next decision is the model, "
+                "not the probe. A non-trivial fraction => those tasks are "
+                "where a structural-layer probe could be trained and "
+                "evaluated, against a label owing nothing to the lexicon."),
+        },
         "per_task": per_task,
         "elapsed_s": round(time.time() - t0, 1),
     }
