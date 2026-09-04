@@ -1,0 +1,827 @@
+{
+ "n_tasks": 60,
+ "n_blockers": 214,
+ "defective_ids": [
+  "swe_2/conflicting_folder_emit_mode_list_rules",
+  "swe_2/conflicting_response_width_mode_activation",
+  "swe_25/flag_primary_key_composition",
+  "swe_25/rollout_cache_prefix",
+  "swe_25/rollout_serialization_tags",
+  "swe_27/missing_max_compose_recipients",
+  "swe_28/conflicting_single_record_compatibility_vs_immutable_audit_history",
+  "swe_3/contradictory_password_input_format",
+  "swe_37/cancellation_context_parameter",
+  "swe_37/forced_renewal_flags_when_cancelled",
+  "swe_38/ambiguous_expired_entry_refresh_failure_behavior",
+  "swe_38/contradiction_non_positive_lifetime_write_policy",
+  "swe_38/missing_max_active_entries_limit",
+  "swe_41/conflicting_path_separator",
+  "swe_43/entry_id",
+  "swe_43/state_value",
+  "swe_44/ambiguous_migration_scope",
+  "swe_45/missing_mbz_absent_sentinel",
+  "swe_49/analytics_field_json_representation_when_disabled",
+  "swe_50/missing_safari_version_threshold_and_validation",
+  "swe_52/missing_default_value_for_max_idle_connections",
+  "swe_52/missing_default_values_for_open_connections_and_connection_lifetime",
+  "swe_52/missing_yaml_key_name_for_database_connection_lifetime",
+  "swe_55/mp_validate_cleanup_rejects_non_db_methods",
+  "swe_56/ambiguous_slash_delimited_numeric_dates",
+  "swe_56/missing_invisible_character_stripping",
+  "swe_8/missing_when_attribute_value",
+  "swe_9/ambiguous_limit_count_source",
+  "swe_9/contradictory_default_vault_creation_timing",
+  "swe_9/contradictory_no_vault_memoization_policy",
+  "swe_9/missing_create_default_vault_precheck_maxage"
+ ],
+ "tasks": {
+  "swe_0": {
+   "id_order": [
+    "non_linux_distribution_source_precedence_on_conflict",
+    "non_linux_distribution_version_source",
+    "non_linux_distribution_normalization",
+    "non_linux_distribution_detection_scope",
+    "cross_platform_consistency_vs_fallback_policy"
+   ],
+   "sha256": {
+    "non_linux_distribution_source_precedence_on_conflict": "50585f42a6d71558726d85fac13e17b716f9ffacc642c9bf3e64a62aca0ec097",
+    "non_linux_distribution_version_source": "ada9f5c29d764d4e7cb23e8e8c7aba243b7a1d46bd910cee74f0584c6eebff24",
+    "non_linux_distribution_normalization": "dea026d295b333b8314af42553867b3562f50c14054d93af9fbc6ccab428a675",
+    "non_linux_distribution_detection_scope": "6c4fb548c5196bf5006bb4d13424a0ee8885b1282132093c068f20814e89fb01",
+    "cross_platform_consistency_vs_fallback_policy": "4fbfe63d0c7b7aa1eb6485e9b08d58072318f3ec025623166c6b52a5b225e827"
+   }
+  },
+  "swe_1": {
+   "id_order": [
+    "missing_show_all_parameter",
+    "missing_trashed_cache_accessor",
+    "ambiguous_photo_filter_field",
+    "contradictory_delete_gate_scope"
+   ],
+   "sha256": {
+    "missing_show_all_parameter": "64a33308e5fc2e6050d3ff0510de0551982ff11074d4f675ecb5ef85eff28be8",
+    "missing_trashed_cache_accessor": "a88d82f845f8f7357a7a128b59fd5bea6ac17a897f8c9cc210be43897204fad8",
+    "ambiguous_photo_filter_field": "b10bf056b552e1258bc50b2a89d44c959579602524a2d11f5bf0f1a07c6a07ee",
+    "contradictory_delete_gate_scope": "13111c598e87e870d7a3c33ac6a39b65a608198c1c5b73cd4c4ddc18d407797b"
+   }
+  },
+  "swe_10": {
+   "id_order": [
+    "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+    "missing_network_facts_dict_key_snr_scope_host_addrs",
+    "ambiguous_route_line_acceptance_and_field_extraction_contract",
+    "conflicting_normalized_value_contract_vs_verbatim_route_token_contract"
+   ],
+   "sha256": {
+    "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection": "60c29ef5bb0defbd47dba2b5fca01f77c7f9fc08f6e43c5d69c24fdbec670aa9",
+    "missing_network_facts_dict_key_snr_scope_host_addrs": "386ac52df812ccd3d0c36850c96cc86dbde6f37572756ca3d62509f7179a315d",
+    "ambiguous_route_line_acceptance_and_field_extraction_contract": "24c7a48fa5278602d5a1672ee1e997157e273afeedb4990968d176a88082f35e",
+    "conflicting_normalized_value_contract_vs_verbatim_route_token_contract": "aa29f1c60b6cdfe3376b30d29fda17a4356c8797623af1d1902e83eec159c68c"
+   }
+  },
+  "swe_11": {
+   "id_order": [
+    "max_input_length_unspecified",
+    "max_fields_count_ambiguous",
+    "max_nesting_depth_policy_conflict"
+   ],
+   "sha256": {
+    "max_input_length_unspecified": "b68917030e16a0e2c60acc0e4f8e90c8594fef263028a7195ee4645713558ff5",
+    "max_fields_count_ambiguous": "4c6b03b900527f508fc86e976efbd63fbc357a73cf6b04020a840bed43c36914",
+    "max_nesting_depth_policy_conflict": "a5f645c3ebaeb3560d09f12d144a1a4834b77f9deb7679cacbc10ed3b37ec45d"
+   }
+  },
+  "swe_12": {
+   "id_order": [
+    "missing_spotlight_eligibility_cutoff",
+    "ambiguous_feature_toggle_token",
+    "contradictory_spotlight_ownership_boundary"
+   ],
+   "sha256": {
+    "missing_spotlight_eligibility_cutoff": "bf434a3adec1c1114b77490b0ec70da2a7539abb2f4e6775f878c3fdc9160d37",
+    "ambiguous_feature_toggle_token": "104778880e304c6a8900c56aa8cd1ce116efb4033b1483e1a2e1c7bb31d5119e",
+    "contradictory_spotlight_ownership_boundary": "5ed81bdc2cabddb364603164fd4424348b4cdbedcb04ca6b49bbde89f3611282"
+   }
+  },
+  "swe_13": {
+   "id_order": [
+    "missing_cache_parameter_default",
+    "ambiguous_selective_caching_criteria",
+    "contradictory_cache_versus_freshness"
+   ],
+   "sha256": {
+    "missing_cache_parameter_default": "f3da3ad56549e34eb4dbd2b7e4a48d0c951a5c133c78eaa70084acf113bfac11",
+    "ambiguous_selective_caching_criteria": "53ac1fd6c05e0830efa35899ec35cf41e06e136851fb2e1684b0e42322abbb90",
+    "contradictory_cache_versus_freshness": "4d9316afd5e83ac3a96a7ffba4275077db95d6790dd996db5eb20b39c2dc6b9a"
+   }
+  },
+  "swe_14": {
+   "id_order": [
+    "default_data_path",
+    "update_interval_zero_handling",
+    "data_path_format_validation",
+    "interval_validation_scope",
+    "directory_existence_handling"
+   ],
+   "sha256": {
+    "default_data_path": "78f752bea067c2482da3caf01bc342f5d1288bbfcb1db8f55e204feb908f8b46",
+    "update_interval_zero_handling": "e7586b130bf5d8894d293841d75c7f0494038b968bdbfaf33ed63b3b474491ed",
+    "data_path_format_validation": "ea6daf0ae6c52492cfde96c86b2b1c41ebe9e248e2d29951006715b83150db3c",
+    "interval_validation_scope": "20005d7403cb7bc7c36242cb3935e82989cd31bc8a693a3b28d2d697d0731da6",
+    "directory_existence_handling": "4e854034dcd54415ac5df2bc9973ca12ec7f8b079d9673cadb7db6e4a9c09b9e"
+   }
+  },
+  "swe_15": {
+   "id_order": [
+    "missing_auth_id_audit_display_length",
+    "ambiguous_checker_initialization_condition",
+    "contradictory_auth_method_format"
+   ],
+   "sha256": {
+    "missing_auth_id_audit_display_length": "f2cbc45e4498712323d023c173e13542368741eec7c1c7c6d201e1d5b2f359a5",
+    "ambiguous_checker_initialization_condition": "33ea24eb4668723e40fe49fe200911ca4f095a4c11b789d6edb911cf5eca1707",
+    "contradictory_auth_method_format": "fac18b72f6a38181cb3ff8df094fcd91917ddb035d2f0d1908a647c258a580b0"
+   }
+  },
+  "swe_16": {
+   "id_order": [
+    "scrobble_limit",
+    "scrobble_ordering",
+    "userid_source"
+   ],
+   "sha256": {
+    "scrobble_limit": "22ff45332db00ecaa544a8cc3175cc1a5bd30f89cb73ebfed0229bb168227492",
+    "scrobble_ordering": "7b62085b2c540eae633faffac9b0c11156753bcc847d5073306d92e7f84d4672",
+    "userid_source": "2f24ba8c7c452cb4848b43b9e00a81aaab2dafde7ea1a9e273325d847fb1dbd6"
+   }
+  },
+  "swe_17": {
+   "id_order": [
+    "operational_time_bound_policy",
+    "typed_nil_context_input_policy",
+    "conflicting_context_freshness_policy"
+   ],
+   "sha256": {
+    "operational_time_bound_policy": "74d9f6e19eeb25f882ec35ff0b23a876b4ade0f59ac358d88a388f4191f120ff",
+    "typed_nil_context_input_policy": "e09d276f8ef1b54dc16f3b7c62fb06aac920f10176e2c5b9b8dd9d2f51548f9e",
+    "conflicting_context_freshness_policy": "7d99dac6dc4cbf87805baa6b926ad33272cefaa3475cb1893f8929fe9466dd34"
+   }
+  },
+  "swe_18": {
+   "id_order": [
+    "default_manifest_pack_mode",
+    "manifest_selection_propagation_scope",
+    "unsupported_manifest_value_policy"
+   ],
+   "sha256": {
+    "default_manifest_pack_mode": "0e4b22f20a9325ad86222da3f546bc4b0e814fd49ec37a41949ccdbafbc30305",
+    "manifest_selection_propagation_scope": "d1dcf665ddca8eb25918259763c304f96c7f77d6b617991728a9b3dc93ebcfc4",
+    "unsupported_manifest_value_policy": "656fbd3591c9c96c8221d5cf74285d61e3af30e10c1bdda2df0893739d25fc36"
+   }
+  },
+  "swe_19": {
+   "id_order": [
+    "missing_bytearray_handling",
+    "missing_unsafe_attribute_check",
+    "missing_tuple_wrapping",
+    "ambiguous_container_mutation_policy",
+    "contradictory_remove_vs_deprecate_unsafeproxy"
+   ],
+   "sha256": {
+    "missing_bytearray_handling": "43cd8e6e3e2421ab200a3c67866056e6a126aa1063e0d263884a6944d29098ce",
+    "missing_unsafe_attribute_check": "74be0aeebc9b911e2862520cf8bf95b67653094c7beb36c15943571df1982456",
+    "missing_tuple_wrapping": "cb60dac744890bca4994accad4f875ae9d3d84603e2a653c2036d10af3194e69",
+    "ambiguous_container_mutation_policy": "eb85261e53d153771eb6dc42097b3e7b5fc9dd36cfe7c3bacf750dd8531ea667",
+    "contradictory_remove_vs_deprecate_unsafeproxy": "bb66e0f866100a7631d5ecee22f1166b5a03958618e339339a0c0b2f5f0612d6"
+   }
+  },
+  "swe_2": {
+   "id_order": [
+    "missing_overflow_sentinel_int",
+    "missing_player_id_base_offset",
+    "ambiguous_minutes_ago_rounding_policy",
+    "conflicting_response_width_mode_activation",
+    "conflicting_folder_emit_mode_list_rules"
+   ],
+   "sha256": {
+    "missing_overflow_sentinel_int": "5a54c7ad2de79a9c51077b29e879f927fc989fe18059d216d29b06f1d18c8797",
+    "missing_player_id_base_offset": "b63dc126243d2279d4b654229948b2b0186a1999b60dd13d08656e324afa247f",
+    "ambiguous_minutes_ago_rounding_policy": "9def52578bd5da25f84708d07b9994f9f69f87337c9e9a8d76c5980fb135c1a6",
+    "conflicting_response_width_mode_activation": "1c9df6cd7ff6c80fda29108d1e64744e193120af3755b424f6f47e74b72f994e",
+    "conflicting_folder_emit_mode_list_rules": "8e642d4c7b3619ece1b5eb2b9138172e23722217ef36eb58b5c717f7cf231f85"
+   }
+  },
+  "swe_20": {
+   "id_order": [
+    "ambiguous_eviction_strategy",
+    "missing_eviction_watermark",
+    "contradictory_default_ttl_cap"
+   ],
+   "sha256": {
+    "ambiguous_eviction_strategy": "a20790bc91fe7ee0cc72f66e588d4f953fb4cadf59a6123bda6468a87e9675a7",
+    "missing_eviction_watermark": "e54eda8bc36ec388175c670d5923950ef7590b6b59f4e24aae225c0c875596c2",
+    "contradictory_default_ttl_cap": "f8812bdcb4877354403add482fddd901f0704f7ab47d16cda6fb9520fdbc2340"
+   }
+  },
+  "swe_21": {
+   "id_order": [
+    "missing_loudness_normalization_definition",
+    "ambiguous_gain_processing_stage",
+    "conflicting_compatibility_vs_new_format_support"
+   ],
+   "sha256": {
+    "missing_loudness_normalization_definition": "d80261037d94be139dec118fb5633a6a490d99fd291877d522b721fb0cac63e4",
+    "ambiguous_gain_processing_stage": "2a525fac2c9ad0d79d6d0fbca9f6e834f79e9151a251c456ae234bd3e9bcda97",
+    "conflicting_compatibility_vs_new_format_support": "3dce9300c5b7157ddb00babc9e87aed2752a44627e4f6397661cc1ae1ed96ce7"
+   }
+  },
+  "swe_22": {
+   "id_order": [
+    "missing_kinit_args_max_length",
+    "ambiguous_retry_backoff_strategy",
+    "contradictory_kinit_timeout_value"
+   ],
+   "sha256": {
+    "missing_kinit_args_max_length": "cc1c46a74365e76c4bfb01c21f951d918cefeacc78fad09d6f950a1242765be7",
+    "ambiguous_retry_backoff_strategy": "7bb162befbf060692d5313f8ad6ef75517786731951b467dbaa39865149d8926",
+    "contradictory_kinit_timeout_value": "6813cf50091a2fcfc986bf650129414dfb0296540d4d83067e214f624c009c04"
+   }
+  },
+  "swe_23": {
+   "id_order": [
+    "missing_persisted_session_staleness_ttl_ms",
+    "ambiguous_resume_success_predicate_for_auth_updates",
+    "contradictory_uid_authority_after_resume",
+    "contradictory_localid_source_for_resume_call"
+   ],
+   "sha256": {
+    "missing_persisted_session_staleness_ttl_ms": "962be4ae93c35da78160825553b9de55f36d314c8878e2cbd42a26d0aeb9a4b4",
+    "ambiguous_resume_success_predicate_for_auth_updates": "6b0ab915fe9b4147ddfbfb54ea6a1d2701128873c0629b9e8c9c131a6a5c4d19",
+    "contradictory_uid_authority_after_resume": "8d5207f0175bfbc68e1898c62c2397ca6ecae45f1fe0c2fd74aa0ba88a5a129c",
+    "contradictory_localid_source_for_resume_call": "14812c27910bcee3b7efa60800d6d4fb11e5af239b26751102ccdc7aa161e7ef"
+   }
+  },
+  "swe_24": {
+   "id_order": [
+    "missing_pip_module_target",
+    "missing_detection_api_parameters",
+    "ambiguous_packages",
+    "contradictory_detection"
+   ],
+   "sha256": {
+    "missing_pip_module_target": "6518870751ada83620155d08c7e934074e0e35933dac6e24d8b76a2e6133fda0",
+    "missing_detection_api_parameters": "56d68b50b622e421c40149617c5f3f3e11ec0ae12c7bcbd5e1f0ae58a8350d62",
+    "ambiguous_packages": "8f60a600d277d5bd4e72c014441edbe8f833745ca8298c9a8d016127af1f9cbc",
+    "contradictory_detection": "ab4c191fe6847ff35eff74ad072f3334850ec49678ca0d943cae55b60e67d643"
+   }
+  },
+  "swe_25": {
+   "id_order": [
+    "rollout_cache_prefix",
+    "rollout_serialization_tags",
+    "flag_primary_key_composition"
+   ],
+   "sha256": {
+    "rollout_cache_prefix": "0dbfadbd63c81bcd7c1b78859035cab324cd7087ccba086944b1643aff1fa98d",
+    "rollout_serialization_tags": "5df4a954f6fd2cd15869b229ae63e6ffdbe3c2395d4bbbbfbac3683ff071dfb6",
+    "flag_primary_key_composition": "471e2d004d3182887a592085e4c04b8f12278ff3bab8659a8082b18dfe58a57c"
+   }
+  },
+  "swe_26": {
+   "id_order": [
+    "html_expiration_threshold",
+    "sanitization_tag_allowlist",
+    "safe_versus_interactive_rendering"
+   ],
+   "sha256": {
+    "html_expiration_threshold": "439bbd4b03e25708718d441c1549de7690e7582237b8ecd052e3a0a046472dbc",
+    "sanitization_tag_allowlist": "6bda2feabd347c514b3197c75f05307abcc76793c58cfcceadf39931ae5683ea",
+    "safe_versus_interactive_rendering": "a5dd4add934fa79acfe8983e83db4727c72a7d3d3500306ff2016e2426fdae8f"
+   }
+  },
+  "swe_27": {
+   "id_order": [
+    "missing_max_compose_recipients",
+    "ambiguous_contact_display_mode",
+    "conflicting_internal_vs_external_compose"
+   ],
+   "sha256": {
+    "missing_max_compose_recipients": "03f2687b814a68330e9409df50c6691f857a0ed0f8efc6a6996bc1397856bc2b",
+    "ambiguous_contact_display_mode": "7555d31d8efca2cc223851f146a57048e277160a4db351678ef1517319424922",
+    "conflicting_internal_vs_external_compose": "79850a5c7ea319e6d8ed85a84e42d90b705f94056402e1ddd1a654d4c8e5aef0"
+   }
+  },
+  "swe_28": {
+   "id_order": [
+    "missing_inline_diagnostic_payload_byte_cap",
+    "ambiguous_diagnostic_overflow_truncation_strategy",
+    "conflicting_single_record_compatibility_vs_immutable_audit_history"
+   ],
+   "sha256": {
+    "missing_inline_diagnostic_payload_byte_cap": "14e9b710fe40b56fbf2ba6774f828d106f36d3c6991d38da32f66b6aa6c78caf",
+    "ambiguous_diagnostic_overflow_truncation_strategy": "14efb175cb6e853f1834039418d78ba83ec5a5839026e7253c157584b3aac971",
+    "conflicting_single_record_compatibility_vs_immutable_audit_history": "3b2aa630ca5064ae63da2999cdb99ea9951200443edc9498affcbfb15a084ba3"
+   }
+  },
+  "swe_29": {
+   "id_order": [
+    "ignore_proxy_input_normalization",
+    "certificate_validation_precedence",
+    "undocumented_input_handling_conflict"
+   ],
+   "sha256": {
+    "ignore_proxy_input_normalization": "f12bb9e613cbc452a2c3f86236f08e7073d01216d9ce2b7b7c2dbc9bc1958a63",
+    "certificate_validation_precedence": "a9fc5fab302f5cf985f61c3466b3265b3436299ff6b03fbcdb8727adc95453ba",
+    "undocumented_input_handling_conflict": "e01f46bd8031ab86554bea345f61a5bc35cc0e0078d85d8c94e1040d129a7956"
+   }
+  },
+  "swe_3": {
+   "id_order": [
+    "missing_path_env_default_value",
+    "missing_communicate_timeout_value",
+    "ambiguous_timeout_cleanup_sequence",
+    "contradictory_password_input_format"
+   ],
+   "sha256": {
+    "missing_path_env_default_value": "aebf6cb7d095afde85d3cf44c72022517786985fc6e92e1c3679520dec725714",
+    "missing_communicate_timeout_value": "dc3b6cdc78d3d0c9d31c8f426fa42f90be0500022609fd34f836f12b5b0c1a27",
+    "ambiguous_timeout_cleanup_sequence": "e6b4d6208839546f1db61b5b20687cf3ff0f7476ecd5b31ae42d2463736ce59c",
+    "contradictory_password_input_format": "49700ec0314538f409c13114cc6f6d8700f4603d7bb22f39703ef13066d4f54b"
+   }
+  },
+  "swe_30": {
+   "id_order": [
+    "ambiguous_non_collection_spec_ownership",
+    "contradictory_path_argument_type",
+    "missing_filefinder_identification_rule"
+   ],
+   "sha256": {
+    "ambiguous_non_collection_spec_ownership": "43a3ef30abf5d7266b226f96ecc9d943ed998a3f6ad42a7cf997820861bef255",
+    "contradictory_path_argument_type": "58ce1ee8da92e6c6e38b2282ac2cb125bce5587efe23229a5fbde3c8154ebc6c",
+    "missing_filefinder_identification_rule": "2af533fce0634aad15bf0fb84bb76ec7e397f2eb6c61c4c72df12d2b8ff765ba"
+   }
+  },
+  "swe_31": {
+   "id_order": [
+    "missing_commerce_copy_tokens",
+    "ambiguous_delegated_context_body_density",
+    "conflicting_modal_primitive_source_of_truth"
+   ],
+   "sha256": {
+    "missing_commerce_copy_tokens": "745acb01be2bff429cec3e772e2abdee43b10478785e5428901be86b26d559d8",
+    "ambiguous_delegated_context_body_density": "88ef36858113fea88a1d315ef31534fe7caa89a0d220688a08c6de3da2ad81b2",
+    "conflicting_modal_primitive_source_of_truth": "2d186f56937544e1180abf33286ffc922bd8e686489e7b53f0149b81de8e1646"
+   }
+  },
+  "swe_32": {
+   "id_order": [
+    "missing_maximum_timeout_ceiling",
+    "missing_minimum_timeout_threshold",
+    "ambiguous_async_timeout_interaction",
+    "contradictory_timeout_granularity_restriction"
+   ],
+   "sha256": {
+    "missing_maximum_timeout_ceiling": "e3a7dc07b65bc9416b5fcba08cf0968217490a34703a10231861fa1291b18940",
+    "missing_minimum_timeout_threshold": "f3a5230120cab6986f2dfea21f089532d9fd49ad8a3794ae9e14c9ac47a4f6d8",
+    "ambiguous_async_timeout_interaction": "16237bd51a288fa4f14c1f22abec59db57065a524c05f5726ac68b7b88d327c3",
+    "contradictory_timeout_granularity_restriction": "b94c6a0ef45eeb3e01507bae9cb1868a5627820c986b51430f321f57aa3e5f42"
+   }
+  },
+  "swe_33": {
+   "id_order": [
+    "missing_return_property_names",
+    "ambiguous_entity_reference_isolation",
+    "contradictory_immutability_depth"
+   ],
+   "sha256": {
+    "missing_return_property_names": "1965cccb42a1f12e1f51351ac57639e0343e0126ccc6d8a19cd4cbdf4859e411",
+    "ambiguous_entity_reference_isolation": "db9ba92185af71f87db60030458bc0e1190c5c7953d1a9b859efb6c4a8841abf",
+    "contradictory_immutability_depth": "4295dcf4069939dc1cc9d94f3aa164827f97a59d819d99e3bbb6ee9f21ada799"
+   }
+  },
+  "swe_34": {
+   "id_order": [
+    "missing_sort_keys_default_value",
+    "ambiguous_exception_preservation_mechanism",
+    "contradictory_representer_raise_vs_no_raise"
+   ],
+   "sha256": {
+    "missing_sort_keys_default_value": "2bbec36c92fe20155c9db10a0a831a6865ffcecbd960b3741f58bdb0b6bb93ca",
+    "ambiguous_exception_preservation_mechanism": "16947b845e0a44064a1ed2ecb0920bd1ca5a24a0eee3a0345cbd0e0c2b12468d",
+    "contradictory_representer_raise_vs_no_raise": "3d562de561d6fd8dff6cdad6949ea0298f30b1a47b74cca03e9ab2b0c7c3645c"
+   }
+  },
+  "swe_35": {
+   "id_order": [
+    "missing_seed_canonicalization_algorithm",
+    "ambiguous_chars_option_type_handling",
+    "contradictory_parse_parameters_scope"
+   ],
+   "sha256": {
+    "missing_seed_canonicalization_algorithm": "2551d70dc2e2d9d52014de344bd29b2d69d1a26b588220cddab293149f3fd66e",
+    "ambiguous_chars_option_type_handling": "d8ad118d520775e7b0d4fc3a5e410c94d5971f080eccf1c239dae757890770e9",
+    "contradictory_parse_parameters_scope": "aa0251412af987a80f9ccc5db51cb03fe5593a833deb10a755972cf713a2f29b"
+   }
+  },
+  "swe_36": {
+   "id_order": [
+    "runtime_replacement_import_path",
+    "controller_replacement_import_path",
+    "shim_transition_signal_mode",
+    "packaging_shim_inclusion_condition"
+   ],
+   "sha256": {
+    "runtime_replacement_import_path": "52b780cf2324b5b7fb1a5acb3cd07fe86cd96b9cd89d4bb60e82e86e66032e09",
+    "controller_replacement_import_path": "c7ea2c0aa476ebcce28241340b9e7edf0c2ca66299337530f8b713a36de79a24",
+    "shim_transition_signal_mode": "5c8fb960983126ee5f1df2cb7bd9c62d75e74bd5fc58a79c2d7295e747899068",
+    "packaging_shim_inclusion_condition": "2e45c222d959615fed4a5ca05ddc2e4be171f6f1f6f276c04cda8662ef874ed7"
+   }
+  },
+  "swe_37": {
+   "id_order": [
+    "cancellation_context_parameter",
+    "forced_renewal_flags_when_cancelled",
+    "renew_disabled_ignores_upcoming",
+    "conflicting_subscription_data"
+   ],
+   "sha256": {
+    "cancellation_context_parameter": "316eac4567d6de8b2cb3d3dc8f4b409141b56735a8b1542d3475be3cd9f23bf5",
+    "forced_renewal_flags_when_cancelled": "0601b1aed820389678a6137b3e2ad6fc557e4bb0c738e43700c90856e11ef3b6",
+    "renew_disabled_ignores_upcoming": "b1fa46eff256b619049081b6c1dbf81771946f1836674fb850fe97b4e083bdc1",
+    "conflicting_subscription_data": "4b50e3cd542300a636256ef7fccd200d273fb49a42ed895e9bc1f5afa032dd0e"
+   }
+  },
+  "swe_38": {
+   "id_order": [
+    "missing_max_active_entries_limit",
+    "ambiguous_expired_entry_refresh_failure_behavior",
+    "contradiction_non_positive_lifetime_write_policy"
+   ],
+   "sha256": {
+    "missing_max_active_entries_limit": "a5905aa466141dad29b948815c00b369e7fd1010f20dbd785404b6e9f960fc74",
+    "ambiguous_expired_entry_refresh_failure_behavior": "e508f76d242b8be5e15de6cadf86d0b632668cf2d5ff251e10d40f9134ef08b9",
+    "contradiction_non_positive_lifetime_write_policy": "de43c7d44a883083f93dbc6a7cb9f1e10f9ae2b67fe2aefd1f24310bc3b54421"
+   }
+  },
+  "swe_39": {
+   "id_order": [
+    "songcount_zero_behavior",
+    "playcount_rounding_strategy",
+    "compilation_album_normalization"
+   ],
+   "sha256": {
+    "songcount_zero_behavior": "e2dc19e0e0fe2204ac2b52f1738a2b9040e6715e468d4358f1a0f71b53bd6a27",
+    "playcount_rounding_strategy": "157dd2705164cad630d97c8265f432259765d2e49d166a78d1116e3e9ef7545f",
+    "compilation_album_normalization": "c0b441816cff24c11fc1fd99d326b632cdbffe1343b36ab3b6c05b0583cdf669"
+   }
+  },
+  "swe_4": {
+   "id_order": [
+    "ambiguous_seed_input_framing",
+    "missing_hasher_digest_and_auto_seed_rules",
+    "contradictory_auto_seed_serialization_and_digest_scope"
+   ],
+   "sha256": {
+    "ambiguous_seed_input_framing": "de72a10b47336ab2dd3d50c770eb21b247753777e789e18fd8505be2cadab0f8",
+    "missing_hasher_digest_and_auto_seed_rules": "26d44ec3460460d4bb96c2b7bf50d32ca63e3e40a6134bb08be5d4da8a4d8f67",
+    "contradictory_auto_seed_serialization_and_digest_scope": "935bac9455406b06470523df3fb3b9c5aaf75e70b16d546e2d4f73ff12ab7a1d"
+   }
+  },
+  "swe_40": {
+   "id_order": [
+    "share_generated_password_length",
+    "flags_value_normalization",
+    "legacy_flags_property_compatibility"
+   ],
+   "sha256": {
+    "share_generated_password_length": "8ea020aa110661127a46d5b9315097d5155a0095941fd543ab6c08b1dc5cd9ea",
+    "flags_value_normalization": "1daf37dd5b32d2e2eb32e9578a88d3d0ee37140ad85fbead55435e87a02c5573",
+    "legacy_flags_property_compatibility": "17a6995e1dd755ae45b9aede81f7fed830cd26e4f23a250440ce27a6d83d1581"
+   }
+  },
+  "swe_41": {
+   "id_order": [
+    "missing_album_refresh_chunk_size",
+    "conflicting_path_separator",
+    "conflicting_path_normalization"
+   ],
+   "sha256": {
+    "missing_album_refresh_chunk_size": "a863a5dd305893aae4f7776be54a259d1e70ab868fe4b7eb568bfeb20649ce3a",
+    "conflicting_path_separator": "9abc6f6cc9490673f67f3ffe9186db2f7f70608ee045b4df5d498fd1ad261719",
+    "conflicting_path_normalization": "f28637eb35c200d82cb1f6bd0d10ff2d4d60b1836b72bf16d8c2c75579da7038"
+   }
+  },
+  "swe_42": {
+   "id_order": [
+    "missing_min_password_length",
+    "missing_max_bearer_token_length",
+    "missing_prometheus_max_concurrent",
+    "ambiguous_write_after_scan_scope",
+    "contradictory_metrics_detail_when_to_record_counts"
+   ],
+   "sha256": {
+    "missing_min_password_length": "8a53d4eeac79612043573f75dd7a04a1ffe26f6f30a513d36e223f10048aefd9",
+    "missing_max_bearer_token_length": "c5637569cb586fd69deca674ffab3b127bbd325c1de68945e7af088e888e4f19",
+    "missing_prometheus_max_concurrent": "013a76e865cc3713626d4b577a3102ef0e6c963d33a6be180d68550c2ce9aa25",
+    "ambiguous_write_after_scan_scope": "912937b8a2998c8a6141143220583be3e64c1012380b6d3bcfdd9e037c019dd9",
+    "contradictory_metrics_detail_when_to_record_counts": "f698df84816f2ae2c0bb9a90707e4745918b50c2c603bcb56b01b504625175d9"
+   }
+  },
+  "swe_43": {
+   "id_order": [
+    "state_value",
+    "disabled_duration",
+    "batch_stamp",
+    "entry_id",
+    "abort_rule"
+   ],
+   "sha256": {
+    "state_value": "ae7eb3568b0f60c26a0adee8463220a2a41d18e61220ac44ebb5b3706014b0c7",
+    "disabled_duration": "9f31bd95aa850e3e3cc0b13cd8b758d5fd148bd0cf42aeaf42e95adc919973f6",
+    "batch_stamp": "b48f7344b5488a0a8e694b7cef646d9e4e13fb804cdce3a3fd0bb5f776d92872",
+    "entry_id": "abcd3f8e60040dc1dd9b05deeedf9b7beea33e50471d897c847168382b63ccb8",
+    "abort_rule": "f6fa1ba73935d17e14b13b5b17751b970e0137b904cfa222bfc24070f7341cad"
+   }
+  },
+  "swe_44": {
+   "id_order": [
+    "missing_deprecation_call_parameters",
+    "ambiguous_migration_scope",
+    "contradictory_duplicate_versus_unique_values"
+   ],
+   "sha256": {
+    "missing_deprecation_call_parameters": "02deb049b012573702f55f5fd4f0da8ba0a1e3e6d97aff14c813305a12e6d706",
+    "ambiguous_migration_scope": "aa1275863730811e67629c73a1690e5d811ca5e99cb3c9c4b434903e2ee870c0",
+    "contradictory_duplicate_versus_unique_values": "bd03ebdeb5c2b2808353c20700801a790f84224b3d95d6e55a2d669f957ddbc7"
+   }
+  },
+  "swe_45": {
+   "id_order": [
+    "missing_refresh_chunk_size",
+    "missing_mbz_absent_sentinel",
+    "ambiguous_mbz_tiebreak",
+    "contradictory_refresh_approach",
+    "contradictory_genre_dedup_equality"
+   ],
+   "sha256": {
+    "missing_refresh_chunk_size": "e5cfe2a035878f5b7d6c2dfb0086776d86fd920e16bfb02eced48a91abc1427a",
+    "missing_mbz_absent_sentinel": "28b71e1028a7abe08fa284f468b612990ca98bc92d648bef7acafa2e3c9c711e",
+    "ambiguous_mbz_tiebreak": "d01f70c45240a252f3e049133693d49b1d5719a6712a1050cb3407f17e47ec79",
+    "contradictory_refresh_approach": "4dd54511341536177c345f72fd7e90f0cec6906e32f419f70d2143aa2225e725",
+    "contradictory_genre_dedup_equality": "6f30db0f37f9a081bca04c3e7aa9bad56c2e8a4358825ee6651346a954d5dec7"
+   }
+  },
+  "swe_46": {
+   "id_order": [
+    "missing_referral_sender_eligibility_scope",
+    "missing_referral_render_mapping_parameter",
+    "missing_empty_referral_settings_fallback_parameter",
+    "ambiguous_sender_switch_preservation_scope",
+    "conflicting_referral_query_handling_rules"
+   ],
+   "sha256": {
+    "missing_referral_sender_eligibility_scope": "12e5e90f53cd0ae5eb304072cf6c56cf8135068b01330e3bf84820c666510dd7",
+    "missing_referral_render_mapping_parameter": "b731e3eb72badf4c4b413d2641bf1f4f03394d25a35149ed006aa9b00d36369b",
+    "missing_empty_referral_settings_fallback_parameter": "b582d7d418b3d1fbc872586c9b97142ce3a4dbfa66ba415a5943015deb5db456",
+    "ambiguous_sender_switch_preservation_scope": "18971c0da3a3cdc4c01f6e16f1a0186c9e932c2436ad3034c42fa28ad0e48ca8",
+    "conflicting_referral_query_handling_rules": "295ec85f76b5008809847b6aeea9fb1f9394fadbc76e15e3a3202a4670e1b41a"
+   }
+  },
+  "swe_47": {
+   "id_order": [
+    "missing_selection_state_wire_labels",
+    "ambiguous_checkbox_toggle_behavior",
+    "contradictory_enum_definition_location"
+   ],
+   "sha256": {
+    "missing_selection_state_wire_labels": "55c551e4f66a6750f272a116ea7aa44aa419a2e2307d58a0c0669deab0188978",
+    "ambiguous_checkbox_toggle_behavior": "7e01aab54948742c1dc6f0fd671d31c608c48cf870c5ec5f747a49ebb5bacf7d",
+    "contradictory_enum_definition_location": "845020ef5919781c6f4dba3968ee0913f9536fb149b2e79e134d272bd1562d49"
+   }
+  },
+  "swe_48": {
+   "id_order": [
+    "legacy_delegate_resolution_deprecation_version_unspecified",
+    "delegate_target_resolution_precedence_unspecified",
+    "delegate_to_resolution_stage_in_execution_unspecified"
+   ],
+   "sha256": {
+    "legacy_delegate_resolution_deprecation_version_unspecified": "7cd904aa76396ed4f7a23b289ff23c31c0135fac51254e4f12f4cbdea5a426b6",
+    "delegate_target_resolution_precedence_unspecified": "628ab99e7c31fcd1fa01f78a81e248780a031a8b7ac8d106819404bc1943a472",
+    "delegate_to_resolution_stage_in_execution_unspecified": "373370d37b247f94aeb5aeabe1e3025f67011b4d4ca74db3ffff21a56b303f12"
+   }
+  },
+  "swe_49": {
+   "id_order": [
+    "analytics_storage_backend_string_value",
+    "analytics_field_json_representation_when_disabled",
+    "uuid_rotation_vs_persistence_policy"
+   ],
+   "sha256": {
+    "analytics_storage_backend_string_value": "dfc7569905b7c36a844ee6b5fdf8577b2565092bcc40b97f4d293324e14f2618",
+    "analytics_field_json_representation_when_disabled": "419017c532712f4a3879f82aaea96189cc2b1884bd587706a9c7aaab159a842f",
+    "uuid_rotation_vs_persistence_policy": "a582ce9f2fb54d9f042a94cddeec4bc48c08bc6f2dc84adc9be53a971c2bc0f2"
+   }
+  },
+  "swe_5": {
+   "id_order": [
+    "fixed_address_lookup_strategy",
+    "missing_lease_action_param",
+    "missing_match_client_param",
+    "name_required_vs_optional"
+   ],
+   "sha256": {
+    "fixed_address_lookup_strategy": "5984b3f9c82974cbbf6651d65c0adec5f55725ae9496649f9828936a6ce9d4f4",
+    "missing_lease_action_param": "7e1d17587dd9fb898af3e1f1f128b1f1e67118d1434060bcdf475293fff04013",
+    "missing_match_client_param": "403bb4c862fc6e3f7f03bad335edb6f3b110d6b4a2fdded81a08b272c11881ea",
+    "name_required_vs_optional": "9ae65fad1ef8c4bf5f637158e0828d4911f3447953b8cfe4197a5eaf8b125ccf"
+   }
+  },
+  "swe_50": {
+   "id_order": [
+    "unspecified_mime_detection_precedence_and_fallback_chain",
+    "missing_safari_version_threshold_and_validation",
+    "conflicting_jxl_ios_support_directive"
+   ],
+   "sha256": {
+    "unspecified_mime_detection_precedence_and_fallback_chain": "c01884994c7d90c256115efb684b594e94a5880f450231a5c6a1847ae941e72f",
+    "missing_safari_version_threshold_and_validation": "c4f3543f41cf68fb2267c5d437474197317ac2feaa6d68bd8c8efe6518b38af6",
+    "conflicting_jxl_ios_support_directive": "71e932520e152b25b351789f2b87c5e064c0e3c440e1e6d25155c6a7da348ca6"
+   }
+  },
+  "swe_51": {
+   "id_order": [
+    "missing_share_default_expiration_duration",
+    "ambiguous_which_timestamp_fields_nullable",
+    "contradictory_share_visit_option_parameter_name",
+    "contradictory_share_visit_update_policy"
+   ],
+   "sha256": {
+    "missing_share_default_expiration_duration": "f1ff3004b1e83ea33ef6227d9a3e54a5252ff49302b377cb925c91a5f5eaafed",
+    "ambiguous_which_timestamp_fields_nullable": "504e7b037c79bb65df01b1bfa90964093d5d42e389345b48ac12669873c83e6d",
+    "contradictory_share_visit_option_parameter_name": "034e06ad03fa809c1c63dee23bf8e8ef201de7e83aa140cf0729f227b1772e0e",
+    "contradictory_share_visit_update_policy": "3fe8a0532a758531d45657b018c4e1a1dea002564536f3116e52ffd308ccd678"
+   }
+  },
+  "swe_52": {
+   "id_order": [
+    "missing_default_value_for_max_idle_connections",
+    "missing_default_values_for_open_connections_and_connection_lifetime",
+    "missing_yaml_key_name_for_database_connection_lifetime",
+    "contradictory_pool_adjustment_when_idle_exceeds_open"
+   ],
+   "sha256": {
+    "missing_default_value_for_max_idle_connections": "e6b205b40ebe69da48c3da16cdd68d7d57cf517075818f8c417794069bf1a559",
+    "missing_default_values_for_open_connections_and_connection_lifetime": "b861b3b6fa4673bc353d5c1fbe3da9c9eefe1a67298f2ef93ccfa5791ee18d22",
+    "missing_yaml_key_name_for_database_connection_lifetime": "65106548e6b76b324ad3df09752b73c5970d077446049e313207ad82171e0f1d",
+    "contradictory_pool_adjustment_when_idle_exceeds_open": "ce4898b9cedd14704a964e53df97517b77c38e4bbd5a383493b0a0bf7adc8aba"
+   }
+  },
+  "swe_53": {
+   "id_order": [
+    "upgrade_deps_depth_limit",
+    "upgrade_candidate_version_limit",
+    "upgrade_source_fallback_depth"
+   ],
+   "sha256": {
+    "upgrade_deps_depth_limit": "5ededb0bf413238210af87383c7376eb0768fff91e266ad5b9f2816c9deaca40",
+    "upgrade_candidate_version_limit": "5685000bd106b3872d66abcd044d087728e0b1fc6e4cfc577c8b5e859b71764a",
+    "upgrade_source_fallback_depth": "1e7aa88926d6d1ad5473530102e8abfa5d22f186955af0c7786230d89d88573e"
+   }
+  },
+  "swe_54": {
+   "id_order": [
+    "missing_deprecation_target_version",
+    "ambiguous_iterating_states_base_class",
+    "hoststate_str_state_label_prefix_convention",
+    "module_public_api_exposure"
+   ],
+   "sha256": {
+    "missing_deprecation_target_version": "1f74ec8d7eea5e1a58859532865eb6ccc48b19e23df9c233dbb010d4d287df6d",
+    "ambiguous_iterating_states_base_class": "6622408919e813f1f3b1660639daa093095ace1c2c5193ea6ddf6a9ce887e6ab",
+    "hoststate_str_state_label_prefix_convention": "712d864a64fdf51fbc805df2f1dc7c56c96a9af96a69b5c4c6b83340b7f69853",
+    "module_public_api_exposure": "8a315d5c4c2ce39dace015b802f456305e2e2fca2d1cd60b35e9176be06ec72d"
+   }
+  },
+  "swe_55": {
+   "id_order": [
+    "mp_auth_store_no_db_path",
+    "mp_validate_cleanup_rejects_non_db_methods",
+    "amb_should_run_cleanup_db_filter",
+    "contra_cleanup_defaults_for_enabled_non_db_methods"
+   ],
+   "sha256": {
+    "mp_auth_store_no_db_path": "20573162d710126a573a37bb11faa6375586a3d2b3e2b86c7c7984584382eb76",
+    "mp_validate_cleanup_rejects_non_db_methods": "1129b11bb9a273d63a31aacc262a7e95a090fa9cb2dea09bf4be062caf7c3610",
+    "amb_should_run_cleanup_db_filter": "2ce49ff55f5650286fcced5b572ea37940de9c9aa6c46275538669ec6bc25c47",
+    "contra_cleanup_defaults_for_enabled_non_db_methods": "ec6d7d18befe146b25dfb17fdb6f956016af7668611a8583b21eb2edfaecc724"
+   }
+  },
+  "swe_56": {
+   "id_order": [
+    "missing_invisible_character_stripping",
+    "ambiguous_slash_delimited_numeric_dates",
+    "contradictory_unset_vs_vcard_fallback"
+   ],
+   "sha256": {
+    "missing_invisible_character_stripping": "10c23d6eeeaffc2c5ac14699f41145ef1b82e430587a9169cb5f5b18a2540ae5",
+    "ambiguous_slash_delimited_numeric_dates": "b0f6122a7fb7b9c33b95b8ff8f4f106d0345d56b1b56cf044ec8ff86ab20681f",
+    "contradictory_unset_vs_vcard_fallback": "7e1f4e511cc23cbeb59aa068a90b847c0fa393058e663d0e1ee281b888cbb434"
+   }
+  },
+  "swe_57": {
+   "id_order": [
+    "unexpected_layer_handling_policy",
+    "max_layers_per_manifest",
+    "features_annotation_requirement_policy"
+   ],
+   "sha256": {
+    "unexpected_layer_handling_policy": "aac7c3cf81a8719c177e4436082c0e9b6f80de23f6c4b132247eede63d6fa96c",
+    "max_layers_per_manifest": "5f1000d9dbe64506ace872d956682d93d36ae7d2a7a9ddc027a57be4693c2bf4",
+    "features_annotation_requirement_policy": "1ace5e6a49a4487a3829698545d416ca07bed345e7ab6b60178eab1f8484cfac"
+   }
+  },
+  "swe_58": {
+   "id_order": [
+    "read_only_error_code_token",
+    "read_only_http_status_code",
+    "unmodifiable_store_identifier",
+    "invalid_request_precedence_in_read_only_mode",
+    "uniform_sentinel_vs_operation_specific_context"
+   ],
+   "sha256": {
+    "read_only_error_code_token": "1795b9ecff8badfddff845cbffe31faa3470ff6d3787aa9ac9e6552ef18fe23d",
+    "read_only_http_status_code": "730f21b2b124545da17d6bd7dc303c258ed52be19c531393ebfac1862d1b8c8c",
+    "unmodifiable_store_identifier": "b46f7e75b9c378a580faaea72b05ede6691b344fcc7c9cfbdaa0e8bd5ac69e1c",
+    "invalid_request_precedence_in_read_only_mode": "ee167c41384a302a1903521cc897a05ebed5e4c67956d439809e7593e356abaa",
+    "uniform_sentinel_vs_operation_specific_context": "7a98021e18efeda0be78cce2980c6fa52619d4f452602dc0afef0c73bda4e360"
+   }
+  },
+  "swe_59": {
+   "id_order": [
+    "missing_calendar_url_max_length",
+    "missing_provider_url_match_patterns",
+    "ambiguous_ics_extension_detection",
+    "contradictory_warning_priority_order",
+    "contradictory_input_normalization_policy"
+   ],
+   "sha256": {
+    "missing_calendar_url_max_length": "f10dd03b5d911a576fd5d5faa83d43dd201d2d8ab396caef7fd506dc6146fcdd",
+    "missing_provider_url_match_patterns": "d5bc020d63df683999cb4f74e3fb63a67cfa5df1d70e707286b1538d30b851c7",
+    "ambiguous_ics_extension_detection": "8a4575c10df59278618f63b40544fe41cbf7efd884db59e5452ca738db3886fe",
+    "contradictory_warning_priority_order": "454613c0d1748dc9274983604c4bce0bd63b7ae1e2ebde43951b8e77e930f833",
+    "contradictory_input_normalization_policy": "b34101fe7e06e13d18315ab5e355d26c8b0c826343a4e632fd82bd959c0ddd1d"
+   }
+  },
+  "swe_6": {
+   "id_order": [
+    "missing_modal_startup_contract",
+    "ambiguous_redirect_metadata_ownership_boundary",
+    "contradictory_pre_verification_status_partition"
+   ],
+   "sha256": {
+    "missing_modal_startup_contract": "e02f78836a81ea403d7e17b8da1c11155940e2a4ceed3b477eaf97b85505f2b2",
+    "ambiguous_redirect_metadata_ownership_boundary": "fb862983f7304e632fb1026876aa615d29908878fd81d45aaf86970c9d6ed75d",
+    "contradictory_pre_verification_status_partition": "98fd7e6004e1cab34e9cb1b5a7f030496cd71efa940dbe7ba0db7528ab89bb3a"
+   }
+  },
+  "swe_7": {
+   "id_order": [
+    "upsell_priority_level",
+    "maximum_cycle_calculation",
+    "disable_cycle_selector_conflict"
+   ],
+   "sha256": {
+    "upsell_priority_level": "a81c270068398dcd817b138694128a6e2cf92cc981f044ecfb8559ed51811427",
+    "maximum_cycle_calculation": "d32093460fe1d5ea623390a1daa42cd3d133dd7ffdc3c8e70213909069c800be",
+    "disable_cycle_selector_conflict": "65972904cd17ee334acbfc454ba77e4bb497d4be82ff3a92e09e97080df3d949"
+   }
+  },
+  "swe_8": {
+   "id_order": [
+    "missing_when_attribute_value",
+    "ambiguous_block_context_initialization",
+    "contradictory_role_reference_assignment"
+   ],
+   "sha256": {
+    "missing_when_attribute_value": "5384b5db4794f13e5ff9c80a7deac1a0a237830d1848b45f0bcaad1bcb223de9",
+    "ambiguous_block_context_initialization": "0bfb09501596925c24b9216dc48e624ae2d0c3104839be4a76c571fbb3684bd4",
+    "contradictory_role_reference_assignment": "a2ac45ed043e462aa8c49a888632cd24e919d76522a7edd2567a6fe433d0dddb"
+   }
+  },
+  "swe_9": {
+   "id_order": [
+    "missing_create_default_vault_precheck_maxage",
+    "ambiguous_limit_count_source",
+    "contradictory_default_vault_creation_timing",
+    "contradictory_no_vault_memoization_policy"
+   ],
+   "sha256": {
+    "missing_create_default_vault_precheck_maxage": "5bbac884e80c3549e2719c8842ba0a903b3fcedcfd7d1ddb2c30438d32125d69",
+    "ambiguous_limit_count_source": "830f6a3bfdebda214c0a2189f317c51fa43837ebd956b47f3f9bb0ae8bff673b",
+    "contradictory_default_vault_creation_timing": "935b7710a14404d0a255fb13859fdad9dfebb723b8af112633d60d0094527d17",
+    "contradictory_no_vault_memoization_policy": "6dd7a7f7e3a930a4ffcb5031fc1e654a6001df346acc28ecd390289bd7db9e85"
+   }
+  }
+ }
+}

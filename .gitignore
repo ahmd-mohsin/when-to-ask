@@ -29,6 +29,11 @@ data/*
 !data/judge_validation_pairs.json
 !data/fork_type_annotations.json
 !data/fork_type_annotations.review.json
+# decisions/029: registry pins (sha256 per resolution, id order, defective
+# ids) and the owner-reviewed rival-resolution fixture -- both are frozen
+# protocol inputs that the contract suite asserts against
+!data/cis_registry_pins.json
+!data/cis_rival_resolutions_pilot.json
 # Judge-labelling arm (decisions/025 + Amendment A): the frozen validation
 # set and the frozen judge-label artifacts are research artifacts, tracked.
 !data/label_judge_validation.json

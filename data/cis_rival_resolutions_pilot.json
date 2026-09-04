@@ -1,0 +1,67 @@
+{
+ "_provenance": {
+  "purpose": "decisions/029 G0.11 -- pilot-only rival-resolution sign control. The registry carries a resolution string only for the canonical class; rival classes have 1-3 word signatures. These are hand-authored rival resolutions for the 11 pilot blockers (swe_0, swe_10, swe_11), one per non-canonical class.",
+  "rule": "Same sentence frame as the canonical resolution with exactly the deciding clause(s) replaced by the rival class's reading; same register ('must'); backticked identifiers kept; length within +/-25% words of the canonical where the rival reading permits (entries outside that window are flagged in 'length_note' rather than padded).",
+  "drafted_by": "Claude Fable 5.1, 2026-09-04, from registry description + rival class signatures + example_questions. NOT yet used: every entry is status draft_pending_owner_review; the loader admits only status=approved. Frozen with 029 BEFORE any CIS number exists.",
+  "usage": "For a run the lexicon labels as committed to rival class c on blocker b, CIS under c's rival text must exceed CIS under the canonical text (paired). Bar: >= 75% of such (run, blocker) units, binomial p < .05."
+ },
+ "entries": [
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_source_precedence_on_conflict", "canonical_class": "distro_id_authoritative", "class": "platform_system_preferred", "status": "draft_pending_owner_review",
+   "rival_resolution": "On non-Linux platforms, `get_distribution()` must use `platform.system()` as the authoritative value (subject to the implementation’s normalization rules) and must not prefer or fallback to `distro.id()` when the two differ."},
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_source_precedence_on_conflict", "canonical_class": "distro_id_authoritative", "class": "fallback_chain", "status": "draft_pending_owner_review",
+   "rival_resolution": "On non-Linux platforms, `get_distribution()` must try `distro.id()` first and must fall back to `platform.system()` (subject to the implementation’s normalization rules) whenever the distro library is unavailable or the two differ."},
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_source_precedence_on_conflict", "canonical_class": "distro_id_authoritative", "class": "custom_probing", "status": "draft_pending_owner_review",
+   "rival_resolution": "On non-Linux platforms, `get_distribution()` must probe the system directly (for example `sw_vers`, `/etc/release`, or `uname()[0]` via `subprocess`) as the authoritative value and must not rely on `distro.id()` or `platform.system()` when the two differ."},
+
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_version_source", "canonical_class": "distro_version_verbatim", "class": "platform_apis", "status": "draft_pending_owner_review",
+   "rival_resolution": "On non-Linux platforms, `get_distribution_version()` must return the value provided by `platform.release()` (or `platform.mac_ver()` on macOS) exactly as returned, without parsing, formatting, or fallback logic."},
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_version_source", "canonical_class": "distro_version_verbatim", "class": "custom_parse", "status": "draft_pending_owner_review",
+   "rival_resolution": "On non-Linux platforms, `get_distribution_version()` must return the value obtained by parsing the output of a system probe such as `sw_vers -productVersion` or `kern.osrevision`, without relying on `distro.version()` or fallback logic."},
+
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_normalization", "canonical_class": "capitalize_first", "class": "verbatim_no_normalization", "status": "draft_pending_owner_review",
+   "rival_resolution": "On non-Linux platforms, `get_distribution()` must return the distribution identifier exactly as returned by the underlying source, without any normalization, capitalization, or transformation of its characters."},
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_normalization", "canonical_class": "capitalize_first", "class": "lowercase_or_mapping", "status": "draft_pending_owner_review",
+   "rival_resolution": "On non-Linux platforms, `get_distribution()` must return the distribution identifier converted to lowercase (or mapped through a canonical name table), rather than preserving the characters as provided by the underlying source."},
+
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_detection_scope", "canonical_class": "platform_system_not_linux", "class": "os_name_or_uname", "status": "draft_pending_owner_review",
+   "rival_resolution": "Non-Linux platforms must be identified using the value returned by `os.uname()[0]` (or `sys.platform`), and any system whose value is not `\"Linux\"` must be treated as non-Linux."},
+  {"task": "swe_0", "blocker_id": "non_linux_distribution_detection_scope", "canonical_class": "platform_system_not_linux", "class": "enumerated_whitelist", "status": "draft_pending_owner_review",
+   "rival_resolution": "Non-Linux platforms must be identified by matching against an enumerated whitelist of supported platforms (`Darwin`, `FreeBSD`, `SunOS`, and similar), and any system not on that list must be treated as Linux."},
+
+  {"task": "swe_0", "blocker_id": "cross_platform_consistency_vs_fallback_policy", "canonical_class": "fallback_linux_only", "class": "universal_fallback", "status": "draft_pending_owner_review",
+   "rival_resolution": "Fallback behavior must be applied consistently on all supported platforms and must not be restricted to Linux under any circumstances."},
+
+  {"task": "swe_10", "blocker_id": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection", "canonical_class": "list_table_255", "class": "show_or_symbolic_local", "status": "draft_pending_owner_review",
+   "rival_resolution": "Use the subcommand verb exactly `show` (not `list` or `ls`) and the table selector exactly `local` (the symbolic table name, not the numeric id). Run `ip -4 route show table local` and `ip -6 route show table local`. Example argv: `['ip', '-4', 'route', 'show', 'table', 'local']`; counter-example: `route list table 255` or `route show table 255`."},
+
+  {"task": "swe_10", "blocker_id": "missing_network_facts_dict_key_snr_scope_host_addrs", "canonical_class": "snr_scope_host_addrs", "class": "descriptive_key_name", "status": "draft_pending_owner_review",
+   "rival_resolution": "When wiring the return value into gathered Linux network facts, use the fact entry identifier exactly `locally_reachable_ips` (spelling and underscores as given). Counter-example: `snr_scope_host_addrs`, `local_ips`, `reachable_ips`, or any name not matching that identifier."},
+
+  {"task": "swe_10", "blocker_id": "ambiguous_route_line_acceptance_and_field_extraction_contract", "canonical_class": "local_first_token_src_field", "class": "positional_destination_token", "status": "draft_pending_owner_review",
+   "rival_resolution": "Accept a line only if the first whitespace-separated token is exactly `local` (lowercase). Extract the address value from the positional destination token (the second whitespace-separated token on that line), not from the labeled `src` field. If a qualifying `local` line has fewer than two tokens, skip it. Apply the same acceptance and extraction rule to IPv4 and IPv6 stdout. Example: `local 10.0.0.5 dev eth0 proto kernel scope host src 203.0.113.99` -> extract `10.0.0.5` (the destination token). Counter-example: extracting the `src` value `203.0.113.99` or using labeled-field extraction."},
+  {"task": "swe_10", "blocker_id": "ambiguous_route_line_acceptance_and_field_extraction_contract", "canonical_class": "local_first_token_src_field", "class": "scope_host_filter", "status": "draft_pending_owner_review",
+   "rival_resolution": "Accept a line only if it contains the tokens `scope host` (scanning the main table rather than filtering on a leading route-type word). Extract the address value from the positional destination token (the second whitespace-separated token on that line). If a qualifying line lacks `scope host`, skip it. Apply the same acceptance and extraction rule to IPv4 and IPv6 stdout. Example: `local 10.0.0.5 dev eth0 proto kernel scope host src 203.0.113.99` -> extract `10.0.0.5`. Counter-example: requiring the first token to be `local` or reading the `src` field."},
+
+  {"task": "swe_10", "blocker_id": "conflicting_normalized_value_contract_vs_verbatim_route_token_contract", "canonical_class": "normalize_ipaddress_dedupe_sort", "class": "verbatim_tokens", "status": "draft_pending_owner_review",
+   "rival_resolution": "Satisfy the interface wording over the requirements: take each address string already selected from qualifying route lines exactly as printed in the route text, without converting it through `ipaddress.ip_address(value)`, de-duplicate within each family only on those raw spellings, and preserve discovery order within each family rather than sorting. Bare host addresses must remain without a prefix length suffix (do not force `/32` or `/128`). Example: `2A02:0123:0015::1` and `2a02:123:15::1` are two raw spellings and are kept as two distinct entries; duplicate `10.0.0.44` entries collapse to one `10.0.0.44`. Counter-example: canonicalizing spellings, deduplicating on canonical form, or applying a stable sort."},
+
+  {"task": "swe_11", "blocker_id": "max_input_length_unspecified", "canonical_class": "limit_10000_typeerror", "class": "different_length_value", "status": "draft_pending_owner_review",
+   "rival_resolution": "Enforce a maximum input length of 1024 characters. Reject strings exceeding this limit with TypeError containing the message 'input string too long to safely parse as dictionary'."},
+  {"task": "swe_11", "blocker_id": "max_input_length_unspecified", "canonical_class": "limit_10000_typeerror", "class": "wrong_exception_or_message", "status": "draft_pending_owner_review",
+   "rival_resolution": "Enforce a maximum input length of 10000 characters. Reject strings exceeding this limit with ValueError containing the message 'input string is too long'."},
+  {"task": "swe_11", "blocker_id": "max_input_length_unspecified", "canonical_class": "limit_10000_typeerror", "class": "no_length_limit", "status": "draft_pending_owner_review", "length_note": "shorter than canonical by construction: the rival reading is the absence of a limit",
+   "rival_resolution": "Do not enforce any maximum input length. Accept strings of any length for parsing as a dictionary and never reject input on the basis of its character count."},
+
+  {"task": "swe_11", "blocker_id": "max_fields_count_ambiguous", "canonical_class": "limit_100_typeerror", "class": "different_field_count_value", "status": "draft_pending_owner_review",
+   "rival_resolution": "Set the maximum field count to 1000. This favors practical use cases (complex module configurations may carry many parameters) over a conservative attack surface. Raise TypeError with message 'too many fields to parse as dictionary' when this limit is exceeded."},
+  {"task": "swe_11", "blocker_id": "max_fields_count_ambiguous", "canonical_class": "limit_100_typeerror", "class": "no_field_count_limit", "status": "draft_pending_owner_review", "length_note": "shorter than canonical by construction: the rival reading is the absence of a limit",
+   "rival_resolution": "Do not set any maximum field count. Accept any number of fields to accommodate complex real-world configurations, and never raise on the basis of field count alone."},
+
+  {"task": "swe_11", "blocker_id": "max_nesting_depth_policy_conflict", "canonical_class": "depth_20_typeerror", "class": "different_depth_value", "status": "draft_pending_owner_review",
+   "rival_resolution": "Enforce a maximum nesting depth of 10 across dict/list structures produced by JSON and Python-literal parsing. If the nesting depth exceeds this limit, raise TypeError with message 'input structure too deeply nested to safely parse as dictionary'."},
+  {"task": "swe_11", "blocker_id": "max_nesting_depth_policy_conflict", "canonical_class": "depth_20_typeerror", "class": "wrong_exception_or_message", "status": "draft_pending_owner_review",
+   "rival_resolution": "Enforce a maximum nesting depth of 20 across dict/list structures produced by JSON and Python-literal parsing. If the nesting depth exceeds this limit, raise ValueError with message 'input exceeds maximum allowed nesting depth'."},
+  {"task": "swe_11", "blocker_id": "max_nesting_depth_policy_conflict", "canonical_class": "depth_20_typeerror", "class": "no_depth_limit", "status": "draft_pending_owner_review", "length_note": "shorter than canonical by construction: the rival reading is the absence of a limit",
+   "rival_resolution": "Do not enforce any maximum nesting depth across dict/list structures produced by JSON and Python-literal parsing. Accept arbitrarily nested inputs for compatibility and never raise on the basis of nesting depth."}
+ ]
+}
