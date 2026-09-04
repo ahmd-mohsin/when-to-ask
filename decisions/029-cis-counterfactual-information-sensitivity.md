@@ -106,9 +106,24 @@ and logged.
 
 1. **Rival-resolution sign control (G0.11):** Claude drafts one rival
    resolution per non-canonical class for the 11 pilot blockers (23
-   entries, `data/cis_rival_resolutions_pilot.json`); the owner reviews and
-   approves each entry; only `status: approved` entries are loaded; the
-   fixture is committed with this entry, before any CIS number exists.
+   entries, `data/cis_rival_resolutions_pilot.json`); only
+   `status: approved` entries are loaded; the fixture is committed with
+   this entry, before any CIS number exists. **As-executed (2026-09-04,
+   same day, before any number):** the owner delegated the line-by-line
+   review to an independent reviewer agent launched from a clean context
+   with only the task and the source files. Verdicts: 13 approved as
+   drafted, 10 revised with the reviewer's replacement text (originals
+   retained in the fixture), 0 rejected. Two pairs of rivals that were not
+   mutually exclusive as drafted were fixed; four technical errors an agent
+   could react to were removed; all 23 sit within the ±25% length window.
+   The reviewer's caveats are recorded in the fixture's
+   `_provenance.review` and bind the reading of G0.11: several rival
+   classes are *families* (one text pins one member, attenuating the
+   paired sign for runs labelled via another member), and the no-limit
+   classes contradict an explicit instruction. The pilot must record the
+   lexicon-committed class per unit; per-signature variants are a
+   sequenced-after item if off-member units are common. The owner retains
+   veto over any entry.
 2. **Timing:** 029 opens now, in parallel with the pending 18-task
    test-outcome extension (no shared inputs).
 3. **`R_b` policy:** verbatim. The defective ids (literal `\n` / `\"` /

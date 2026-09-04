@@ -23,7 +23,7 @@ swe_10, swe_11; full: 1,415 / 41,538) -- the gate2_probe_robustness idiom.
     python scripts/cis_score.py --a0 /ssd/wta_data/a0_v3_32b --only-tasks swe_0,swe_10,swe_11 \
         --controls foreign=2,rival --work-dir /ssd3/wta-cis/pilot --scope pilot
     python scripts/cis_score.py --a0 /ssd3/wta_data/a0_full_info_32b --mode full_info \
-        --only-tasks swe_0,swe_10,swe_11 --controls none --work-dir /ssd3/wta-cis/pilot_fi --scope pilot
+        --only-tasks swe_0,swe_10,swe_11 --controls none --work-dir /ssd3/wta-cis/pilot_fi --scope pilot_fullinfo
 """
 
 from __future__ import annotations
@@ -54,6 +54,10 @@ LAYERS_FRACTIONS = "0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.85"   # R2's --layers
 MID_POS = 3                                              # layer 32 in the 8-list
 CONTEXT_CAP = 65_536
 UNIVERSE = {"pilot": {"tasks": ["swe_0", "swe_10", "swe_11"], "runs": 67, "segments": 1845},
+            # the full_info arm (028 Am.H.1): 68 of 72 seeds succeeded; its
+            # segment total was never recorded on the laptop, so it is logged
+            # as-run rather than asserted
+            "pilot_fullinfo": {"tasks": ["swe_0", "swe_10", "swe_11"], "runs": 68, "segments": None},
             "full": {"tasks": None, "runs": 1415, "segments": 41538}}
 _EXIT = re.compile(r"exit\s+(-?\d+)")
 
@@ -175,7 +179,7 @@ def main() -> int:
     ap.add_argument("--tasks-dir", default="third_party/hil-bench/harbor_swe")
     ap.add_argument("--classes", default="data/interpretation_classes.json")
     ap.add_argument("--only-tasks", default="")
-    ap.add_argument("--scope", choices=("pilot", "full"), default="pilot")
+    ap.add_argument("--scope", choices=tuple(UNIVERSE), default="pilot")
     ap.add_argument("--controls", default="foreign=2,rival",
                     help="comma list of: foreign=N, rival, none")
     ap.add_argument("--rival-fixture", default="data/cis_rival_resolutions_pilot.json")
@@ -219,9 +223,9 @@ def main() -> int:
     n_seg = sum(len(json.loads((a0 / t / f"{r}.segments.json").read_text(encoding="utf-8")))
                 for t, r in runs)
     log(f"mode={mode} tasks={len(task_ids)} runs={len(runs)} segments={n_seg}")
-    if (len(runs), n_seg) != (uni["runs"], uni["segments"]):
+    if len(runs) != uni["runs"] or (uni["segments"] is not None and n_seg != uni["segments"]):
         log(f"!! universe mismatch: scope {args.scope} expects {uni['runs']} runs / "
-            f"{uni['segments']} segments. Aborting (029 §4 guard).")
+            f"{uni['segments'] or 'as-run'} segments. Aborting (029 §4 guard).")
         return 1
 
     res = load_resolutions(tasks_dir, Path(args.classes))
