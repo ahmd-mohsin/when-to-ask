@@ -1,0 +1,1081 @@
+{
+  "note": "Consequence-grounded fork labels from the task's OWN tests. Owes nothing to the lexicon, anchors or a judge.",
+  "inputs": {
+    "a0": "/ssd/wta_data/a0_v3_32b",
+    "tasks_dir": "third_party/hil-bench/harbor_swe"
+  },
+  "deviations": {
+    "selected_tests_not_full_suite": "shipped test_cmd runs run_script.sh with no args (full suite); given the FAIL_TO_PASS files instead -- same runner, same parser",
+    "test_files_restored_from_HEAD": "files touched by test_patch are checked out from HEAD before applying it, so a run that edited tests cannot fake a pass"
+  },
+  "excluded_tasks": {
+    "swe_1": "sweap_json mis-parses jest output",
+    "swe_12": "sweap_json mis-parses jest output"
+  },
+  "js_parser_defect": "sweap_json mis-parses jest: on a pristine swe_1 container it emitted 5 concatenated test names under a src/app/... prefix (FAIL_TO_PASS uses applications/drive/src/app/...), 0 of 4 F2P names matched, and every test was reported PASSED although the captured lines carry jest's failure glyph.",
+  "no_op_control": {
+    "n_scored": 422,
+    "n_repo_unchanged": 113,
+    "n_repo_unchanged_matching_baseline": 113,
+    "interpretation": "a run that changed nothing should reproduce the zero-action baseline exactly; any that does not indicates test flakiness or replay nondeterminism, not a decision"
+  },
+  "ground_truth_control": {
+    "swe_0": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_10": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_11": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_13": {
+      "vector": null,
+      "status": "test_patch did not apply",
+      "apply_rc": 0,
+      "all_pass": false
+    },
+    "swe_19": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_22": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_24": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_28": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_29": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_3": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_30": {
+      "vector": [
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_32": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_34": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_35": {
+      "vector": [
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_36": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_44": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_48": {
+      "vector": null,
+      "status": "test_patch did not apply",
+      "apply_rc": 0,
+      "all_pass": false
+    },
+    "swe_5": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_53": {
+      "vector": [
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_54": {
+      "vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "status": "ok",
+      "apply_rc": 0,
+      "all_pass": true
+    },
+    "swe_8": {
+      "vector": null,
+      "status": "test_patch did not apply",
+      "apply_rc": 0,
+      "all_pass": false
+    }
+  },
+  "instrument_validated": false,
+  "instrument_validated_tasks": [
+    "swe_0",
+    "swe_10",
+    "swe_11",
+    "swe_19",
+    "swe_22",
+    "swe_24",
+    "swe_28",
+    "swe_29",
+    "swe_3",
+    "swe_30",
+    "swe_32",
+    "swe_34",
+    "swe_35",
+    "swe_36",
+    "swe_44",
+    "swe_5",
+    "swe_53",
+    "swe_54"
+  ],
+  "instrument_failed_tasks": {
+    "swe_13": {
+      "vector": null,
+      "status": "test_patch did not apply",
+      "apply_rc": 0
+    },
+    "swe_48": {
+      "vector": null,
+      "status": "test_patch did not apply",
+      "apply_rc": 0
+    },
+    "swe_8": {
+      "vector": null,
+      "status": "test_patch did not apply",
+      "apply_rc": 0
+    }
+  },
+  "label_existence_gate": {
+    "n_tasks_admitted": 21,
+    "n_tasks_scored": 18,
+    "n_tasks_baseline_vector_varies": 8,
+    "n_tasks_varies_consequential_only": 2,
+    "frac_tasks_varies": 0.4444444444444444,
+    "frac_tasks_varies_consequential_only": 0.1111111111111111,
+    "pooled_runs_scored": 422,
+    "pooled_fully_solved": 0,
+    "pooled_collection_error": 196,
+    "pooled_repo_unchanged": 113,
+    "reading": "near-zero frac_tasks_varies => no per-run label exists on this model at baseline; the activation question cannot be evaluated on this data and the next decision is the model, not the probe. A non-trivial fraction => those tasks are where a structural-layer probe could be trained and evaluated, against a label owing nothing to the lexicon."
+  },
+  "per_task": {
+    "swe_0": {
+      "n_runs_scored": 21,
+      "n_runs_failed": 0,
+      "n_f2p": 6,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 4,
+      "vector_counts": {
+        "000000": 12,
+        "001000": 4,
+        "100000": 4,
+        "101000": 1
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 12,
+      "n_repo_unchanged": 2,
+      "n_collection_error": 4,
+      "distinct_vectors_consequential_only": 3,
+      "varies_consequential_only": true
+    },
+    "swe_10": {
+      "n_runs_scored": 22,
+      "n_runs_failed": 0,
+      "n_f2p": 7,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "0000000": 22
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 22,
+      "n_repo_unchanged": 3,
+      "n_collection_error": 10,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_11": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 5,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "00000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 4,
+      "n_collection_error": 18,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_19": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 12,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 2,
+      "vector_counts": {
+        "000000000000": 21,
+        "000000101110": 3
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 3,
+      "n_repo_unchanged": 2,
+      "n_collection_error": 21,
+      "distinct_vectors_consequential_only": 1,
+      "varies_consequential_only": false
+    },
+    "swe_22": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 25,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "0000000000000000000000000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 9,
+      "n_collection_error": 12,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_24": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 6,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 2,
+      "vector_counts": {
+        "000000": 23,
+        "010000": 1
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 23,
+      "n_repo_unchanged": 6,
+      "n_collection_error": 8,
+      "distinct_vectors_consequential_only": 1,
+      "varies_consequential_only": false
+    },
+    "swe_28": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 5,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 2,
+      "vector_counts": {
+        "00000": 22,
+        "00100": 2
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 22,
+      "n_repo_unchanged": 13,
+      "n_collection_error": 7,
+      "distinct_vectors_consequential_only": 1,
+      "varies_consequential_only": false
+    },
+    "swe_29": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 13,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "0000000000000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 12,
+      "n_collection_error": 2,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_3": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 7,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "0000000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 10,
+      "n_collection_error": 9,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_30": {
+      "n_runs_scored": 22,
+      "n_runs_failed": 0,
+      "n_f2p": 3,
+      "baseline_vector": [
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "000": 22
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 22,
+      "n_repo_unchanged": 8,
+      "n_collection_error": 14,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_32": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 21,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 2,
+      "vector_counts": {
+        "000000000000000000000": 23,
+        "000000001111111111010": 1
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 23,
+      "n_repo_unchanged": 5,
+      "n_collection_error": 6,
+      "distinct_vectors_consequential_only": 1,
+      "varies_consequential_only": false
+    },
+    "swe_34": {
+      "n_runs_scored": 22,
+      "n_runs_failed": 0,
+      "n_f2p": 5,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "00000": 22
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 22,
+      "n_repo_unchanged": 4,
+      "n_collection_error": 22,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_35": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 3,
+      "baseline_vector": [
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 14,
+      "n_collection_error": 8,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_36": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 6,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 2,
+      "vector_counts": {
+        "000000": 16,
+        "010000": 8
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 16,
+      "n_repo_unchanged": 1,
+      "n_collection_error": 6,
+      "distinct_vectors_consequential_only": 1,
+      "varies_consequential_only": false
+    },
+    "swe_44": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 17,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 5,
+      "vector_counts": {
+        "00000000000000000": 18,
+        "00000000001100000": 3,
+        "00000000000100000": 1,
+        "00000100111100000": 1,
+        "00000000001000000": 1
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 18,
+      "n_repo_unchanged": 3,
+      "n_collection_error": 1,
+      "distinct_vectors_consequential_only": 4,
+      "varies_consequential_only": true
+    },
+    "swe_5": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 9,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "000000000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 3,
+      "n_collection_error": 23,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_53": {
+      "n_runs_scored": 24,
+      "n_runs_failed": 0,
+      "n_f2p": 3,
+      "baseline_vector": [
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 1,
+      "vector_counts": {
+        "000": 24
+      },
+      "varies": false,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 24,
+      "n_repo_unchanged": 7,
+      "n_collection_error": 13,
+      "distinct_vectors_consequential_only": 0,
+      "varies_consequential_only": false
+    },
+    "swe_54": {
+      "n_runs_scored": 23,
+      "n_runs_failed": 0,
+      "n_f2p": 9,
+      "baseline_vector": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "ground_truth_vector": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "distinct_vectors": 2,
+      "vector_counts": {
+        "000000000": 22,
+        "000000010": 1
+      },
+      "varies": true,
+      "n_fully_solved": 0,
+      "n_equal_to_baseline": 22,
+      "n_repo_unchanged": 7,
+      "n_collection_error": 12,
+      "distinct_vectors_consequential_only": 1,
+      "varies_consequential_only": false
+    }
+  },
+  "elapsed_s": 3544.8
+}

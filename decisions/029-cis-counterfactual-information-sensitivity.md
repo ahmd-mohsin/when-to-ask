@@ -265,3 +265,80 @@ plus the 68 `full_info` runs of the same tasks. Reads every G0 gate, the
 variance decomposition, and tokens/second per unit for the full-run
 estimate (≈0.45B tokens by the branched-cache count). Stage 2 does NOT run on
 the pilot (3 tasks give no probe number).
+
+## Amendment 029.1 (2026-09-05 — Stage 0 pilot as-run: NO-GO)
+
+Run exactly as pre-registered on the box: 3 pilot tasks, 67 baseline runs
+(1,845 units, 559 mutating), an independent replicate into a separate work
+dir, and 68 `full_info` runs. Nothing tuned, nothing rerun with variations.
+`results/cis_stage0_pilot.json`.
+
+**§8 interpretation 1 fires: four G0 gates fail, so the counterfactual is not
+a usable label on this model. No probe is fit. Stage 2 does not run.**
+
+### 029.1.1 Every gate beside its frozen §5 bar
+
+| gate | bar (§5, frozen) | as-run | verdict |
+|---|---|---|---|
+| G0.1 rebuilt prompt == render | = 100% | 17/17 contract tests green on the box | **pass** |
+| G0.2 exit-code fidelity | ≥ 0.95 | mean **0.995**, frac≥0.9 = 0.985, n=67 | **pass** |
+| G0.3 double-replay agreement | ρ ≥ 0.95 | ρ = **0.9994**, median \|Δ\| = 0.000, n=6,898 | **pass** |
+| G0.4 branched-cache vs from-scratch | ≤ 0.05 nats **and** ρ ≥ 0.999 | max \|Δ\| block = **1.266 nats** (25× the bar), max tok 0.584, ρ = 0.9963 | **FAIL** |
+| G0.5 recorded NPZ vs fresh state | median cos ≥ 0.95 | median **0.9999**, p10 = 0.9954, n=1,793 | **pass** |
+| G0.6 relevance, own-vs-foreign AUROC | ≥ 0.65, CI excludes 0.5 | **0.855**, clustered CI **[0.826, 0.947]**, own \|CIS\| 5.28 vs foreign 1.35 | **pass** |
+| G0.7 sign on non-canonical commitments | ≥ 75%, p < .05 | **95.2%** negative (99/104), p = 4.8e-24; canonical control 5.7% non-neg | **pass** |
+| G0.8 redundancy, full_info ÷ baseline | ≤ 0.5 | ratio **0.578** (median \|CIS\| 3.054 vs 5.283) | **FAIL** |
+| G0.9 variance, contrast vs covariate | contrast ≥ covariate | contrast increment **0.085** < covariates **0.109** | **FAIL** |
+| G0.10 \|ρ(S_k, CIS)\| | > 0.3 disqualifies raw CIS | ρ = **−0.398** → **raw CIS disqualified**, only T(k) probeable | rule fired |
+| G0.11 rival sign | ≥ 75%, p < .05 | **51.9%** (54/104), p = 0.384 — indistinguishable from a coin | **FAIL** |
+
+### 029.1.2 What passed is not nothing
+
+The instrument itself is sound where it was testable. Replay fidelity 0.995;
+double-replay ρ 0.9994 with a median delta of exactly zero; the rebuilt
+context matches the recorded activations at median cosine 0.9999. And the two
+substantive validity gates that *did* pass are the interesting ones: CIS
+separates a unit's **own** withheld resolution from a **foreign** one at
+AUROC 0.855 (bar 0.65, CI well clear of chance), and on lexicon-labelled
+**non-canonical** commitments it is negative 95.2% of the time against a 5.7%
+canonical control, p = 4.8e-24. Sign and relevance both hold decisively.
+
+### 029.1.3 Why it is still a NO-GO
+
+Four independent failures, and they are not near-misses:
+
+- **G0.4 is a scorer defect, not a threshold quibble.** 1.266 nats against a
+  0.05 bar is 25× over. The branched-cache path does not reproduce
+  from-scratch scoring at the block level even though rank order survives
+  (ρ 0.996). Every downstream number is computed through that path.
+- **G0.9 says the target is nuisance.** The own-vs-foreign contrast adds
+  R² 0.085 on top of covariates {task, k, log tokens, is_mutating, S_k},
+  which alone explain 0.109. The thing the gate exists to prevent — a target
+  dominated by position and length rather than information — is what the
+  decomposition found.
+- **G0.11 removes the independent sign check.** Rival-text direction is
+  51.9%, a coin flip. G0.7's 95.2% therefore rests on the lexicon, the
+  labeler this whole program has been trying to escape, so the sign evidence
+  is not labeler-free after all.
+- **G0.8 at 0.578 vs a 0.5 bar** is the closest to its bar and the least
+  alarming on its own, but it says the injection channel removes only ~42%
+  of the signal it is supposed to remove.
+
+G0.10 additionally disqualifies raw CIS (ρ = −0.398 with surprisal, bar 0.3),
+so even a repaired instrument would only license probing T(k), not CIS itself.
+
+### 029.1.4 Cost, measured
+
+1,845 units at **3.04 s/unit** of scoring (5,605 s score + 339 s replay).
+Projected full run **≈35 GPU-hours**. Recorded per §"Pilot" so the number
+exists; it is not a recommendation to spend it.
+
+### 029.1.5 What this does not say
+
+It does not say CIS is a bad idea — G0.6 and G0.7 are genuine positive
+evidence that the quantity tracks something real. It says **this
+implementation, on this model, is not a usable label yet**: one gate is a
+reproducibility defect that is likely fixable, one is a validity failure that
+may not be, and the independent sign check did not survive. Per §8 and the
+stop rules, nothing is refit and no variation is rerun without amending this
+entry first.

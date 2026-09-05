@@ -1,0 +1,111 @@
+{
+ "note": "decisions/029 Stage-0 gates, as-run. Any failing gate -> Stage 2 is not fit.",
+ "inputs": {
+  "pilot": "/ssd3/wta-cis/pilot",
+  "replicate": "/ssd3/wta-cis/pilot_rep",
+  "fullinfo": "/ssd3/wta-cis/pilot_fi",
+  "a0": "/ssd/wta_data/a0_v3_32b",
+  "labels_debug": "models/v3_32b_fixed/labels_debug.jsonl",
+  "classes": "data/interpretation_classes.json",
+  "out": "results/cis_stage0_pilot.json"
+ },
+ "n_runs": 67,
+ "n_units": 1845,
+ "n_mutating_units": 559,
+ "gates": {
+  "G0.2_fidelity": {
+   "mean": 0.9949995312868448,
+   "frac_ge_0.9": 0.9850746268656716,
+   "n_runs": 67,
+   "bar": 0.95,
+   "pass": true
+  },
+  "G0.3_replicate": {
+   "n_pairs": 6898,
+   "spearman": 0.9994182860370278,
+   "median_abs_delta": 0.0,
+   "bar": 0.95,
+   "pass": true
+  },
+  "G0.4_from_scratch": {
+   "n": 201,
+   "max_abs_block_delta_nats": 1.266021728515625,
+   "max_abs_tok": 0.5844845771789551,
+   "spearman": 0.9962996896704596,
+   "bar": {
+    "nats": 0.05,
+    "rho": 0.999
+   },
+   "pass": false
+  },
+  "G0.5_recorded_vs_fresh": {
+   "n": 1793,
+   "median_cosine": 0.999856173992157,
+   "p10": 0.9954290866851807,
+   "bar": 0.95,
+   "pass": true
+  },
+  "G0.6_relevance": {
+   "n_mutating_units": 559,
+   "n_tasks": 3,
+   "paired_auroc": 0.855098389982111,
+   "ci95_clustered": [
+    0.8255813953488372,
+    0.9468085106382979
+   ],
+   "median_own_abs": 5.2825164794921875,
+   "median_foreign_abs": 1.350579857826233,
+   "bar": 0.65,
+   "pass": true
+  },
+  "G0.7_sign_lexicon": {
+   "n_noncanonical_commitments": 104,
+   "n_negative": 99,
+   "frac_negative": 0.9519230769230769,
+   "binomial_p_vs_half": 4.770055081748341e-24,
+   "n_canonical_commitments": 35,
+   "frac_canonical_nonneg": 0.05714285714285714,
+   "bar": 0.75,
+   "pass": true
+  },
+  "G0.8_redundancy": {
+   "n_base": 559,
+   "n_fi": 510,
+   "median_abs_base": 5.2825164794921875,
+   "median_abs_fullinfo": 3.053931474685669,
+   "ratio": 0.5781205769147446,
+   "bar": 0.5,
+   "pass": false
+  },
+  "G0.9_variance": {
+   "n_units": 1845,
+   "r2_covariates": 0.10886082552729637,
+   "r2_contrast_increment": 0.08527352618319484,
+   "pass": false
+  },
+  "G0.10_surprisal": {
+   "n": 559,
+   "spearman_Sk_vs_CIS": -0.3978938415922662,
+   "kill": 0.3,
+   "raw_cis_disqualified": true
+  },
+  "G0.11_rival": {
+   "n": 104,
+   "wins": 54,
+   "frac": 0.5192307692307693,
+   "binomial_p_vs_half": 0.38439590506933635,
+   "bar": 0.75,
+   "pass": false,
+   "note": null
+  }
+ },
+ "cost": {
+  "units_scored": 1845,
+  "wall_score_s": 5605.1,
+  "wall_replay_s": 338.9,
+  "s_per_unit_score": 3.0379945799457997,
+  "projected_full_run_score_h": 35.05339412827462
+ },
+ "verdict": "NO-GO: ['G0.4_from_scratch', 'G0.9_variance', 'G0.8_redundancy', 'G0.11_rival']",
+ "elapsed_s": 25.4
+}
