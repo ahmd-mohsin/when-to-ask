@@ -342,3 +342,111 @@ reproducibility defect that is likely fixable, one is a validity failure that
 may not be, and the independent sign check did not survive. Per §8 and the
 stop rules, nothing is refit and no variation is rerun without amending this
 entry first.
+
+## Amendment 029.2 (2026-09-05 — correction to 029.1's reading of G0.7, and the coherent diagnosis)
+
+No new numbers. This amendment corrects an interpretation in 029.1 from the
+same `results/cis_stage0_pilot.json`, states what the eleven gates say when
+read together, and names what may be pre-registered next. Nothing runs
+before that pre-registration (029.3) exists.
+
+### 029.2.1 The correction: G0.7's control shows the sign does NOT track correctness
+
+029.1.1 reports G0.7 as "95.2% negative (99/104); canonical control 5.7%
+non-neg" and 029.1.2 calls it a decisive pass. The control number was read
+backwards. `frac_canonical_nonneg = 0.057` means **2 of 35** commitments the
+lexicon labels as *canonical* have CIS ≥ 0 — **33 of 35 (94.3%) are
+negative**. Injecting the correct answer makes the correct action less likely
+94% of the time, exactly as it does for the wrong action (95.2%). The sign of
+CIS therefore does not discriminate canonical from non-canonical
+commitments. **G0.7 passed its written criterion (≥ 75% of non-canonical
+negative) and failed its intended meaning.** 029.1.2's sentence "sign and
+relevance both hold decisively" is withdrawn as to sign; relevance stands.
+
+G0.11 says the same thing from the other side: rival text vs canonical text,
+paired on the run's own committed class, is 51.9% — a coin. Both sign checks
+agree; there is no sign.
+
+### 029.2.2 What the gates say together
+
+`CIS_bash` is a large, generic **negative perturbation** — any injected
+resolution lowers the likelihood of the exact recorded block — **scaled by
+relevance**. Own resolutions move it ~4× more than length/type/code-matched
+foreign ones (median |CIS| 5.28 vs 1.35; paired AUROC .855, clustered CI
+[.826, .947]). That relevance signal is real, replicable (G0.3 ρ .9994), and
+computed on a context that reproduces the model's recorded internal state to
+cosine .9999 (G0.5). But correctness does not enter the sign, so `CIS_bash`
+is a **relevance detector, not a correctness detector**, and "large-negative
+= should have asked" (§2) is not licensed.
+
+**Mechanism.** Teacher-forcing the *exact recorded tokens* is a surface
+measure. Told the answer explicitly, the model would write even a
+semantically identical block differently — names, comments, structure — so
+the recorded token sequence becomes less likely whether or not the decision
+was right. Relevance survives because it drives magnitude; correctness is
+swamped. This is the same surface-variance-over-semantic-signal failure that
+killed the six pairwise instruments (STATUS gap 8), reappearing in
+likelihood space. G0.9 (contrast increment .085 against covariates .109 —
+*comparable*, not "pure nuisance" as 029.1.3 put it; the gate failed as
+written) and G0.10 (ρ(S_k, CIS) = −.40) are the same fact seen through two
+other gates: length and surprisal of the block co-vary with how much any
+perturbation can move it.
+
+**G0.4 is numerical, not scientific.** 1.266 nats against a .05 bar with
+rank order intact (ρ .996) and the branched path self-reproducible to a
+median Δ of 0.000 (G0.3) is bf16 kernel non-determinism between a
+cached-prefix forward and a full-sequence forward over 12k+ tokens. The bar
+was set for fp32-style equality and was wrong for bf16 at 32B. The
+from-scratch forward is not the better reference: the collector *generated*
+with a KV cache, and G0.5 shows the branched path reproduces those recorded
+states at .9999. G0.4 stands as failed as pre-registered; a corrected G0.4′
+(compare `CIS_branch − CIS_scratch`, where the systematic offset cancels,
+with a bf16-appropriate bar) may be pre-registered in 029.3 and applies only
+forward.
+
+### 029.2.3 Assets that survive
+
+The context-rebuild pipeline (`wta.cis_context`), validated end-to-end
+against the original activations (G0.5); replay reproducibility (G0.3); the
+branched teacher-forced scorer (`wta.cis_scorer`); the relevance quantity
+`T_rel(k) = max_b[−CIS_bash(k,b)] − mean_foreign[−CIS_bash]`; the registry
+loader and the reviewed rival fixture. All reusable at forward-pass cost.
+
+### 029.2.4 What 029.3 must pre-register before anything runs
+
+The failure is in *what is scored* (exact tokens), not in the context, the
+injection channel, or the model's sensitivity. The re-scoping to be frozen
+in 029.3:
+
+1. **A decision-level readout in place of exact-token likelihood.** At the
+   pre-action position `P_k−1`, teacher-force one short templated
+   *commitment statement per registry class* of each blocker (the same
+   frame for every class; content from the class's own signatures — the
+   reviewed rival fixture is the pilot prototype) and read the model's
+   **implicit interpretation distribution** `p_k(c | b) ∝ exp log p(stmt_c |
+   ctx_k)`. Derived per-turn labels: `P_k(canonical | b)` (lean toward the
+   right answer) and the entropy of `p_k(· | b)` (uncertainty). The
+   perturbation that swamped `CIS_bash` cancels: every option shares the
+   template and the context; only the class content differs. Cost is ~30
+   tokens per option on the cached prefix — roughly 1/50 of a CIS branch.
+2. **Validity gates for the readout, all planted or free:** (a) the
+   `full_info` arm (68 runs, already collected) must raise `P(canonical)`
+   relative to baseline — the planted effect H.1 demonstrated behaviourally;
+   (b) at lexicon-committed segments, the argmax of `p_k` must agree with
+   the committed class above the lexicon's own validated agreement floor;
+   (c) statements built from *foreign* tasks' classes must receive low
+   probability (relevance, as G0.6); (d) G0.4′ as above.
+3. **`T_rel(k)` retained as a second, already-validated target**, labelled
+   as relevance, never as correctness.
+4. **Stage 2 re-scoped** to three targets — relevance, lean-entropy, and
+   `P(canonical)` — with §7's splits, nulls, covariate and nuisance
+   baselines, paired-margin bar and null-calibrated lead time unchanged.
+   The strongest result this can deliver, stated in advance: *the agent's
+   pre-action internal state linearly encodes (i) that the withheld
+   information is relevant now and (ii) its implicit lean among the
+   registry's interpretations, with lead time before commitment.* That is
+   the structural-layer question in two components. It is not a
+   "should-ask" detector unless (ii) is shown to track the canonical class,
+   which gate 2(a)–(b) decide.
+
+Sections 1–8 and 029.1's numbers are untouched.
