@@ -1,0 +1,270 @@
+{
+ "_provenance": {
+  "purpose": "029.3 lean readout: one templated commitment statement per registry class",
+  "template": {
+   "STMT_PREFIX": "THOUGHT: I will follow this rule: ",
+   "NULL_USER": "Complete the assigned task in this repository."
+  },
+  "sources": "class 0 = registry resolution verbatim (029 par.3.3); other classes = data/cis_rival_resolutions_pilot.json entries with status=approved (independently reviewed 2026-09-04)",
+  "rule": "no new authoring; regenerate with scripts/cis_build_statements.py; the contract test asserts idempotence"
+ },
+ "tasks": [
+  "swe_0",
+  "swe_10",
+  "swe_11"
+ ],
+ "n_blockers": 12,
+ "n_complete": 12,
+ "n_statements": 35,
+ "blockers": [
+  {
+   "task": "swe_0",
+   "blocker_id": "non_linux_distribution_source_precedence_on_conflict",
+   "type": "missing parameters",
+   "classes": [
+    "distro_id_authoritative",
+    "platform_system_preferred",
+    "fallback_chain",
+    "custom_probing"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution()` must use `distro.id()` as the authoritative value (subject to the implementation’s normalization rules) and must not prefer or fallback to `platform.system()` when the two differ.",
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution()` must use `platform.system()` as the authoritative value (subject to the implementation’s normalization rules) and must not prefer or fallback to `distro.id()` when the two differ.",
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution()` must try `distro.id()` first (subject to the implementation’s normalization rules) and must fall back to `platform.system()` whenever the distro library is unavailable or returns no identifier, not when the two differ.",
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution()` must use a direct system probe (for example `sw_vers` via `subprocess`, `/etc/release`, or `os.uname()[0]`) as the authoritative value and must not rely on `distro.id()` or `platform.system()` when the two differ."
+   ],
+   "complete": true,
+   "sha256": [
+    "743f447d1ff485babe4c318bdcdd9b17f0eae8bd4a8b7e4377a8f1c88cf54d06",
+    "5a8b139fb48967aa87cb418c3039da61dfc040fdd281b09df6bff4b72e139243",
+    "37311b3f2e832fdb2b5fe07535adaac0a49ec60755faf30e8c401d933e587cc3",
+    "6b0b0a5f3690dfb43680f8022d47484f58940bf5d6c39ccff383cb97463a637d"
+   ]
+  },
+  {
+   "task": "swe_0",
+   "blocker_id": "non_linux_distribution_version_source",
+   "type": "missing parameters",
+   "classes": [
+    "distro_version_verbatim",
+    "platform_apis",
+    "custom_parse"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution_version()` must return the value provided by `distro.version()` exactly as returned, without parsing, formatting, or fallback logic.",
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution_version()` must return the value provided by `platform.release()` exactly as returned, without parsing, formatting, or fallback logic.",
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution_version()` must return the value parsed from a system probe (for example `sw_vers -productVersion`), without relying on `distro.version()` or fallback logic."
+   ],
+   "complete": true,
+   "sha256": [
+    "48c7025cf057f38115ae971da491cb3f28f98a60ab3ad6af2944c6ce37a307f7",
+    "26d3235ff08316e68edbc9d0b26da119fced77322c2b950eec6b8ba5980367e6",
+    "af696d595304caacc64f8511a8b6bbac6008aec95005c8ad2369053920ab437f"
+   ]
+  },
+  {
+   "task": "swe_0",
+   "blocker_id": "non_linux_distribution_normalization",
+   "type": "missing parameters",
+   "classes": [
+    "capitalize_first",
+    "verbatim_no_normalization",
+    "lowercase_or_mapping"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution()` must return the distribution identifier with only the first character capitalized, preserving the remaining characters exactly as provided by the underlying source.",
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution()` must return the distribution identifier exactly as returned by the underlying source, without any normalization, capitalization, or transformation of its characters.",
+    "THOUGHT: I will follow this rule: On non-Linux platforms, `get_distribution()` must return the distribution identifier converted entirely to lowercase, rather than preserving the case of its characters as provided by the underlying source."
+   ],
+   "complete": true,
+   "sha256": [
+    "f1d4e4e136690846113b327ed204b50c3becbd338255174afe6ae435cfe2fec2",
+    "feaaaaa4db5dc5ada6be972085184de7b3a2160bc0df589db2898cb23c13251a",
+    "3abebd887526594e6e8ce7cdee15897ec83b42b8ffb19866aa0b003822cd10db"
+   ]
+  },
+  {
+   "task": "swe_0",
+   "blocker_id": "non_linux_distribution_detection_scope",
+   "type": "ambiguous requirements",
+   "classes": [
+    "platform_system_not_linux",
+    "os_name_or_uname",
+    "enumerated_whitelist"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Non-Linux platforms must be identified using the value returned by `platform.system()`, and any system whose value is not `\"Linux\"` must be treated as non-Linux.",
+    "THOUGHT: I will follow this rule: Non-Linux platforms must be identified using the value returned by `os.uname()[0]`, and any system whose value is not `\"Linux\"` must be treated as non-Linux.",
+    "THOUGHT: I will follow this rule: Non-Linux platforms must be identified by matching against an enumerated whitelist of supported platforms (`Darwin`, `FreeBSD`, `SunOS`), and any system not on that list must be treated as Linux."
+   ],
+   "complete": true,
+   "sha256": [
+    "50e664bfd08af458d094104364d5f20a51238872d7fc68b3d3cca3c6519552bb",
+    "e4272ad393cd21e565983873e47046078a2e1cc8e1070b25062817faae5fce04",
+    "db9b55a0c5220a7e1cac59c5ea2c084a292883a2d985e0c889fb7a37a819d6bb"
+   ]
+  },
+  {
+   "task": "swe_0",
+   "blocker_id": "cross_platform_consistency_vs_fallback_policy",
+   "type": "contradictory requirements",
+   "classes": [
+    "fallback_linux_only",
+    "universal_fallback"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Fallback behavior must be applied only on Linux platforms and must not be applied on non-Linux platforms under any circumstances.",
+    "THOUGHT: I will follow this rule: Fallback behavior must be applied consistently on all supported platforms and must not be restricted to Linux under any circumstances."
+   ],
+   "complete": true,
+   "sha256": [
+    "f3c63794b50b59ddf48708458a0e3f621e098649caac253eb82181245902a3f1",
+    "870a1f9ca4dbfb87105f564e6a08271d3d1bd85f8531da0cdd5aa30cacb2455e"
+   ]
+  },
+  {
+   "task": "swe_10",
+   "blocker_id": "missing_ip_route_list_verb_and_table_id_for_locally_reachable_collection",
+   "type": "missing parameters",
+   "classes": [
+    "list_table_255",
+    "show_or_symbolic_local"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Use the subcommand verb exactly `list` (not `show` or `ls`) and the table selector exactly `255` (decimal string, not the symbolic table name). Run `ip -4 route list table 255` and `ip -6 route list table 255`. Example argv: `['ip', '-4', 'route', 'list', 'table', '255']`; counter-example: `route show table local` or `route list table local`.",
+    "THOUGHT: I will follow this rule: Use the subcommand verb exactly `show` (not `list` or `ls`) and the table selector exactly `local` (the symbolic table name, not the numeric id). Run `ip -4 route show table local` and `ip -6 route show table local`. Example argv: `['ip', '-4', 'route', 'show', 'table', 'local']`; counter-example: `route list table 255` or `route show table 255`."
+   ],
+   "complete": true,
+   "sha256": [
+    "9ec25a318fe54ef49291ba0dad5ad52dfbfcf3db27c33aa4873dcddcea6bf90c",
+    "31a8404cb8269a3ce5609b43e0c1a6b4cfa1775eec1e54dd9d2277ea27aa7e5f"
+   ]
+  },
+  {
+   "task": "swe_10",
+   "blocker_id": "missing_network_facts_dict_key_snr_scope_host_addrs",
+   "type": "missing parameters",
+   "classes": [
+    "snr_scope_host_addrs",
+    "descriptive_key_name"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: When wiring the return value into gathered Linux network facts, use the fact entry identifier exactly `snr_scope_host_addrs` (spelling and underscores as given). Counter-example: `locally_reachable_ips`, `local_ips`, `reachable_ips`, or any name not matching that identifier.",
+    "THOUGHT: I will follow this rule: When wiring the return value into gathered Linux network facts, use the fact entry identifier exactly `locally_reachable_ips` (spelling and underscores as given). Counter-example: `snr_scope_host_addrs` or any other name not matching that identifier."
+   ],
+   "complete": true,
+   "sha256": [
+    "8121225111e5c48a6c037b9113f9ee5c3a397b278cecdcd2e83c46bac9b8a6bb",
+    "f4bcf520bc69eadefe712576883c5687504ec4202496cd67e498b515247d81a4"
+   ]
+  },
+  {
+   "task": "swe_10",
+   "blocker_id": "ambiguous_route_line_acceptance_and_field_extraction_contract",
+   "type": "ambiguous requirements",
+   "classes": [
+    "local_first_token_src_field",
+    "positional_destination_token",
+    "scope_host_filter"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Accept a line only if the first whitespace-separated token is exactly `local` (lowercase). Extract the address value from the labeled `src` field on that line (the token immediately following the literal word `src`), not from the positional destination token (second token). If a qualifying `local` line has no `src` field, skip it. Apply the same acceptance and extraction rule to IPv4 and IPv6 stdout. Example: `local 10.0.0.5 dev eth0 proto kernel scope host src 203.0.113.99` -> extract `203.0.113.99` (the `src` value). Counter-example: extracting the second token `10.0.0.5` (the route destination) or using positional field extraction.",
+    "THOUGHT: I will follow this rule: Accept a line only if the first whitespace-separated token is exactly `local` (lowercase). Extract the address value from the positional destination token (the second whitespace-separated token on that line), not from the labeled `src` field. If a qualifying `local` line has fewer than two tokens, skip it. Apply the same acceptance and extraction rule to IPv4 and IPv6 stdout. Example: `local 10.0.0.5 dev eth0 proto kernel scope host src 203.0.113.99` -> extract `10.0.0.5` (the destination token). Counter-example: extracting the `src` value `203.0.113.99` or using labeled-field extraction.",
+    "THOUGHT: I will follow this rule: Accept a line only if it contains the tokens `scope host` (anywhere on the line, rather than filtering on a leading route-type word). Extract the address value from the labeled `src` field on that line (the token immediately following the literal word `src`), not from the positional destination token (second token). If a qualifying `scope host` line has no `src` field, skip it. Apply the same acceptance and extraction rule to IPv4 and IPv6 stdout. Example: `local 10.0.0.5 dev eth0 proto kernel scope host src 203.0.113.99` -> extract `203.0.113.99` (the `src` value). Counter-example: filtering on the first token `local` instead of `scope host`, or extracting the second token `10.0.0.5` (the route destination)."
+   ],
+   "complete": true,
+   "sha256": [
+    "6f47c714fc86be257f94efd0965a0fd877faf58be55f6cfb7f336c8273a4d751",
+    "10b5cb0f489fda43db448e7e8820e8909b90e98a8deda176b1f189843acdfada",
+    "473b807cd78431ba374c2b5e010632730e89b445548aa79905fe69bef15f8d80"
+   ]
+  },
+  {
+   "task": "swe_10",
+   "blocker_id": "conflicting_normalized_value_contract_vs_verbatim_route_token_contract",
+   "type": "contradictory requirements",
+   "classes": [
+    "normalize_ipaddress_dedupe_sort",
+    "verbatim_tokens"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Satisfy the requirements over the interface wording: take each address string already selected from qualifying route lines, convert it to canonical textual form using `ipaddress.ip_address(value)` string form, de-duplicate within each family using that canonical form, then sort each family list ascending by Unicode code-point order of those final strings (e.g. Python `list.sort()`). Bare host addresses must remain without a prefix length suffix (do not force `/32` or `/128`). Example: `2A02:0123:0015::1` and `2a02:123:15::1` are two raw spellings of the same IPv6 address and collapse to one `2a02:123:15::1`; duplicate `10.0.0.44` entries collapse to one `10.0.0.44`. Counter-example: emitting as-printed route text when it differs from canonical form, deduplicating on raw spellings only, omitting a stable sort so order depends on discovery order alone, or appending `/32` to bare IPv4 addresses.",
+    "THOUGHT: I will follow this rule: Satisfy the interface wording over the requirements: take each address string already selected from qualifying route lines exactly as printed in the route text, without converting it through `ipaddress.ip_address(value)`, de-duplicate within each family only on those raw spellings, and preserve discovery order within each family rather than sorting. Bare host addresses must remain without a prefix length suffix (do not force `/32` or `/128`). Example: `2A02:0123:0015::1` and `2a02:123:15::1` are two raw spellings and are kept as two distinct entries; duplicate `10.0.0.44` entries collapse to one `10.0.0.44`. Counter-example: canonicalizing spellings, deduplicating on canonical form, or applying a stable sort."
+   ],
+   "complete": true,
+   "sha256": [
+    "292a51f6f7f7b77f80671f2c180e531b547b4ba4768bd7d77701a29a04d400ed",
+    "4491897312fc0a38b85a7f02124f24afe1750c147a6856e5c92a3479101a5ab8"
+   ]
+  },
+  {
+   "task": "swe_11",
+   "blocker_id": "max_input_length_unspecified",
+   "type": "missing parameters",
+   "classes": [
+    "limit_10000_typeerror",
+    "different_length_value",
+    "wrong_exception_or_message",
+    "no_length_limit"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Enforce a maximum input length of 10000 characters. Reject strings exceeding this limit with TypeError containing the message 'input string too long to safely parse as dictionary'.",
+    "THOUGHT: I will follow this rule: Enforce a maximum input length of 1024 characters. Reject strings exceeding this limit with TypeError containing the message 'input string too long to safely parse as dictionary'.",
+    "THOUGHT: I will follow this rule: Enforce a maximum input length of 10000 characters. Reject strings exceeding this limit with ValueError containing the message 'input string is too long'.",
+    "THOUGHT: I will follow this rule: Do not enforce any maximum input length. Accept strings of any length for parsing as a dictionary and never reject input on the basis of its character count."
+   ],
+   "complete": true,
+   "sha256": [
+    "2c869aa708729b25f8fd1d8a8ed17607566b43474158118a19e7595a10f352db",
+    "522efe760a53d3cb91f9d4be7921c418aa6d1e8ab84c03c0cf683f1721286ad6",
+    "97e5ba8d3dc9df3ad5a3bdd97eb40639220e70f85aa35ea535ade8cb27094611",
+    "b6f83bce85150fc306f45c9625f7ca4db28258c4c88ba16aa72c487fcfd1b313"
+   ]
+  },
+  {
+   "task": "swe_11",
+   "blocker_id": "max_fields_count_ambiguous",
+   "type": "ambiguous requirements",
+   "classes": [
+    "limit_100_typeerror",
+    "different_field_count_value",
+    "no_field_count_limit"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Set the maximum field count to 100. This balances security (preventing resource exhaustion) with practical use cases (most module configurations have fewer than 100 parameters). Raise TypeError with message 'too many fields to parse as dictionary' when this limit is exceeded.",
+    "THOUGHT: I will follow this rule: Set the maximum field count to 1000. This favors practical use cases (complex module configurations may carry many parameters) over a conservative attack surface. Raise TypeError with message 'too many fields to parse as dictionary' when this limit is exceeded.",
+    "THOUGHT: I will follow this rule: Do not set any maximum field count. This favors practical use cases (complex module configurations may carry arbitrarily many parameters) over a conservative attack surface. Accept any number of fields and never raise an error on the basis of field count."
+   ],
+   "complete": true,
+   "sha256": [
+    "88b1640b8b3d787c9628e28c3765cb93ec259c5def148a3da9a0de1ba697c66f",
+    "72587e7eb41edc072484873284398be8834c5f4bf11c31426aadc43c8efead57",
+    "176233cab2bfed5dc6530178ef42e4f6344aef296289cc9a128f77a82c1acc42"
+   ]
+  },
+  {
+   "task": "swe_11",
+   "blocker_id": "max_nesting_depth_policy_conflict",
+   "type": "contradictory requirements",
+   "classes": [
+    "depth_20_typeerror",
+    "different_depth_value",
+    "wrong_exception_or_message",
+    "no_depth_limit"
+   ],
+   "statements": [
+    "THOUGHT: I will follow this rule: Enforce a maximum nesting depth of 20 across dict/list structures produced by JSON and Python-literal parsing. If the nesting depth exceeds this limit, raise TypeError with message 'input structure too deeply nested to safely parse as dictionary'.",
+    "THOUGHT: I will follow this rule: Enforce a maximum nesting depth of 10 across dict/list structures produced by JSON and Python-literal parsing. If the nesting depth exceeds this limit, raise TypeError with message 'input structure too deeply nested to safely parse as dictionary'.",
+    "THOUGHT: I will follow this rule: Enforce a maximum nesting depth of 20 across dict/list structures produced by JSON and Python-literal parsing. If the nesting depth exceeds this limit, raise ValueError with message 'input exceeds maximum allowed nesting depth'.",
+    "THOUGHT: I will follow this rule: Do not enforce any maximum nesting depth across dict/list structures produced by JSON and Python-literal parsing. Accept arbitrarily nested inputs for compatibility and never raise on the basis of nesting depth."
+   ],
+   "complete": true,
+   "sha256": [
+    "e66dbaa1241a045047631be852e093958fb9abb23158309911194326cd9d00ab",
+    "066ad46f76f2bd4a234645a8dc218f5ff52cc7d11e10d258a798310e9e05c180",
+    "7241886a539a995e2ab5c86363206d0ded89ed44bf42388a64ce3adf17a6edfb",
+    "fec3e8ccfeaaa490baf69fca276c643f75d188d2d5f4a74990f0defd80da26cb"
+   ]
+  }
+ ]
+}

@@ -450,3 +450,121 @@ in 029.3:
    which gate 2(a)–(b) decide.
 
 Sections 1–8 and 029.1's numbers are untouched.
+
+## Amendment 029.3 (2026-09-05 — the lean readout: pre-registered BEFORE any run)
+
+**Pre-registration timing.** Nothing in this amendment has been run. It freezes
+a replacement for the quantity that failed (exact-token likelihood of the
+recorded block) while keeping every validated component of 029 — the context
+rebuild (G0.5 cosine .9999), the branched scorer (G0.3 ρ .9994), the registry
+loader, the reviewed rival fixture, the foreign-control matcher, and §7's
+probe machinery. Owner directive, 2026-09-05: "make it ready."
+
+### 029.3.1 What is scored
+
+At turn k, at the pre-action position (after the generation header, before
+the model has emitted anything), teacher-force **one templated commitment
+statement per registry class** of each of the task's blockers, as the
+assistant's continuation:
+
+```
+stmt_c = "THOUGHT: I will follow this rule: " + text_c
+text_0 = the registry resolution, verbatim (§3.3)          (canonical)
+text_c = the reviewed rival resolution for class c          (029 §3.1 fixture)
+```
+
+No new authoring: the statements are a fixed function of two already-frozen
+artifacts (`scripts/cis_build_statements.py` →
+`data/cis_lean_statements_pilot.json`; idempotence is a contract test). A
+blocker with any class lacking an approved rival is `complete: false` and is
+excluded from the distribution (a partial menu is not a lean). All 12 pilot
+blockers are complete: 35 statements.
+
+Surface-form competition is removed by **domain-conditional PMI**
+(Holtzman et al. 2021): `PMI_c = log p(stmt_c | ctx_k) − log p(stmt_c | ctx_null)`,
+with `ctx_null` = the collector's system prompt + a fixed task-agnostic user
+turn (`"Complete the assigned task in this repository."`) + the same
+generation header. Tokens shared across options contribute a constant that
+cancels in the softmax (contract-tested).
+
+```
+p_k(c | b)         = softmax_c PMI_c                       the implicit interpretation distribution
+P_canonical(k, b)  = p_k(class 0 | b)                       lean toward the right answer
+H(k, b)            = entropy(p_k) / log n_c  ∈ [0, 1]       uncertainty
+T_rel(k)           = mean_b PMI(canon_b) − mean_{b'∈foreign} PMI(canon_b')   relevance (029 §2 analogue)
+```
+
+Secondary, reported not gated: the length-normalised softmax (mean per-token
+log-prob). Features: the residual at `P_k−1` on the first statement branch,
+8 layers, float16 — the same position 029 §4 froze.
+
+Why this should carry what CIS_bash could not: CIS_bash compared a long,
+free-form object against a perturbed context, so the generic perturbation
+dominated and correctness never entered the sign (029.2). Here every option
+shares the template and the context; only the class content differs; the
+perturbation cancels across options by construction, and PMI removes each
+option's intrinsic string likelihood.
+
+### 029.3.2 Frozen protocol
+
+Identical to 029 §4 (rebuild, recorded `[exit N]`, replayed text, universe
+guard 67/1,845 for the pilot, 68 for `pilot_fullinfo`, context cap 65,536,
+resumable) except: no injection into the user turn; statements are scored as
+continuations; 2 matched foreign blockers per unit (`foreign_controls`,
+seed from (run, k)) contribute their canonical statements only. Driver
+`scripts/cis_lean_score.py`; gates `scripts/cis_stage0b_gates.py`.
+
+### 029.3.3 Stage-0b validity gates — frozen table
+
+| gate | read-out | fixed today | bar | on failure |
+|---|---|---|---|---|
+| G0b.1 | statement + null-context render and tokenization contract (laptop, in the suite) | 4 tests green | = 100% | bug; nothing runs |
+| G0b.2 (= G0.4′) | branched vs from-scratch, ≥ 20 units: max \|Δ(lp_c − lp_c′)\| within a blocker **and** Spearman of statement log-probs | tiny-model test 1e-5 | ≤ 0.25 nats **and** ρ ≥ 0.99 | scorer unusable for a menu |
+| G0b.3 | **swe_0 planted contrast:** at each run's last mutating segment, `P_canonical(normalization)` > mean `P_canonical` over the three blockers every run got wrong (source precedence, version source, detection scope), paired per run | H.1 + gap 8(c): 3 wrong / 1 right, every run | ≥ 75% of runs, binomial p < .05 | the readout does not see a known wrong default → invalid |
+| G0b.4 | **`full_info` planted shift:** per-blocker median `P_canonical` over mutating units, `full_info` − baseline (12 blockers, 68 vs 67 runs) | H.1's behavioural effect (0/21 → 8/23) | task-clustered CI of the median shift excludes 0 **and** ≥ 75% of blockers positive | the readout does not move when the answer is supplied → invalid |
+| G0b.5 | lexicon agreement: argmax `p_k` at the lexicon's commitment segment vs its committed class | chance .38 (canonical-accuracy baseline) | > .38, binomial p < .05 — **diagnostic-strength, not required for GO** (the lexicon is the confounded labeler) | reported |
+| G0b.6 | **relevance:** own canonical PMI vs foreign canonical PMI on mutating units, paired task-clustered CI | 029 G0.6 = .855 | ≥ 0.65, CI excludes 0.5 | instrument in the .54–.60 band → invalid |
+| G0b.7 | double replay into a separate work dir: Spearman of `P_canonical` | 029 G0.3 = .9994 | ≥ 0.95 | context too unstable |
+
+All of G0b.2/3/4/6/7 must pass. Stage 2 does not run on the pilot.
+
+### 029.3.4 Pre-registered interpretation
+
+1. **Any required gate fails** → the lean readout is not a valid per-turn
+   measure on this model; reported with the failing number; no probe is
+   fit. The paper keeps relevance (029 G0.6) as its one validated
+   labeler-free quantity.
+2. **All pass** → (a) Stage 1b anatomy on the pilot, descriptive: median
+   `P_canonical`, `H`, and `T_rel` against (k − commitment segment), with the
+   frozen prediction that `H` falls and `P(committed class)` rises approaching
+   commitment while `T_rel` rises **before** it; (b) the full run over the 60
+   tasks (statements for all 596 classes built by the same mechanical rule
+   from the registry and an owner-reviewed rival set — the review is a
+   sequenced-after item and gates the full run); (c) **Stage 2 as 029 §7,
+   unchanged in splits, nulls, baselines, bars and lead-time correction, on
+   three targets:** `T_rel(k)`, `H(k)`, `P_canonical(k)`.
+3. **The strongest result this can deliver, stated now:** *the agent's
+   pre-action internal state linearly encodes (i) that the withheld
+   information is relevant now, (ii) which interpretation it is heading
+   for, and (iii) — only if G0b.3 and G0b.4 pass — that the interpretation
+   is the wrong one, with lead time before commitment.* (i)–(ii) are the
+   structural-layer question in components; (iii) is the need-to-ask signal
+   proper. Reported as decodability, never as a trigger (029 Boundary).
+
+### 029.3.5 What this cannot settle
+
+The same limits as 029 §8: one model family, one benchmark, teacher-forced
+statements rather than sampled actions, competence-limited tasks contribute
+little. Additionally: the statement template is one of many; a first-person
+rewrite is a sequenced-after variant if the gates fail on template grounds
+(G0b.6 passing while G0b.3/4 fail would suggest it). Family-shaped rival
+classes (fixture `_provenance.review`) attenuate G0b.5 but not G0b.3/4, which
+need no lexicon.
+
+### 029.3.6 Cost
+
+Statements are 50–200 tokens; ~13 per unit including the 2 foreign, against
+~17 branches of ~1.2k tokens in the CIS pilot — roughly 13× cheaper per unit.
+Pilot arms (baseline, replicate, `full_info`): ~10–15 GPU-minutes each plus ~6
+minutes of docker. The full run is a few GPU-hours plus ~4 hours of docker,
+not 35 GPU-hours.

@@ -34,6 +34,7 @@ data/*
 # protocol inputs that the contract suite asserts against
 !data/cis_registry_pins.json
 !data/cis_rival_resolutions_pilot.json
+!data/cis_lean_statements_pilot.json
 # Judge-labelling arm (decisions/025 + Amendment A): the frozen validation
 # set and the frozen judge-label artifacts are research artifacts, tracked.
 !data/label_judge_validation.json
