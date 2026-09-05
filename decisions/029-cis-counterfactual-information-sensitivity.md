@@ -568,3 +568,88 @@ Statements are 50–200 tokens; ~13 per unit including the 2 foreign, against
 Pilot arms (baseline, replicate, `full_info`): ~10–15 GPU-minutes each plus ~6
 minutes of docker. The full run is a few GPU-hours plus ~4 hours of docker,
 not 35 GPU-hours.
+
+## Amendment 029.4 (2026-09-05 — Stage-0b lean-readout pilot as-run: NO-GO on one gate)
+
+Run exactly as pre-registered: 3 pilot tasks, 67 baseline runs (1,845 units
+with a complete menu), an independent replicate into a separate work dir, and
+68 `full_info` runs. Menus were 15 / 9 / 11 statements per unit as the guard
+declared. Nothing tuned, nothing rerun with variations.
+`results/cis_lean_stage0b_pilot.json`.
+
+**§029.3.4 interpretation 1 fires: G0b.2 is a required gate and it fails, so
+the lean readout is not yet a valid per-turn measure on this model. No probe
+is fit. Stage 1b is NOT reported, per the rule that it is released only if
+all required gates pass** — the JSON carries
+`stage1b_anatomy_vs_commitment` but it is deliberately left unread here.
+
+### 029.4.1 Every gate beside its frozen §029.3.3 bar
+
+| gate | bar (frozen) | as-run | verdict |
+|---|---|---|---|
+| G0b.1 render + tokenization contract | = 100% | 21/21 CIS contract tests green on the box | **pass** |
+| G0b.2 branched vs from-scratch | ≤ 0.25 nats **and** ρ ≥ 0.99 | max \|Δ(lp_c − lp_c′)\| = **2.960 nats** (≈12× the bar); ρ = **0.9999** | **FAIL** |
+| G0b.3 swe_0 planted contrast | ≥ 75% of runs, p < .05 | **21/21 runs (100%)**, p = 4.8e-07; median `P_canon` **0.9975** on the blocker every run got right vs **0.00057** on the three they got wrong | **pass** |
+| G0b.4 `full_info` planted shift | CI excludes 0 **and** ≥ 75% blockers positive | **12/12 blockers positive**, median shift **+0.788**, clustered CI **[0.384, 0.999]** | **pass** |
+| G0b.5 lexicon agreement (diagnostic, not required) | > .38, p < .05 | **50.4%** (70/139) vs .38 chance, p = 0.002 | pass (diagnostic) |
+| G0b.6 relevance, own vs foreign PMI | ≥ 0.65, CI excludes 0.5 | paired AUROC **1.000**, CI **[1.000, 1.000]**; median own PMI **+25.48** vs foreign **−15.13** | **pass** |
+| G0b.7 double replay | ρ ≥ 0.95 | ρ = **0.9998**, median \|Δ\| = **0.000**, n = 6,898 | **pass** |
+
+### 029.4.2 The two planted gates both passed, at ceiling
+
+This is the material difference from 029.1. There the substantive validity
+gates themselves failed (G0.9 variance: the target was nuisance; G0.11 rival
+sign: a coin). Here **every substantive gate passes, and the two planted ones
+— the ones §029.3 named in advance as deciding everything — pass at ceiling:**
+
+- **G0b.3 is 21 out of 21 runs**, with a ~1,750× separation in median
+  `P_canonical` between the blocker swe_0 gets right (0.9975) and the three
+  it gets wrong (0.00057). The readout sees the consensus-wrong default that
+  gap 8(c) established and that no divergence-based instrument in this repo
+  could ever see.
+- **G0b.4 is 12 of 12 blockers positive** with a clustered CI excluding zero.
+  The readout moves in the right direction when the answer is supplied,
+  matching H.1's behavioural 0/21 → 8/23.
+- **G0b.6 relevance is a perfect 1.000**, against CIS_bash's 0.855.
+
+Sign now tracks correctness, which is exactly what 029.2 showed `CIS_bash`
+could not do. On the substance, the lean readout is the thing 029 was
+looking for.
+
+### 029.4.3 Why it is nevertheless a NO-GO
+
+`G0b.2` is required and it fails by ≈12×. The branched-cache path does not
+reproduce from-scratch scoring in absolute nats (max \|Δ\| 2.960 against a
+0.25 bar over 2,484 option pairs), and **every number in 029.4.1 is computed
+through that path.**
+
+The mitigating fact is recorded but does not change the verdict: **rank order
+is essentially perfect** (ρ = 0.9999 on statement log-probs, and the same ρ
+on `P_canonical` in G0b.7), and G0b.3/4/6/7 are all contrasts or orderings
+rather than absolute magnitudes, so they are the quantities least likely to
+be disturbed by an absolute-scale defect. That is a reason to expect the
+result to survive a fixed scorer — **it is not evidence that it has**, and
+the frozen rule is that a required gate failing means no probe is fit. It
+stands as NO-GO.
+
+This is the **second** time a from-scratch reproducibility gate has failed in
+this cycle (029 G0.4 at 1.266 nats vs 0.05; now G0b.2 at 2.960 vs 0.25), in
+two different scorers sharing the same branched-`DynamicCache` approach,
+while both passed their tiny-model fixtures. The defect is systematic and
+sits in that shared approach, not in either readout's semantics.
+
+### 029.4.4 Cost, measured
+
+1,845 units scored in **3,691 s** on the baseline arm (≈2.0 s/unit); three
+arms plus gates ran 15:12→18:18 wall. Roughly 3× cheaper per unit than
+`CIS_bash` (3.04 s/unit).
+
+### 029.4.5 What this does and does not license
+
+It does **not** license Stage 1b, the full run, or Stage 2 — all three are
+gated on G0b.2 in §029.3.4. It does establish that the failure is now
+isolated to one implementation defect with a known signature, rather than to
+the readout's validity. Per the stop rules nothing is refit and no variation
+is rerun without amending this entry first; the next pre-registration should
+name the scorer repair and what re-running it would and would not entitle
+one to claim.
